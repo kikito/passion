@@ -7,7 +7,8 @@ require 'passion.HasBody'
 
 passion.Actor = class('passion.Actor', StatefulObject)
 
-function passion.Actor:initialize()
+function passion.Actor:initialize(options) -- options will normally be nil
+  super(self, options)
   passion:addActor(self) -- add the actor to the passion system
 end
 
