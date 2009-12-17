@@ -11,7 +11,7 @@ Object = { name = "Object",
   -- creates a new instance
   new = function(class, ...)
     assert(classes[class]~=nil, "Use class:new instead of class.new")
-    --FIXME add events here
+
     local instance = setmetatable({ class = class }, class.__classDict) -- the class dictionary is the instance's metatable
     instance:initialize(...)
     return instance
@@ -38,6 +38,7 @@ Object = { name = "Object",
         if localMethod ~= nil then return localMethod end
         return superclass[methodName]
       end,
+      -- FIXME add support for __index method here
       __newindex = function(_, methodName, method) -- when adding new methods, include a "super" function
         if type(method) == 'function' then
           local super = function(instance, ...) return superclass[methodName](instance, ...) end --super function
