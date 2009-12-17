@@ -52,15 +52,9 @@ function passion:update(dt)
   passion:applyToAllActors('update', dt)
 end
 
--- draw callback
-function passion:draw()
-  --love.graphics.clear()
-  passion:applyToAllActors('draw')
-end
-
 -- Rest of the callbacks
 local callbacks = {
-  'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'reset'
+  'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'reset', 'draw'
 }
 for _,method in pairs(callbacks) do
   passion[method] = function(self, ...)
