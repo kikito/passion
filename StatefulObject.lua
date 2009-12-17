@@ -40,13 +40,17 @@ end
   This method invokes the exitState and enterState functions if they exist on the current state
 ]]
 function StatefulObject:gotoState(stateName)
-  local nextState = self.states[stateName]
-  local prevState = self.currentState
+  assert(self.states~=nil, "Attribute 'states' not initialized. Maybe you forgot to call super() in the constructor?")
 
+  local nextState = self.states[stateName]  
+  assert(nextState~=nil, "State '" .. stateName .. "' not found")
+
+  local prevState = self.currentState
   if(prevState~=nil and type(prevState.exitState) == "function") then
     prevState.exitState(self)
   end
 
+  self.previousState = prevState
   self.currentState = nextState
 
   if(nextState~=nil and type(nextState.enterState) == "function") then
@@ -61,6 +65,7 @@ end
   returns the newly created state
 ]]
 function StatefulObject:addState(stateName, superState)
+  assert(subclassOf(StatefulObject, self), "Use class:addState instead of class.addState")
   assert(self.states[stateName]==nil, "The class " .. self.name .. " already has a state called '" .. stateName)
   assert(type(stateName)=="string", "stateName must be a string")
   -- states are just regular classes. If superState is nil, this uses Object as superClass
@@ -69,21 +74,22 @@ function StatefulObject:addState(stateName, superState)
   return state
 end
 
-do --create an environment to keep the following variable local
-  local ignoredMethods = {initialize=1, gotoState=1, addState=1, subclass=1, includes=1, exitState=1, enterState=1}
-
+do --create an environment to keep the following variables local
+  local ignoredMethods = {states=1, initialize=1, gotoState=1, addState=1, subclass=1, includes=1, exitState=1, enterState=1}
+  local prevSubclass = StatefulObject.subclass
   --[[ creates a stateful subclass
     Subclasses inherit all the states of their superclases, in a special way:
     If class A has a state called Sleeping and B = A.subClass('B'), then B.states.Sleeping is a subclass of A.states.Sleeping
     returns the newly created stateful class
   ]]
   function StatefulObject:subclass(name)
-    local theClass = super(self, name) --for now, theClass is just a regular subclass
+    assert(subclassOf(StatefulObject, self), "Use class:subclass instead of class.subclass")
+    local theClass = prevSubclass(self, name) --for now, theClass is just a regular subclass
     
     --the states of the subclass are subclasses of the superclass' states
     theClass.states = {}
     for stateName,state in pairs(self.states) do 
-      theClass.addState(stateName, state)
+      theClass:addState(stateName, state)
     end
 
     --make sure that the currentState is used on the method lookup function before looking on the class dict
@@ -111,7 +117,7 @@ end -- end of the environment to keep ignoredMethods local
      If module.states has a state that doesn't exist on StatefulObject, a new state will be created.
 ]]
 function StatefulObject:includes(module)
-  assert(subclassOf(Object, self), "Use class:includes instead of class.includes")
+  assert(subclassOf(StatefulObject, self), "Use class:includes instead of class.includes")
   for methodName,method in pairs(module) do
     if methodName ~="included" and methodName ~= "states" then
       self[methodName] = method
@@ -121,8 +127,8 @@ function StatefulObject:includes(module)
   if type(module.states)=="table" then
     for stateName,moduleState in pairs(module.states) do 
       local state = self.states[stateName]
-      if(state==nil) then state = theClass.addState(stateName) end
-      state.includes(moduleState)
+      if(state==nil) then state = theClass:addState(stateName) end
+      state:includes(moduleState)
     end
   end
 end
