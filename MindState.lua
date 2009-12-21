@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------------
--- StatefulObject.lua
+-- MindState.lua
 -- Enrique García ( enrique.garcia.cota [AT] gmail [DOT] com ) - 19 Oct 2009
 -- Based on Unrealscript's stateful objects
 -----------------------------------------------------------------------------------
@@ -18,16 +18,16 @@ StatefulObject.states = {} -- the root state list
 -- Instance methods
 
 --[[ constructor
-  If your states need initialization, they can receive parameters via the stateValues parameter
-  stateValues is a table with parameters used for initializing the states. These are needed mostly if
+  If your states need initialization, they can receive parameters via the initParameters parameter
+  initParameters is a table with parameters used for initializing the states. These are needed mostly if
   your states have a custom superclass that needs parameters on their initialize() function.
 ]]
-function StatefulObject:initialize(stateValues)
+function StatefulObject:initialize(initParameters)
   super(self)
-  stateValues = stateValues or {} --initialize to empty table if nil
+  initParameters = initParameters or {} --initialize to empty table if nil
   self.states = {}
   for stateName,stateClass in pairs(self.class.states) do 
-    local state = stateClass.new(unpack(stateValues[stateName]))
+    local state = stateClass:new(unpack(initParameters[stateName] or {}))
     state.name = stateName
     self.states[stateName] = state
   end
@@ -40,10 +40,10 @@ end
   This method invokes the exitState and enterState functions if they exist on the current state
 ]]
 function StatefulObject:gotoState(stateName)
-  assert(self.states~=nil, "Attribute 'states' not initialized. Maybe you forgot to call super() in the constructor?")
+  assert(self.states~=nil, "Attribute 'states' not detected. check that you called instance:gotoState and not instance.gotoState, and that you invoked super(self) in the constructor.")
 
-  local nextState = self.states[stateName]  
-  assert(nextState~=nil, "State '" .. stateName .. "' not found")
+  local nextState = self.states[stateName]
+  assert(type(stateName)=='string' and nextState~=nil, "State '" .. stateName .. "' not found")
 
   local prevState = self.currentState
   if(prevState~=nil and type(prevState.exitState) == "function") then
@@ -83,7 +83,7 @@ do --create an environment to keep the following variables local
     returns the newly created stateful class
   ]]
   function StatefulObject:subclass(name)
-    assert(subclassOf(StatefulObject, self), "Use class:subclass instead of class.subclass")
+    --assert(subclassOf(StatefulObject, self), "Use class:subclass instead of class.subclass")
     local theClass = prevSubclass(self, name) --for now, theClass is just a regular subclass
     
     --the states of the subclass are subclasses of the superclass' states

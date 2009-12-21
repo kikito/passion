@@ -1,5 +1,5 @@
 require 'passion.MiddleClass'
-require 'passion.StatefulObject'
+require 'passion.MindState'
 require 'passion.Core'
 require 'passion.HasImage'
 require 'passion.HasBody'
