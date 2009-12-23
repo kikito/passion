@@ -40,7 +40,7 @@ passion.HasBody = {
       * radius: The radius of the circle
   ]]
   newCircleShape = function( self, offsetX, offsetY, radius )
-    body = self:getBody()
+    local body = self:getBody()
     local shape
     if(offsetY==nil or radius==nil) then shape= love.physics.newCircleShape(body, offsetX)
     else shape = love.physics.newCircleShape(body, offsetX, offsetY, radius)
@@ -62,7 +62,7 @@ passion.HasBody = {
     * angle: The orientation of the rectangle (degrees).
   ]]
   newRectangleShape = function( self, offsetX, offsetY, w, h, angle )
-    body = self:getBody()
+    local body = self:getBody()
     local shape
     if(w==nil or h==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY)
     elseif(angle==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY, w, h)
@@ -73,7 +73,7 @@ passion.HasBody = {
 
   -- Creates a new PolygonShape, using the parameters as an array of points
   newPolygonShape = function( self, ... )
-    body = self:getBody()
+    local body = self:getBody()
     return self:addShape(love.physics.newPolygonShape( body, ... ))
   end,
   
