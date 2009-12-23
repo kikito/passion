@@ -2,5 +2,5 @@
 
 require 'passion.Core'
 require 'passion.Colors'
-require 'passion.Actor'
+require 'passion.actors.Actor'
 

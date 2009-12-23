@@ -1,8 +1,8 @@
 require 'passion.MiddleClass'
 require 'passion.MindState'
 require 'passion.Core'
-require 'passion.HasImage'
-require 'passion.HasBody'
+require 'passion.actors.HasImage'
+require 'passion.actors.HasBody'
 
 
 passion.Actor = class('passion.Actor', StatefulObject)
