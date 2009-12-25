@@ -32,9 +32,11 @@ do -- keep the following variable
   end
 end
 
+function passion.Actor:update(dt) end
+
 function passion.Actor:getX() return self.x end
 function passion.Actor:getY() return self.y end
-function passion.Actor:getPosition() return { self.x, self.y } end
+function passion.Actor:getPosition() return self.x, self.y end
 
 function passion.Actor:getAngle() return self.angle end
 
