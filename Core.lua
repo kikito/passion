@@ -40,7 +40,7 @@ function passion:applyToAllActors(methodName, ...)
     local method = actorClass[methodName]
     if(type(method)=='function') then
       for _,actor in pairs(actorClass._actors) do
-        method(actor, ...)
+        actor[methodName](actor, ...)
       end
     end
   end
