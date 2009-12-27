@@ -69,7 +69,27 @@ Object = { name = "Object",
     end
     if type(module.included)=="function" then module:included(class) end
   end
+
 }
+
+do
+  local capitalize = function(s)
+    return string.gsub (s, "(%w)([%w]*)", function (first, rest) return string.upper(first) .. rest end, 1)
+  end
+
+  Object.getter = function(class, attributeName, defaultValue)
+    class['get' .. capitalize(attributeName)] = function(self) return self[attributeName] or defaultValue end
+  end
+  
+  Object.setter = function(class, attributeName)
+    class['set' .. capitalize(attributeName)] = function(self, value) self[attributeName] = value end
+  end
+  
+  Object.getterSetter = function(class, attributeName, defaultValue)
+    class:getter(attributeName, defaultValue)
+    class:setter(attributeName)
+  end
+end
 
 classes[Object]=Object -- adds Object to the list of classes
 
