@@ -1,5 +1,5 @@
 require 'passion.gui.Core'
-require 'passion.gui.controls.Control'
+require 'passion.gui.Control'
 
 passion.gui.StaticText = class('passion.gui.StaticText', passion.gui.Control)
 
