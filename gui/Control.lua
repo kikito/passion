@@ -11,10 +11,12 @@ end
 function passion.gui.Control:parseOptions(options)
   options = options or {}
   self:setLabel(options.label)
-  self:setParent(options.parent)
+  self:setPadding(options.padding)
+  self:setBackgroundColor(options.backgroundColor)
   self:setX(options.x)
   self:setY(options.y)
 end
 
 passion.gui.Control:getterSetter('label')
-passion.gui.Control:getterSetter('parent')
+passion.gui.Control:getterSetter('padding')
+passion.gui.Control:getterSetter('backgroundColor')
