@@ -8,8 +8,9 @@ function passion.gui.StaticText:initialize(options)
 end
 
 function passion.gui.StaticText:parseOptions(options)
-  options = options or {}
+
   super(self, options)
+  options = options or {}
 
   self:setText(options.text)
   self:setWidth(options.width)
@@ -19,34 +20,48 @@ function passion.gui.StaticText:parseOptions(options)
   self:setFontSize(options.fontSize)
 end
 
-passion.gui.StaticText:getterSetter('text', '')
-passion.gui.StaticText:getterSetter('width')
 passion.gui.StaticText:getterSetter('align')
 passion.gui.StaticText:getterSetter('font')
-passion.gui.StaticText:getterSetter('fontColor')
-passion.gui.StaticText:getterSetter('fontSize')
+passion.gui.StaticText:getterSetter('fontColor', passion.white)
+passion.gui.StaticText:getterSetter('fontSize', 12)
+passion.gui.StaticText:getterSetter('width')
+
+passion.gui.StaticText:getter('text', '')
+function passion.gui.StaticText:setText(text)
+  text = text or ''
+  local label = self:getLabel()
+  if(type(label)=="string" and string.len(label) > 0) then self.text = label .. ': ' .. text
+  else self.text = text
+  end
+end
 
 function passion.gui.StaticText:draw()
-  local text = self:getText()
-  local label = self:getLabel()
-  if(label~=nil and string.len(label) > 0) then text = label .. ': ' .. text end
-  
-  local x, y = self:getPosition()
-  local width = self:getWidth()
-  local align = self:getAlign()
 
-  local color = self:getFontColor()
+  local x, y = self:getPosition()
+  local align = self:getAlign()
+  local fontColor = self:getFontColor()
   local font = self:getFont()
   local fontSize = self:getFontSize()
-  
-  if(font~=nil and fontSize~=nil) then love.graphics.setFont(font, fontSize)
-  elseif(fontSize~=nil) then love.graphics.setFont(fontSize)
+  local width = self:getWidth()
+  local backgroundColor = self:getBackgroundColor()
+  local text = self:getText()
+
+  if(font ~= nil and fontSize ~= nil) then love.graphics.setFont(font, fontSize)
+  elseif(fontSize ~= nil) then
+    love.graphics.setFont(fontSize)
+    font = love.graphics.getFont()
   end
   
-  if(color~=nil) then love.graphics.setColor(unpack(color)) end
+  if(width == nil and font ~= nil) then width = font:getWidth(text) end
 
-  if(width==nil) then love.graphics.print( text, x, y )
-  elseif(align==nil) then love.graphics.printf( text, x, y, width)
+  if(backgroundColor ~= nil) then
+    love.graphics.setColor(unpack(backgroundColor))
+    love.graphics.rectangle( "fill", x, y-fontSize, width, fontSize )
+  end
+
+  if(fontColor~=nil) then love.graphics.setColor(unpack(fontColor)) end
+
+  if(align==nil) then love.graphics.printf( text, x, y, width)
   else love.graphics.printf(text, x, y, width, align)
   end
 end
