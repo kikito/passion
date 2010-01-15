@@ -109,7 +109,7 @@ local delegatedMethods = {
   'getLinearVelocity', 'getLinearVelocityFromLocalPoint', 'getLinearVelocityFromWorldPoint', 'getLocalCenter',
   'getLocalPoint', 'getLocalVector', 'getMass', 'getPosition', 'getWorldCenter', 'getWorldPoint', 'getWorldVector',
   'getX', 'getY', 'isBullet', 'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
-  'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setLinearDamping', 'setLinearVelocity',
+  'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setInertia', 'setLinearDamping', 'setLinearVelocity',
   'setMass', 'setMassFromShapes', 'setPosition', 'setX', 'setY', 'wakeUp'
 }
 
