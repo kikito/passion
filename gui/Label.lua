@@ -17,8 +17,11 @@ passion.gui.Label:getterSetter('align')
 passion.gui.Label:getterSetter('borderColor', nil)
 
 -- FIXME: setText should update width
--- FIXME: setFontSize should update height
--- FIXME: padding
+-- FIXME: setFontSize should update height  ?
+
+function passion.gui.Label:getHeight()
+  return super(self) or 2*self:getPadding() + self:getFontSize()
+end
 
 function passion.gui.Label:draw()
 
@@ -29,6 +32,7 @@ function passion.gui.Label:draw()
   local fontSize = self:getFontSize()
   local width = self:getWidth()
   local text = self:getText()
+  local padding = self:getPadding()
 
   if(font ~= nil and fontSize ~= nil) then love.graphics.setFont(font, fontSize)
   elseif(fontSize ~= nil) then
@@ -42,7 +46,8 @@ function passion.gui.Label:draw()
 
   if(fontColor~=nil) then love.graphics.setColor(unpack(fontColor)) end
 
-  if(align==nil) then love.graphics.printf(text, x, y+fontSize, width)
-  else love.graphics.printf(text, x, y+fontSize, width, align)
+  if(align==nil) then love.graphics.printf(text, x+padding, y+fontSize+padding-1, width)
+  elseif(align=='center') then love.graphics.printf(text, x, y+fontSize+padding-1, width, 'center')
+  else love.graphics.printf(text, x+padding, y+fontSize+padding-1, width, align)
   end
 end
