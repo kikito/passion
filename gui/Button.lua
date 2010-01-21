@@ -1,6 +1,6 @@
 require 'passion.gui.Label'
 
-passion.gui.Button = class('Button', passion.gui.Label)
+passion.gui.Button = class('passion.gui.Button', passion.gui.Label)
 
 local Button = passion.gui.Button
 
@@ -60,12 +60,12 @@ function MouseOut:update(dt)
     self:gotoState('MouseOver')
   end
 end
+function MouseOut:exitState()
+  self:onMouseOver()
+end
 
 -- MouseOver State
 local MouseOver = Button:addState('MouseOver')
-function MouseOver:enterState()
-  self:onMouseOver()
-end
 function MouseOver:update(dt)
   if((passion.gui.focus == nil or passion.gui.focus == self) and
       self:checkPoint(love.mouse.getPosition())==false) then
