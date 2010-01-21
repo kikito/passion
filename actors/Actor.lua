@@ -12,24 +12,22 @@ function passion.Actor:initialize(options) -- options will normally be nil
   passion:addActor(self) -- add the actor to the passion system
 end
 
-do -- keep the following variable
-  local prevSubclass = passion.Actor.subclass
+local prevSubclass = passion.Actor.subclass
 
-  function passion.Actor:subclass(name, options)
-    local theSubclass = prevSubclass(self, name)
-    options = options or {}
+function passion.Actor:subclass(name, options)
+  local theSubclass = prevSubclass(self, name)
+  options = options or {}
 
-    local hasImage = options.hasImage==nil and false or options.hasImage -- equivalent to ? : trinary operator
-    local hasBody = options.hasBody==nil and false or options.hasBody
+  local hasImage = options.hasImage==nil and false or options.hasImage -- equivalent to ? : trinary operator
+  local hasBody = options.hasBody==nil and false or options.hasBody
 
-    if(hasImage) then theSubclass:includes(passion.HasImage) end
-    if(hasBody) then theSubclass:includes(passion.HasBody) end
+  if(hasImage) then theSubclass:includes(passion.HasImage) end
+  if(hasBody) then theSubclass:includes(passion.HasBody) end
 
-    passion:addActorClass(theSubclass) -- register the new actor class on the passion system
-    theSubclass._actors = setmetatable({}, {__mode = "k"}) --this will hold references to all the actors created on this class
+  passion:addActorClass(theSubclass) -- register the new actor class on the passion system
+  theSubclass._actors = setmetatable({}, {__mode = "k"}) --this will hold references to all the actors created on this class
 
-    return theSubclass
-  end
+  return theSubclass
 end
 
 function passion.Actor:update(dt) end
