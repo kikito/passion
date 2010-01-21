@@ -2,18 +2,20 @@ require 'passion.gui.Core'
 require 'passion.actors.Actor'
 
 passion.gui.Pannel = class('passion.gui.Pannel', passion.Actor)
+local Pannel = passion.gui.Pannel
+
 -- instance methods
 
-passion.gui.Pannel.VALID_OPTIONS = { 
+local VALID_OPTIONS = { 
   'x', 'y', 'parent', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 'padding'
 }
 
-function passion.gui.Pannel:initialize(options)
+function Pannel:initialize(options)
   super(self)
-  self:parseOptions(options, passion.gui.Pannel.VALID_OPTIONS)
+  self:parseOptions(options, VALID_OPTIONS)
 end
 
-function passion.gui.Pannel:parseOptions(options, validOptions)
+function Pannel:parseOptions(options, validOptions)
   options = options or {}
   for _,option in pairs(validOptions) do
     local setterName = self.class:setterFor(option)
@@ -23,29 +25,30 @@ function passion.gui.Pannel:parseOptions(options, validOptions)
   end
 end
 
-passion.gui.Pannel:getterSetter('parent')
-passion.gui.Pannel:getterSetter('width')
-passion.gui.Pannel:getterSetter('height')
-passion.gui.Pannel:getterSetter('backgroundColor')
-passion.gui.Pannel:getterSetter('borderColor', passion.white)
-passion.gui.Pannel:getterSetter('borderWidth', 1)
-passion.gui.Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
-passion.gui.Pannel:getterSetter('cornerRadius', 0)
-passion.gui.Pannel:getterSetter('padding', 0)
+Pannel:getterSetter('parent')
+Pannel:getterSetter('width')
+Pannel:getterSetter('height')
+Pannel:getterSetter('backgroundColor')
+Pannel:getterSetter('borderColor', passion.white)
+Pannel:getterSetter('borderWidth', 1)
+Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
+Pannel:getterSetter('cornerRadius', 0)
+Pannel:getterSetter('padding', 0)
 
 -- FIXME: set cornerratius should increase padding
+-- TODO: Add children
 
-function passion.gui.Pannel:getX()
+function Pannel:getX()
   local parent = self:getParent()
   return (self.x or 0) + (parent == nil and 0 or (parent:getX() + parent:getPadding()))
 end
 
-function passion.gui.Pannel:getY()
+function Pannel:getY()
   local parent = self:getParent()
   return (self.y or 0) + (parent == nil and 0 or (parent:getY() + parent:getPadding()))
 end
 
-function passion.gui.Pannel:getPosition()
+function Pannel:getPosition()
   local parent = self:getParent()
   if(parent == nil) then
     return self.x, self.y
@@ -54,7 +57,7 @@ function passion.gui.Pannel:getPosition()
   end
 end
 
-function passion.gui.Pannel:draw()
+function Pannel:draw()
   local x, y = self:getPosition()
   local width = self:getWidth()
   local height = self:getHeight()
@@ -65,7 +68,7 @@ function passion.gui.Pannel:draw()
   end
 end
 
-function passion.gui.Pannel:drawBackground(x, y, width, height)
+function Pannel:drawBackground(x, y, width, height)
   local backgroundColor = self:getBackgroundColor()
 
   if(backgroundColor~=nil) then
@@ -91,53 +94,8 @@ function passion.gui.Pannel:drawBackground(x, y, width, height)
   end
 end
 
-do
-  local math_round = function (num, idp) local mult = 10^(idp or 0) return math.floor(num * mult + 0.5) / mult end 
 
-  function passion.gui.Pannel:_drawCorners(x, y, width, height, r, lineWidth)
-      local step = 1.0 / r
-      local theta = 0.0
-      local c = r + 0.0
-      local s = 0.0
-      local pc = c
-      local ps = s
-
-      while(theta <= math.pi / 4.0) do
-        theta = theta + step
-        c = math_round(r*math.cos(theta)) -- rounded cosine
-        s = math_round(r*math.sin(theta)) -- rounded sine
-        
-        r_2 = lineWidth / 2.0
-        r_23 = r_2*3
-
-        love.graphics.line(x+width-r+pc, y+r-ps, x+width-r+c, y+r-s) -- octant 0
-        love.graphics.line(x+width-r+ps, y+r-pc, x+width-r+s, y+r-c) -- octant 1
-        love.graphics.line(x+r-pc, y+r-ps, x+r-c, y+r-s) -- octant 2
-        love.graphics.line(x+r-ps, y+r-pc, x+r-s, y+r-c) -- octant 3
-        love.graphics.line(x+r-pc, y+height-r+ps, x+r-c, y+height-r+s) -- octant 4
-        love.graphics.line(x+r-ps, y+height-r+pc, x+r-s, y+height-r+c) -- octant 5
-        love.graphics.line(x+width-r+pc, y+height-r+ps, x+width-r+c, y+height-r+s) -- octant 6
-        love.graphics.line(x+width-r+ps, y+height-r+pc, x+width-r+s, y+height-r+c) -- octant 8
-
-        if(r_2 > 1) then
-          love.graphics.circle('fill', x+width-r+pc, y+r-ps, r_2, r_23)
-          love.graphics.circle('fill', x+width-r+ps, y+r-pc, r_2, r_23)
-          love.graphics.circle('fill', x+r-pc, y+r-ps, r_2, r_23)
-          love.graphics.circle('fill', x+r-ps, y+r-pc, r_2, r_23)
-          love.graphics.circle('fill', x+r-pc, y+height-r+ps, r_2, r_23)
-          love.graphics.circle('fill', x+r-ps, y+height-r+pc, r_2, r_23)
-          love.graphics.circle('fill', x+width-r+pc, y+height-r+ps, r_2, r_23)
-          love.graphics.circle('fill', x+width-r+ps, y+height-r+pc, r_2, r_23)
-        end
-
-        pc = c
-        ps = s
-      end
-
-  end
-end
-
-function passion.gui.Pannel:drawBorder(x, y, width, height)
+function Pannel:drawBorder(x, y, width, height)
   local lineColor = self:getBorderColor()
 
   if(lineColor~=nil) then
@@ -171,4 +129,48 @@ function passion.gui.Pannel:drawBorder(x, y, width, height)
     love.graphics.setLineWidth(w)
     love.graphics.setLineStyle(s)
   end
+end
+
+local math_round = function (num, idp) local mult = 10^(idp or 0) return math.floor(num * mult + 0.5) / mult end 
+
+function Pannel:_drawCorners(x, y, width, height, r, lineWidth)
+    local step = 1.0 / r
+    local theta = 0.0
+    local c = r + 0.0
+    local s = 0.0
+    local pc = c
+    local ps = s
+
+    while(theta <= math.pi / 4.0) do
+      theta = theta + step
+      c = math_round(r*math.cos(theta)) -- rounded cosine
+      s = math_round(r*math.sin(theta)) -- rounded sine
+      
+      r_2 = lineWidth / 2.0
+      r_23 = r_2*3
+
+      love.graphics.line(x+width-r+pc, y+r-ps, x+width-r+c, y+r-s) -- octant 0
+      love.graphics.line(x+width-r+ps, y+r-pc, x+width-r+s, y+r-c) -- octant 1
+      love.graphics.line(x+r-pc, y+r-ps, x+r-c, y+r-s) -- octant 2
+      love.graphics.line(x+r-ps, y+r-pc, x+r-s, y+r-c) -- octant 3
+      love.graphics.line(x+r-pc, y+height-r+ps, x+r-c, y+height-r+s) -- octant 4
+      love.graphics.line(x+r-ps, y+height-r+pc, x+r-s, y+height-r+c) -- octant 5
+      love.graphics.line(x+width-r+pc, y+height-r+ps, x+width-r+c, y+height-r+s) -- octant 6
+      love.graphics.line(x+width-r+ps, y+height-r+pc, x+width-r+s, y+height-r+c) -- octant 8
+
+      if(r_2 > 1) then
+        love.graphics.circle('fill', x+width-r+pc, y+r-ps, r_2, r_23)
+        love.graphics.circle('fill', x+width-r+ps, y+r-pc, r_2, r_23)
+        love.graphics.circle('fill', x+r-pc, y+r-ps, r_2, r_23)
+        love.graphics.circle('fill', x+r-ps, y+r-pc, r_2, r_23)
+        love.graphics.circle('fill', x+r-pc, y+height-r+ps, r_2, r_23)
+        love.graphics.circle('fill', x+r-ps, y+height-r+pc, r_2, r_23)
+        love.graphics.circle('fill', x+width-r+pc, y+height-r+ps, r_2, r_23)
+        love.graphics.circle('fill', x+width-r+ps, y+height-r+pc, r_2, r_23)
+      end
+
+      pc = c
+      ps = s
+    end
+
 end
