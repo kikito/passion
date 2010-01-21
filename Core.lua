@@ -1,6 +1,3 @@
-
-do
-
 passion = {}
 
 -- actor managing stuff
@@ -108,5 +105,3 @@ passion.SUPPORTED_FORMATS= {
   sound = { aif=1, aiff=1, ogg=1, rif=1, riff=1, voc=1, wav=1 },
   music = { midi=1, ['mod']=1, mp3=1, ogg=1, xm=1 }
 }
-
-end
