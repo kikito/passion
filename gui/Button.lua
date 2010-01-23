@@ -11,6 +11,7 @@ Button.VALID_OPTIONS = {
 function Button:initialize(options)
   super(self, options)
   self:parseOptions(options, Button.VALID_OPTIONS)
+
   self:gotoState('MouseOut')
 end
 
@@ -21,7 +22,7 @@ Button:getterSetter('onMouseOut')
 Button:getterSetter('onFocus')
 Button:getterSetter('onBlur')
 
--- make button borders visible by default
+-- make button borders visible by default, with text centered, and some border
 Button:getter('borderColor', passion.white)
 Button:getter('borderWidth', 2)
 Button:getter('cornerRadius', 5)
@@ -47,6 +48,18 @@ function Button:checkPoint(mx, my)
   
   if(mx < x or mx > x+width or my < y or my > y+height) then return false end
   return true
+end
+
+function Button:isPressed()
+  return self.currentState.name == 'Pressed'
+end
+
+function Button:isMouseOver()
+  return not self:isMouseOut()
+end
+
+function Button:isMouseOut()
+  return self.currentState.name == 'MouseOut'
 end
 
 -- MouseOut State

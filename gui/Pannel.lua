@@ -7,7 +7,8 @@ local Pannel = passion.gui.Pannel
 -- instance methods
 
 local VALID_OPTIONS = { 
-  'x', 'y', 'parent', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 'padding'
+  'x', 'y', 'parent', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 
+  'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
 }
 
 function Pannel:initialize(options)
@@ -26,26 +27,125 @@ function Pannel:parseOptions(options, validOptions)
 end
 
 Pannel:getterSetter('parent')
-Pannel:getterSetter('width')
-Pannel:getterSetter('height')
 Pannel:getterSetter('backgroundColor')
 Pannel:getterSetter('borderColor', passion.white)
 Pannel:getterSetter('borderWidth', 1)
 Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Pannel:getterSetter('cornerRadius', 0)
-Pannel:getterSetter('padding', 0)
+Pannel:setter('width', 0)
+Pannel:setter('height', 0)
 
--- FIXME: set cornerratius should increase padding
+function Pannel:getWidth()
+  self.width = self.width or 0
+  local maxWidth = self:getMaxWidth()
+  if(maxWidth ~= nil and maxWidth < self.width) then self.width = maxWidth end
+  return self.width
+end
+
+function Pannel:getHeight()
+  self.height = self.height or 0
+  local maxHeight = self:getMaxHeight()
+  if(maxHeight ~= nil and maxHeight < self.height) then self.height = maxHeight end
+  return self.height
+end
+
+-- returns the max height that the pannel can have, if it is inside of another pannel (otherwise, nil)
+-- FIXME: take local y into account
+function Pannel:getMaxHeight()
+  local parent = self:getParent()
+  if(parent ~= nil) then return parent:getPaddedHeight() end
+  return nil
+end
+
+-- returns the max width that the pannel can have, if it is inside of another pannel (otherwise, nil)
+-- FIXME: take local y into account
+function Pannel:getMaxWidth()
+  local parent = self:getParent()
+  if(parent ~= nil) then return parent:getPaddedWidth() end
+  return nil
+end
+
+-- returns the height of the 'padded' box (the space inside the pannel, with the padding taken out)
+function Pannel:getPaddedHeight()
+  return self:getHeight() - self:getTopPadding() - self:getBottomPadding()
+end
+
+-- returns the width of the 'padded' box (the space inside the pannel, with the padding taken out)
+function Pannel:getPaddedWidth()
+  return self:getWidth() - self:getLeftPadding() - self:getRightPadding()
+end
+
+-- returns x, y, width and height, with x and y being the top-left corner
+function Pannel:getBoundingBox()
+  local x, y = self:getPosition()
+  return x, y, self:getWidth(), self:getHeight()
+end
+
+-- returns the boundingbox minus the padding. It also returns x,y,paddedWidth,paddedHeight
+function Pannel:getPaddedBox()
+  local x, y = self:getPosition()
+  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getPaddedHeight(), self:getPaddedWidth()
+end
+
+-- define getters & setters for paddings
+for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
+  Pannel:setter(paddingName)
+  Pannel[Pannel:getterFor(paddingName)] = function(self, value)
+    local cornerRadius = self:getCornerRadius()
+    if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
+      self[paddingName] = cornerRadius
+    end
+    return self[paddingName]
+  end
+end
+
+--[[ Sets the padding in general.
+     The default parameter order is left, right, top, bottom.
+     Exceptions:
+       * If left is a table, the rest of the parameters are ignored. It is assumed that left has the form {left, right, top, bottom}
+       * If left is a number, and the rest are nil, then padding is set uniformly (the 4 paddings will have that value, not just left)
+     For finer control, use setLeftPadding, setRightPadding, setTopPadding & setBottomPadding
+]]
+function Pannel:setPadding(left, right, top, bottom)
+  if(type(left) == 'table') then
+    right = left[2]
+    top = left[3]
+    bottom = left[4]
+    left = left[1]
+  elseif(type(left) == 'number' and right==nil and top==nil and bottom==nil) then
+    right = left
+    top = left
+    bottom = left
+  end
+  
+  self:setLeftPadding(left)
+  self:setRightPadding(right)
+  self:setTopPadding(top)
+  self:setBottomPadding(bottom)
+end
+
+-- allways returns left, right, top & bottom padding
+function Pannel:getPadding()
+  return self:getLeftPadding(), self:getRightPadding(), self:getTopPadding(), self:getBottomPadding()
+end
+
+-- If you reset the corner Radius, and it is "bigger" than the padding, then adjust the padding.
+function Pannel:setCornerRadius(cornerRadius)
+  self.cornerRadius = cornerRadius
+  local padding = self:getPadding()
+  if(cornerRadius~=nil and cornerRadius > padding) then self:setPadding(cornerRadius) end
+end
+
 -- TODO: Add children
 
 function Pannel:getX()
   local parent = self:getParent()
-  return (self.x or 0) + (parent == nil and 0 or (parent:getX() + parent:getPadding()))
+  return self:getLocalX() + (parent == nil and 0 or (parent:getX() + parent:getLeftPadding()))
 end
 
 function Pannel:getY()
   local parent = self:getParent()
-  return (self.y or 0) + (parent == nil and 0 or (parent:getY() + parent:getPadding()))
+  return self:getLocalY() + (parent == nil and 0 or (parent:getY() + parent:getTopPadding()))
 end
 
 function Pannel:getPosition()
@@ -56,6 +156,10 @@ function Pannel:getPosition()
     return self:getX(), self:getY()
   end
 end
+
+function Pannel:getLocalX() return self.x or 0 end
+function Pannel:getLocalY() return self.y or 0 end
+function Pannel:getLocalPosition() return self.x, self.y end
 
 function Pannel:draw()
   local x, y = self:getPosition()

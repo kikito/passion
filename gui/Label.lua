@@ -21,12 +21,18 @@ Label:getterSetter('fontColor',  passion.white)
 Label:getterSetter('align',      'left')
 Label:getterSetter('borderColor', nil)
 
--- FIXME: setText should update width
--- FIXME: setFontSize should update height  ?
-
--- FIXME: review this
 function Label:getHeight()
-  return super(self) or 2*self:getPadding() + self:getFontSize()
+  return math.max(super(self),
+                  self:getTopPadding() + self:getBottomPadding() + self:getFontSize())
+end
+
+function Label:getWidth()
+  return math.max(super(self),
+                  self:getLeftPadding() + self:getRightPadding() + self:getTextWidth())
+end
+
+function Label:getTextWidth()
+  return self:getFont():getWidth(self:getText())
 end
 
 function Label:getFontSize()
