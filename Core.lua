@@ -85,6 +85,7 @@ function passion:run()
     end
   end
   
+  if(type(love.load)=='function') then love.load() end
   if(type(passion.load)=='function') then passion:load() end
   -- Main loop.
   while true do
