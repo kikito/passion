@@ -1,6 +1,7 @@
 passion = {}
 
--- actor class managing stuff
+-- ACTOR MANAGING STUFF
+
 passion.actorClasses={}
 function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
@@ -18,7 +19,8 @@ function passion:applyToAllActors(methodName, ...)
   self:applyToAllActorClasses('applyToAllActors', methodName, ...)
 end
 
--- physical world stuff
+-- PHYSICAL WORLD STUFF
+
 function passion:newWorld(w, h)
   self.world = love.physics.newWorld( w, h )
   self.ground = self:newBody(0, 0, 0)
@@ -37,6 +39,19 @@ function passion:newBody(x, y, m )
   return love.physics.newBody( world, x, y, m )
 end
 
+-- Passion will route the following to its internal world object (i.e. passion:setGravity(0, 100)
+local delegatedMethods = {
+  'getBodyCount', 'getCallbacks', 'getGravity', 'getJointCount', 'getMeter', 'isAllowSleep', 'setAllowSleep', 'setCallbacks', 'setGravity', 'setMeter'
+}
+for _,method in pairs(delegatedMethods) do
+  passion[method] = function(self, ...)
+    local world = passion:getWorld()
+    return world[method](world, ...)
+  end
+end
+
+-- CALLBACK STUFF
+
 -- update callback
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
@@ -50,17 +65,6 @@ local callbacks = {
 for _,method in ipairs(callbacks) do
   passion[method] = function(self, ...)
     passion:applyToAllActors(method, ...)
-  end
-end
-
--- Passion will route the following to its internal world object (i.e. passion:setGravity(0, 100)
-local delegatedMethods = {
-  'getBodyCount', 'getCallbacks', 'getGravity', 'getJointCount', 'getMeter', 'isAllowSleep', 'setAllowSleep', 'setCallbacks', 'setGravity', 'setMeter'
-}
-for _,method in pairs(delegatedMethods) do
-  passion[method] = function(self, ...)
-    local world = passion:getWorld()
-    return world[method](world, ...)
   end
 end
 
