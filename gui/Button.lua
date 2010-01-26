@@ -51,7 +51,7 @@ function Button:checkPoint(mx, my)
 end
 
 function Button:isPressed()
-  return self.currentState.name == 'Pressed'
+  return self.currentState == self.states.Pressed
 end
 
 function Button:isMouseOver()
@@ -59,7 +59,7 @@ function Button:isMouseOver()
 end
 
 function Button:isMouseOut()
-  return self.currentState.name == 'MouseOut'
+  return self.currentState == self.states.MouseOut
 end
 
 -- MouseOut State

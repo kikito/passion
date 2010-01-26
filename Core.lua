@@ -1,16 +1,21 @@
 passion = {}
 
--- actor managing stuff
-passion.actors = setmetatable({}, {__mode = "k"})
-function passion:addActor(actor)
-  table.insert(actor.class._actors, actor)
-  table.insert(self.actors, actor)
-  actor.actorId = #(self.actors)
-end
-
+-- actor class managing stuff
 passion.actorClasses={}
 function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
+end
+function passion:applyToAllActorClasses(methodName, ...)
+  local method
+  for _,actorClass in pairs(self.actorClasses) do
+    method = actorClass[methodName]
+    if(type(method)=='function') then
+      method(actorClass, ...)
+    end
+  end
+end
+function passion:applyToAllActors(methodName, ...)
+  self:applyToAllActorClasses('applyToAllActors', methodName, ...)
 end
 
 -- physical world stuff
@@ -32,17 +37,6 @@ function passion:newBody(x, y, m )
   return love.physics.newBody( world, x, y, m )
 end
 
-function passion:applyToAllActors(methodName, ...)
-  for _,actorClass in pairs(self.actorClasses) do
-    local method = actorClass[methodName]
-    if(type(method)=='function') then
-      for _,actor in pairs(actorClass._actors) do
-        actor[methodName](actor, ...)
-      end
-    end
-  end
-end
-
 -- update callback
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
@@ -53,14 +47,13 @@ end
 local callbacks = {
   'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'reset', 'draw'
 }
-for _,method in pairs(callbacks) do
+for _,method in ipairs(callbacks) do
   passion[method] = function(self, ...)
     passion:applyToAllActors(method, ...)
   end
 end
 
--- Apply the following methods directly to passion. for example passion:update(dt).
--- Passion will route them to the world object.
+-- Passion will route the following to its internal world object (i.e. passion:setGravity(0, 100)
 local delegatedMethods = {
   'getBodyCount', 'getCallbacks', 'getGravity', 'getJointCount', 'getMeter', 'isAllowSleep', 'setAllowSleep', 'setCallbacks', 'setGravity', 'setMeter'
 }
@@ -71,37 +64,118 @@ for _,method in pairs(delegatedMethods) do
   end
 end
 
---[[ Redefined the main loop to use passion functions
+-- MAIN LOOP STUFF
+
+--[[ passion.run. Can be used to "replace" love.run. Use it like this:
 function love.run()
-  if passion.load then passion:load() end
-  -- Main loop.
-  while true do
-
-    love.timer.step()
-
-    passion:update(love.timer.getDelta()) --execute the "update" method on all actors, and update the world
-    passion:draw()  -- draw all actors
-    passion:reset() -- execute the reset method on all actors - this is new
-
-    -- Process events.
-    for e,a,b,c in love.event.poll() do
-      if e == love.event_quit then return end
-      love.handlers[e](a,b,c)
-    end
-
-    love.graphics.present()
-  end
+  return passion:run()
 end
 ]]
 
--- resource loading
+function passion:run()
+  
+  -- registers the love events on passion
+  for _,f in ipairs({'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased'}) do
+    love[f] = function(...)
+      passion[f](passion, ...)
+    end
+  end
+  
+  if(type(passion.load)=='function') then passion:load() end
+  -- Main loop.
+  while true do
+    love.timer.step()
+    passion:update(love.timer.getDelta())
+    
+    love.graphics.clear()
 
---TBD
+    passion:draw()
 
--- this is not used yet
-passion.SUPPORTED_FORMATS= {
-  image = { bmp=1, gif=1, jpeg=1, jpg=1, lbm=1, pcx=1, png=1, pnm=1, tga=1, xcf=1, xpm=1, xv=1 },
-  font =  { ttf=1 },
-  sound = { aif=1, aiff=1, ogg=1, rif=1, riff=1, voc=1, wav=1 },
-  music = { midi=1, ['mod']=1, mp3=1, ogg=1, xm=1 }
+    -- Process events.
+    for e,a,b,c in love.event.poll() do
+      if e == 'q' then
+        if love.audio then love.audio.stop() end
+        return
+      end
+      love.handlers[e](a,b,c)
+    end
+    love.timer.sleep(1)
+
+    love.graphics.present() -- what is this?
+
+    passion:reset() -- do something between the "draw" and "update" calls
+  end
+end
+
+-- RESOURCE LOADING STUFF
+
+passion.resources = {
+  images = {},
+  sounds = {},
+  musics = {},
+  fonts = {}
 }
+
+local getResource = function(collection, f, key, ...)
+  local resource = collection[key]
+  if(resource == nil) then resource = f(...) end
+  return resource
+end
+
+function passion:getImage(pathOrFileOrData)
+  return getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
+end
+
+function passion:getSound(pathOrFileOrData)
+  return getResource(self.resources.sounds, love.audio.newSound, pathOrFileOrData, pathOrFileOrData )
+end
+
+function passion:getMusic(pathOrFileOrDecoder)
+  return getResource(self.resources.musics, love.audio.newMusic, pathOrFileOrDecoder, pathOrFileOrDecoder)
+end
+
+local newDefaultFont = function(size)
+  local prevFont = love.graphics.getFont()
+  love.graphics.setFont(size)
+  local font = love.graphics.getFont()
+  if(prevFont~=nil) then love.graphics.setFont(prevFont) end
+  return font
+end
+
+function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
+  if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
+
+    local size = sizeOrPathOrImage
+    return getResource(self.resources.fonts, newDefaultFont, size, size)
+
+  elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
+
+    local path = sizeOrPathOrImage
+    local extension = string.match(path, '\.(%a%a%a)')
+    assert(extension~=nil, "The file must have a valid extension (ttf or image)")
+
+    local fontList = self.resources.fonts[path]
+    if(fontList == nil) then
+      self.resources.fonts[path] = {}
+      fontList = self.resources.fonts[path]
+    end
+
+    if('ttf' == string.lower(extension)) then -- it is a truetype font
+      local size = sizeOrGlyphs
+      return getResource(fontList, love.graphics.newFont, size)
+    else -- it is an image font, with a path
+      local image = self:getImage(path)
+      local glyphs = sizeOrGlyphs
+      return getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
+    end
+
+  else -- sizeOrPathOrImage is an image -> imagefont, with an image
+
+    local image = sizeOrPathOrImage
+    local glyphs = sizeOrGlyphs
+    return getResource(self.fonts, love.graphics.newImageFont, image, image, glyphs)
+
+  end
+
+end
+

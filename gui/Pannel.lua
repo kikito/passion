@@ -19,10 +19,12 @@ end
 function Pannel:parseOptions(options, validOptions)
   options = options or {}
   for _,option in pairs(validOptions) do
-    local setterName = self.class:setterFor(option)
-    local setter = self[setterName]
-    assert(setter~=nil, "Setter function " .. setterName .. " not found on class " .. self.class.name)
-    setter(self, options[option])
+    if(options[option]~=nil) then
+      local setterName = self.class:setterFor(option)
+      local setter = self[setterName]
+      assert(setter~=nil, "Setter function " .. setterName .. " not found on class " .. self.class.name)
+      setter(self, options[option])
+    end
   end
 end
 
@@ -53,7 +55,7 @@ end
 -- FIXME: take local y into account
 function Pannel:getMaxHeight()
   local parent = self:getParent()
-  if(parent ~= nil) then return parent:getPaddedHeight() end
+  if(parent ~= nil) then return parent:getInternalHeight() end
   return nil
 end
 
@@ -61,18 +63,18 @@ end
 -- FIXME: take local y into account
 function Pannel:getMaxWidth()
   local parent = self:getParent()
-  if(parent ~= nil) then return parent:getPaddedWidth() end
+  if(parent ~= nil) then return parent:getInternalWidth() end
   return nil
 end
 
--- returns the height of the 'padded' box (the space inside the pannel, with the padding taken out)
-function Pannel:getPaddedHeight()
-  return self:getHeight() - self:getTopPadding() - self:getBottomPadding()
+-- returns the height of the 'Internal' box (the space inside the pannel, with the padding taken out)
+function Pannel:getInternalHeight()
+  return (self:getHeight() - self:getTopPadding() - self:getBottomPadding())
 end
 
--- returns the width of the 'padded' box (the space inside the pannel, with the padding taken out)
-function Pannel:getPaddedWidth()
-  return self:getWidth() - self:getLeftPadding() - self:getRightPadding()
+-- returns the width of the 'Internal' box (the space inside the pannel, with the padding taken out)
+function Pannel:getInternalWidth()
+  return (self:getWidth() - self:getLeftPadding() - self:getRightPadding())
 end
 
 -- returns x, y, width and height, with x and y being the top-left corner
@@ -81,21 +83,21 @@ function Pannel:getBoundingBox()
   return x, y, self:getWidth(), self:getHeight()
 end
 
--- returns the boundingbox minus the padding. It also returns x,y,paddedWidth,paddedHeight
-function Pannel:getPaddedBox()
+-- returns the boundingbox minus the padding. It also returns x,y,InternalWidth,InternalHeight
+function Pannel:getInternalBox()
   local x, y = self:getPosition()
-  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getPaddedHeight(), self:getPaddedWidth()
+  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getInternalWidth(), self:getInternalHeight()
 end
 
--- define getters & setters for paddings
+-- define getters & setters for paddings (i.e. setLeftPadding, getLeftPadding)
 for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
   Pannel:setter(paddingName)
-  Pannel[Pannel:getterFor(paddingName)] = function(self, value)
+  Pannel[Pannel:getterFor(paddingName)] = function(self)
     local cornerRadius = self:getCornerRadius()
     if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
       self[paddingName] = cornerRadius
     end
-    return self[paddingName]
+    return self[paddingName] or 0
   end
 end
 
@@ -130,10 +132,9 @@ function Pannel:getPadding()
 end
 
 -- If you reset the corner Radius, and it is "bigger" than the padding, then adjust the padding.
+-- FIXME: cornerRadius incrementing padding?
 function Pannel:setCornerRadius(cornerRadius)
   self.cornerRadius = cornerRadius
-  local padding = self:getPadding()
-  if(cornerRadius~=nil and cornerRadius > padding) then self:setPadding(cornerRadius) end
 end
 
 -- TODO: Add children

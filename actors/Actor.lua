@@ -7,14 +7,54 @@ require 'passion.actors.HasBody'
 
 passion.Actor = class('passion.Actor', StatefulObject)
 
-function passion.Actor:initialize(options) -- options will normally be nil
+local Actor = passion.Actor
+
+-- INSTANCE METHODS
+
+function Actor:initialize(options) -- options will normally be nil
   super(self, options)
-  passion:addActor(self) -- add the actor to the passion system
+  self.class:_registerInstance(self) -- add the actor to the list of actors of its class
 end
 
-local prevSubclass = passion.Actor.subclass
+function Actor:destroy()
+  self.class:_unregisterInstance(self)
+end
 
-function passion.Actor:subclass(name, options)
+function Actor:update(dt) end
+function Actor:draw() end
+
+Actor:getterSetter('x') --getX, setX
+Actor:getterSetter('y') -- getY, setY
+Actor:getterSetter('angle') -- getAngle, setAngle
+Actor:getterSetter('centerX') -- getCenterX, setCenterX
+Actor:getterSetter('centerY') -- getCenterY, setCenterY
+Actor:getterSetter('scaleX', 1) -- getScaleX, setScaleX, with 1 as default value
+Actor:getterSetter('scaleY', 1) --getScaleY, setScaleY, with 1 as defalult value
+
+function Actor:getPosition() return self.x, self.y end
+function Actor:setPosition(x, y)
+  self.x = x
+  self.y = y
+end
+
+function Actor:getCenter() return self.centerX, self.centerX end
+function Actor:setCenter(centerX, centerY)
+  self.centerX = centerX
+  self.centerY = centerY
+end
+
+function Actor:setScale(scale)
+  self.scaleX = scale
+  self.scaleY = scale
+end
+
+-- CLASS METHODS
+
+-- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
+-- it also registers the subclass on the list of passion actor classes
+-- and creates the _actors array
+local prevSubclass = Actor.subclass
+function Actor:subclass(name, options)
   local theSubclass = prevSubclass(self, name)
   options = options or {}
 
@@ -30,29 +70,48 @@ function passion.Actor:subclass(name, options)
   return theSubclass
 end
 
-function passion.Actor:update(dt) end
-
-passion.Actor:getterSetter('x') --getX, setX
-passion.Actor:getterSetter('y') -- getY, setY
-passion.Actor:getterSetter('angle') -- getAngle, setAngle
-passion.Actor:getterSetter('centerX') -- getCenterX, setCenterX
-passion.Actor:getterSetter('centerY') -- getCenterY, setCenterY
-passion.Actor:getterSetter('scaleX', 1) -- getScaleX, setScaleX, with 1 as default value
-passion.Actor:getterSetter('scaleY', 1) --getScaleY, setScaleY, with 1 as defalult value
-
-function passion.Actor:getPosition() return self.x, self.y end
-function passion.Actor:setPosition(x, y)
-  self.x = x
-  self.y = y
+-- Adds an actor to the "list of actors" of its class
+function Actor:_registerInstance(actor)
+  self._actors[actor]= actor
 end
 
-function passion.Actor:getCenter() return self.centerX, self.centerX end
-function passion.Actor:setCenter(centerX, centerY)
-  self.centerX = centerX
-  self.centerY = centerY
+-- Removes an actor from the "list of actors" of its class
+function Actor:_unregisterInstance(actor)
+  self._actors[actor]= nil
 end
 
-function passion.Actor:setScale(scale)
-  self.scaleX = scale
-  self.scaleY = scale
+-- Applies some method to all the actors of this class (not subclasses)
+function Actor:applyToAllActors(methodName, ...)
+  local method = self[methodName]
+  if(type(method)=='function') then
+    for _,actor in pairs(self._actors) do actor[methodName](actor, ...) end -- do NOT replace with method(actor, ...) ... it is not the same thing
+  end
+end
+
+local resourceTypes = {
+  images = 'getImage',
+  sounds = 'getSound',
+  musics = 'getMusic',
+  fonts = 'getFont'
+}
+-- Loads images, fonts, sounds & music onto the actor class itself
+function Actor:load(resourceTypesToLoad)
+  assert(self~=nil, 'Please call Class:load instead of class.load')
+  local resourceTypeToLoad
+  for resourceTypeName,loadingMethod in pairs(resourceTypes) do
+    resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]
+    if(type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
+      -- create self.fonts if it doesn't exist
+      if(self[resourceTypeName]==nil) then self[resourceTypeName] = {} end
+      
+      -- parse all the resource names, invoking the right loadingMethod with the right parameters
+      for resourceName, params in pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
+        if(type(params) == 'table') then
+          self[resourceTypeName][resourceName] = passion[loadingMethod](passion, unpack(params))
+        else
+          self[resourceTypeName][resourceName] = passion[loadingMethod](passion, params)
+        end
+      end
+    end
+  end
 end

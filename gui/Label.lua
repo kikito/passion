@@ -1,5 +1,4 @@
 require 'passion.gui.Pannel'
-require 'passion.ResourceManager'
 
 passion.gui.Label = class('passion.gui.Label', passion.gui.Pannel)
 local Label = passion.gui.Label
@@ -18,7 +17,8 @@ end
 Label:getterSetter('text',       '')
 Label:getterSetter('font',       defaultFont)
 Label:getterSetter('fontColor',  passion.white)
-Label:getterSetter('align',      'left')
+Label:getterSetter('align',      'left')   -- or right or center
+Label:getterSetter('valign',     'center') -- or top or bottom
 Label:getterSetter('borderColor', nil)
 
 function Label:getHeight()
@@ -36,20 +36,18 @@ function Label:getTextWidth()
 end
 
 function Label:getFontSize()
-  local f = self:getFont()
-  return f:getHeight()
+  return self:getFont():getHeight()
 end
 
 function Label:draw()
 
-  local x, y = self:getPosition()
   local align = self:getAlign()
+  local valign = self:getValign()
   local font = self:getFont()
   local fontColor = self:getFontColor()
   local fontSize = self:getFontSize()
-  local width = self:getWidth()
   local text = self:getText()
-  local padding = self:getPadding()
+  local x, y, width, height = self:getInternalBox()
 
 
   local prevFont = love.graphics.getFont()
@@ -59,14 +57,14 @@ function Label:draw()
 
   love.graphics.setFont(font)
 
-  if(width == nil and font ~= nil) then width = font:getWidth(text) end
-
   if(fontColor~=nil) then love.graphics.setColor(unpack(fontColor)) end
 
-  if    (align=='left') then love.graphics.printf(text, x+padding, y+fontSize+padding-1, width, 'left')
-  elseif(align=='center') then love.graphics.printf(text, x, y+fontSize+padding-1, width, 'center')
-  else love.graphics.printf(text, x, y+fontSize+padding-1, width-padding, 'right')
+  if(valign=='top') then y = y+fontSize-1
+  elseif(valign=='center') then y = (y + height/2.0 + fontSize/2.0) -1
+  else y = y + height -1
   end
+
+  love.graphics.printf(text, x, y, width, align)
 
   -- restore previous values of font & color
   if(prevFont~=nil) then love.graphics.setFont(prevFont) end
