@@ -5,7 +5,7 @@ passion.gui.Button = class('passion.gui.Button', passion.gui.Label)
 local Button = passion.gui.Button
 
 Button.VALID_OPTIONS = {
-  'onClick', 'onPress', 'onRelease' 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'captureMouse'
+  'onClick', 'onPress', 'onRelease' 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
 }
 
 function Button:initialize(options)
@@ -22,7 +22,7 @@ Button:getterSetter('onMouseOver')
 Button:getterSetter('onMouseOut')
 Button:getterSetter('onFocus')
 Button:getterSetter('onBlur')
-Button:getterSetter('captureMouse', true) -- if set to false, buttons don't capture the mouse when clicked
+Button:getterSetter('focus', true) -- if set to false, buttons don't capture the mouse when clicked
 
 -- make button borders visible by default, with text centered, and some border
 Button:getter('borderColor', passion.white)
@@ -88,7 +88,7 @@ function MouseOver:update(dt)
       self:checkPoint(love.mouse.getPosition())==false) then
     self:gotoState('MouseOut')
   elseif love.mouse.isDown('l') then
-    self:gotoState(self:getCaptureMouse()==true and 'PressedFocus' or 'Pressed')
+    self:gotoState(self:getFocus()==true and 'PressedFocus' or 'Pressed')
   end
 end
 
