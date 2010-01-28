@@ -5,7 +5,7 @@ passion.gui.Button = class('passion.gui.Button', passion.gui.Label)
 local Button = passion.gui.Button
 
 Button.VALID_OPTIONS = {
-  'onClick', 'onPress', 'onRelease' 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
+  'onClick', 'onPress', 'onRelease', 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
 }
 
 function Button:initialize(options)
