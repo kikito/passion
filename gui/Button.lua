@@ -17,6 +17,7 @@ end
 
 Button:getterSetter('onClick')
 Button:getterSetter('onPress')
+Button:getterSetter('onRelease')
 Button:getterSetter('onMouseOver')
 Button:getterSetter('onMouseOut')
 Button:getterSetter('onFocus')
@@ -33,6 +34,7 @@ Button:getter('align', 'center')
 -- These functions do nothing by default
 function Button:onClick() end
 function Button:onPress() end
+function Button:onRelease() end
 function Button:onMouseOver() end
 function Button:onMouseOut() end
 function Button:onFocus() end
