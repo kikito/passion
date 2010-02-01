@@ -7,7 +7,7 @@ local Pannel = passion.gui.Pannel
 -- instance methods
 
 local VALID_OPTIONS = { 
-  'x', 'y', 'parent', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 
+  'x', 'y', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 
   'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
 }
 
@@ -28,7 +28,6 @@ function Pannel:parseOptions(options, validOptions)
   end
 end
 
-Pannel:getterSetter('parent')
 Pannel:getterSetter('backgroundColor')
 Pannel:getterSetter('borderColor', passion.white)
 Pannel:getterSetter('borderWidth', 1)
@@ -136,8 +135,6 @@ end
 function Pannel:setCornerRadius(cornerRadius)
   self.cornerRadius = cornerRadius
 end
-
--- TODO: Add children
 
 function Pannel:getX()
   local parent = self:getParent()
