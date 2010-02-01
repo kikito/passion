@@ -17,7 +17,27 @@ function Actor:initialize(options) -- options will normally be nil
 end
 
 function Actor:destroy()
+  self:gotoState(nil)
+  self:freeze()
+  self:setVisible(false)
   self.class:_unregisterInstance(self)
+end
+
+--FIXME add special control case on HasBody
+function Actor:freeze()
+  self._frozen = true
+end
+
+function Actor:unFreeze()
+  self._frozen = false
+end
+
+function Actor:updateIfNotFrozen()
+  if(self._frozen~=true) then self:update() end
+end
+
+function Actor:drawIfVisible()
+  if(self:getVisible()==true) then self:draw() end
 end
 
 function Actor:update(dt) end
@@ -25,6 +45,7 @@ function Actor:draw() end
 
 Actor:getterSetter('x') --getX, setX
 Actor:getterSetter('y') -- getY, setY
+Actor:getterSetter('visible', true)
 Actor:getterSetter('angle') -- getAngle, setAngle
 Actor:getterSetter('centerX') -- getCenterX, setCenterX
 Actor:getterSetter('centerY') -- getCenterY, setCenterY
@@ -72,12 +93,19 @@ end
 
 -- Adds an actor to the "list of actors" of its class
 function Actor:_registerInstance(actor)
-  self._actors[actor]= actor
+  table.insert(self._actors, actor)
 end
 
 -- Removes an actor from the "list of actors" of its class
 function Actor:_unregisterInstance(actor)
-  self._actors[actor]= nil
+  local index
+  for i, v in ipairs(self._actors) do
+      if v == arg then
+          index = i
+          break
+      end
+  end
+  table.remove(self._actors, index)
 end
 
 -- Applies some method to all the actors of this class (not subclasses)
