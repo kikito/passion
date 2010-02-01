@@ -55,7 +55,12 @@ end
 -- update callback
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
-  passion:applyToAllActors('update', dt)
+  self:applyToAllActors('updateIfNotFrozen', dt)
+end
+
+-- draw callback
+function passion:draw()
+  self:applyToAllActors('drawIfVisible')
 end
 
 -- Rest of the callbacks
@@ -123,7 +128,10 @@ passion.resources = {
 
 local getResource = function(collection, f, key, ...)
   local resource = collection[key]
-  if(resource == nil) then resource = f(...) end
+  if(resource == nil) then
+    resource = f(...)
+    collection[key]=resource
+  end
   return resource
 end
 
@@ -156,8 +164,7 @@ function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
   elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
 
     local path = sizeOrPathOrImage
-    local extension = string.match(path, '\.(%a%a%a)')
-    assert(extension~=nil, "The file must have a valid extension (ttf or image)")
+    local extension = string.sub(path,-3)
 
     local fontList = self.resources.fonts[path]
     if(fontList == nil) then
@@ -167,8 +174,9 @@ function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
 
     if('ttf' == string.lower(extension)) then -- it is a truetype font
       local size = sizeOrGlyphs
-      return getResource(fontList, love.graphics.newFont, size)
+      return getResource(fontList, love.graphics.newFont, size, path, size)
     else -- it is an image font, with a path
+      print('c')
       local image = self:getImage(path)
       local glyphs = sizeOrGlyphs
       return getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
