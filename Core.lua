@@ -6,17 +6,31 @@ passion.actorClasses={}
 function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
 end
-function passion:applyToAllActorClasses(methodName, ...)
+function passion:applyToAllActorClasses(methodOrName, ...)
   local method
   for _,actorClass in pairs(self.actorClasses) do
-    method = actorClass[methodName]
+
+    if(type(methodOrName)=='string') then
+      method = actorClass[methodOrName]
+    elseif(type(methodOrName)=='function') then
+      method = methodOrName
+    else
+      error('methodOrName must be a function or function name')
+    end
+    
     if(type(method)=='function') then
       method(actorClass, ...)
     end
   end
 end
-function passion:applyToAllActors(methodName, ...)
-  self:applyToAllActorClasses('applyToAllActors', methodName, ...)
+
+function passion:applyToAllActors(methodOrName, ...)
+  self:applyToAllActorClasses('applyToAllActors', methodOrName, ...)
+end
+
+-- EXIT
+function passion:exit()
+  love.event.push('q')
 end
 
 -- PHYSICAL WORLD STUFF
@@ -25,6 +39,9 @@ function passion:newWorld(w, h)
   self.world = love.physics.newWorld( w, h )
   self.ground = self:newBody(0, 0, 0)
   return world
+end
+function passion:destroyWorld()
+  self.world = nil
 end
 function passion:getWorld()
   assert(self.world ~= nil, "passion.world is nil. You must invoke passion:newWorld")
@@ -53,14 +70,22 @@ end
 -- CALLBACK STUFF
 
 -- update callback
+local updateIfNotFrozen = function(actor, dt)
+  if(actor:isFrozen()==false) then actor:update(dt) end
+end
+
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
-  self:applyToAllActors('updateIfNotFrozen', dt)
+  self:applyToAllActors(updateIfNotFrozen, dt)
 end
 
 -- draw callback
+local drawIfVisible = function(actor)
+  if(actor:getVisible()==true) then actor:draw() end
+end
+
 function passion:draw()
-  self:applyToAllActors('drawIfVisible')
+  self:applyToAllActors(drawIfVisible)
 end
 
 -- Rest of the callbacks
@@ -136,14 +161,17 @@ local getResource = function(collection, f, key, ...)
 end
 
 function passion:getImage(pathOrFileOrData)
+  assert(self==passion, 'Use passion:getImage instead of passion.getImage')
   return getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
 function passion:getSound(pathOrFileOrData)
+  assert(self==passion, 'Use passion:getSound instead of passion.getSound')
   return getResource(self.resources.sounds, love.audio.newSound, pathOrFileOrData, pathOrFileOrData )
 end
 
 function passion:getMusic(pathOrFileOrDecoder)
+  assert(self==passion, 'Use passion:getMusic instead of passion.getMusic')
   return getResource(self.resources.musics, love.audio.newMusic, pathOrFileOrDecoder, pathOrFileOrDecoder)
 end
 
@@ -156,6 +184,7 @@ local newDefaultFont = function(size)
 end
 
 function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
+  assert(self==passion, 'Use passion:getFont instead of passion.getFont')
   if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage

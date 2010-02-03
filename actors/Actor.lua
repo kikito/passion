@@ -33,15 +33,12 @@ function Actor:unFreeze()
   self._frozen = false
 end
 
-function Actor:update(dt) end
-function Actor:updateIfNotFrozen()
-  if(self._frozen~=true) then self:update() end
+function Actor:isFrozen()
+  return (self._frozen == true)
 end
 
+function Actor:update(dt) end
 function Actor:draw() end
-function Actor:drawIfVisible()
-  if(self:getVisible()==true) then self:draw() end
-end
 
 Actor:getterSetter('x') --getX, setX
 Actor:getterSetter('y') -- getY, setY
@@ -53,7 +50,9 @@ Actor:getterSetter('centerY') -- getCenterY, setCenterY
 Actor:getterSetter('scaleX', 1) -- getScaleX, setScaleX, with 1 as default value
 Actor:getterSetter('scaleY', 1) --getScaleY, setScaleY, with 1 as defalult value
 
-function Actor:getPosition() return self.x, self.y end
+function Actor:getPosition()
+  return self.x, self.y
+end
 function Actor:setPosition(x, y)
   self.x = x
   self.y = y
@@ -79,6 +78,7 @@ end
 function Actor:addChild(child, setParent)
   table.insert(self._children, child)
   if(setParent~=false) then child:setParent(self) end
+  return child
 end
 
 -- Removes a child.
@@ -142,10 +142,25 @@ function Actor:_unregisterInstance(actor)
 end
 
 -- Applies some method to all the actors of this class (not subclasses)
-function Actor:applyToAllActors(methodName, ...)
-  local method = self[methodName]
-  if(type(method)=='function') then
-    for _,actor in pairs(self._actors) do actor[methodName](actor, ...) end -- do NOT replace with method(actor, ...) ... it is not the same thing
+function Actor:applyToAllActors(methodOrName, ...)
+  local method
+
+  if(type(methodOrName)=='string') then
+
+    method = self[methodOrName]
+    if(type(method)=='function') then
+      for _,actor in pairs(self._actors) do 
+        actor[methodOrName](actor, ...) -- do NOT replace with method(actor, ...) ... it is not the same thing
+      end
+    end
+
+  elseif(type(methodOrName)=='function') then
+
+    method = methodOrName
+    for _,actor in pairs(self._actors) do method(actor, ...) end
+
+  else
+    error('methodOrName must be a function or function name')
   end
 end
 
