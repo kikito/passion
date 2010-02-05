@@ -6,26 +6,9 @@ passion.actorClasses={}
 function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
 end
-function passion:applyToAllActorClasses(methodOrName, ...)
-  local method
-  for _,actorClass in pairs(self.actorClasses) do
-
-    if(type(methodOrName)=='string') then
-      method = actorClass[methodOrName]
-    elseif(type(methodOrName)=='function') then
-      method = methodOrName
-    else
-      error('methodOrName must be a function or function name')
-    end
-    
-    if(type(method)=='function') then
-      method(actorClass, ...)
-    end
-  end
-end
 
 function passion:applyToAllActors(methodOrName, ...)
-  self:applyToAllActorClasses('applyToAllActors', methodOrName, ...)
+  passion.Actor:applyToAllActors(methodOrName, ...)
 end
 
 -- EXIT
@@ -76,25 +59,30 @@ end
 
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
-  self:applyToAllActors(updateIfNotFrozen, dt)
+  passion.Actor:applyToAllActors(updateIfNotFrozen, dt)
 end
 
 -- draw callback
+local drawn = {}
 local drawIfVisible = function(actor)
-  if(actor:getVisible()==true) then actor:draw() end
+  if(actor:getVisible()==true and drawn[actor]==nil) then
+    actor:drawHierarchically()
+    drawn[actor] = 1
+  end
 end
 
 function passion:draw()
-  self:applyToAllActors(drawIfVisible)
+  drawn = {}
+  passion.Actor:applyToAllActors(drawIfVisible)
 end
 
 -- Rest of the callbacks
 local callbacks = {
   'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'reset', 'draw'
 }
-for _,method in ipairs(callbacks) do
-  passion[method] = function(self, ...)
-    passion:applyToAllActors(method, ...)
+for _,methodName in ipairs(callbacks) do
+  passion[methodName] = function(self, ...)
+    passion.Actor:applyToAllActors(methodName, ...)
   end
 end
 

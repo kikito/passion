@@ -9,6 +9,9 @@ passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor
 
+-- The global list of actors
+Actor._actors = setmetatable({}, {__mode = "k"})
+
 -- INSTANCE METHODS
 
 function Actor:initialize(options) -- options will normally be nil
@@ -39,6 +42,11 @@ end
 
 function Actor:update(dt) end
 function Actor:draw() end
+
+function Actor:drawHierarchically()
+  self:draw()
+  self:applyToAllChildren('drawHierarchically')
+end
 
 Actor:getterSetter('x') --getX, setX
 Actor:getterSetter('y') -- getY, setY
@@ -86,19 +94,30 @@ end
 function Actor:removeChild(child, resetParent)
   local index
   for i, v in ipairs(self._children) do
-      if v == arg then
-          index = i
-          break
-      end
+    if v == arg then
+      index = i
+      break
+    end
   end
   table.remove(self._children, index)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
 -- Applies some method to all the children of an actor
-function Actor:applyToAllChildren(methodName, ...)
+function Actor:applyToAllChildren(methodOrName, ...)
+  local method
   for _,child in pairs(self._children) do
-    child[methodName](child, ...)
+    if(type(methodOrName)=='string') then
+      method = child[methodOrName]
+    elseif(type(methodOrName)=='function') then
+      method = methodOrName
+    else
+      error('methodOrName must be a function or function name')
+    end
+    
+    if(type(method)=='function') then
+      method(child, ...)
+    end
   end
 end
 
@@ -127,22 +146,25 @@ end
 -- Adds an actor to the "list of actors" of its class
 function Actor:_registerInstance(actor)
   table.insert(self._actors, actor)
+  if(self~=Actor) then self.superclass:_registerInstance(actor) end
 end
 
 -- Removes an actor from the "list of actors" of its class
 function Actor:_unregisterInstance(actor)
+  if(self~=Actor) then self.superclass:_unregisterInstance(actor) end
   local index
   for i, v in ipairs(self._actors) do
-      if v == arg then
-          index = i
-          break
-      end
+    if v == arg then
+      index = i
+      break
+    end
   end
   table.remove(self._actors, index)
 end
 
 -- Applies some method to all the actors of this class (not subclasses)
 function Actor:applyToAllActors(methodOrName, ...)
+  assert(self~=nil, 'Please call Class:applyToAllActors instead of class.applyToAllActors')
   local method
 
   if(type(methodOrName)=='string') then
