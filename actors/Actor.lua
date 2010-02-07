@@ -15,7 +15,7 @@ Actor._actors = setmetatable({}, {__mode = "k"})
 -- INSTANCE METHODS
 
 function Actor:initialize(options) -- options will normally be nil
-  super(self, options)
+  super.initialize(self, options)
   self.class:_registerInstance(self) -- add the actor to the list of actors of its class
   self._children = {}
 end

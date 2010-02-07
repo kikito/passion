@@ -10,7 +10,7 @@ local defaultFont = love.graphics.getFont()
 local VALID_OPTIONS = {'text', 'font', 'fontColor', 'align'}
 
 function Label:initialize(options)
-  super(self, options)
+  super.initialize(self, options)
   self:parseOptions(options, VALID_OPTIONS)
 end
 
@@ -22,12 +22,12 @@ Label:getterSetter('valign',     'center') -- or top or bottom
 Label:getterSetter('borderColor', nil)
 
 function Label:getHeight()
-  return math.max(super(self),
+  return math.max(super.getHeight(self),
                   self:getTopPadding() + self:getBottomPadding() + self:getFontSize())
 end
 
 function Label:getWidth()
-  return math.max(super(self),
+  return math.max(super.getWidth(self),
                   self:getLeftPadding() + self:getRightPadding() + self:getTextWidth())
 end
 
@@ -53,7 +53,7 @@ function Label:draw()
   local prevFont = love.graphics.getFont()
   local pr,pg,pb,pa = love.graphics.getColor() -- previous font color
 
-  super(self) -- draws background and borders using the Pannel implementation
+  super.draw(self) -- draws background and borders using the Pannel implementation
 
   love.graphics.setFont(font)
 

@@ -12,7 +12,7 @@ local VALID_OPTIONS = {
 }
 
 function Pannel:initialize(options)
-  super(self)
+  super.initialize(self)
   self:parseOptions(options, VALID_OPTIONS)
 end
 

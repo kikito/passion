@@ -9,7 +9,7 @@ Button.VALID_OPTIONS = {
 }
 
 function Button:initialize(options)
-  super(self, options)
+  super.initialize(self, options)
   self:parseOptions(options, Button.VALID_OPTIONS)
 
   self:gotoState('MouseOut')
