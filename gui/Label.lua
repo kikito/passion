@@ -7,7 +7,7 @@ local Label = passion.gui.Label
 love.graphics.setFont(12)
 local defaultFont = love.graphics.getFont()
 
-local VALID_OPTIONS = {'text', 'font', 'fontColor', 'align'}
+local VALID_OPTIONS = {'text', 'font', 'fontColor', 'align', 'valign'}
 
 function Label:initialize(options)
   super.initialize(self, options)
@@ -36,7 +36,8 @@ function Label:getTextWidth()
 end
 
 function Label:getFontSize()
-  return self:getFont():getHeight()
+  local font = self:getFont()
+  return font:getHeight() * font:getLineHeight()
 end
 
 function Label:draw()
@@ -48,8 +49,6 @@ function Label:draw()
   local fontSize = self:getFontSize()
   local text = self:getText()
   local x, y, width, height = self:getInternalBox()
-
-
   local prevFont = love.graphics.getFont()
   local pr,pg,pb,pa = love.graphics.getColor() -- previous font color
 
@@ -59,10 +58,13 @@ function Label:draw()
 
   if(fontColor~=nil) then love.graphics.setColor(unpack(fontColor)) end
 
-  if(valign=='top') then y = y+fontSize-1
-  elseif(valign=='center') then y = (y + height/2.0 + fontSize/2.0) -1
-  else y = y + height -1
+  if(valign=='center') then y = (y + height/2.0 - fontSize/2.0)
+  elseif(valign=='bottom') then y = y + height - fontSize
   end
+
+  -- FIXME remove this when love starts printing fonts the top-leftly
+  y = y + fontSize
+
 
   love.graphics.printf(text, x, y, width, align)
 
