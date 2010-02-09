@@ -28,6 +28,7 @@ function Actor:destroy()
 end
 
 --FIXME add special control case on HasBody
+--FIXME add frozen status
 function Actor:freeze()
   self._frozen = true
 end
@@ -164,7 +165,7 @@ end
 
 -- Applies some method to all the actors of this class (not subclasses)
 function Actor:applyToAllActors(methodOrName, ...)
-  assert(self~=nil, 'Please call Class:applyToAllActors instead of class.applyToAllActors')
+  assert(self~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
   local method
 
   if(type(methodOrName)=='string') then
@@ -188,13 +189,12 @@ end
 
 local resourceTypes = {
   images = 'getImage',
-  sounds = 'getSound',
-  musics = 'getMusic',
+  sources = 'getSource',
   fonts = 'getFont'
 }
 -- Loads images, fonts, sounds & music onto the actor class itself
 function Actor:load(resourceTypesToLoad)
-  assert(self~=nil, 'Please call Class:load instead of class.load')
+  assert(self~=nil, 'Please call Class:load instead of Class.load')
   local resourceTypeToLoad
   for resourceTypeName,loadingMethod in pairs(resourceTypes) do
     resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]

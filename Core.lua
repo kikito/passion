@@ -94,6 +94,8 @@ function love.run()
 end
 ]]
 
+-- FIXME addapt to 0.6.1
+
 function passion:run()
   
   -- registers the love events on passion
@@ -134,8 +136,7 @@ end
 
 passion.resources = {
   images = {},
-  sounds = {},
-  musics = {},
+  sources = {},
   fonts = {}
 }
 
@@ -153,14 +154,22 @@ function passion:getImage(pathOrFileOrData)
   return getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
-function passion:getSound(pathOrFileOrData)
-  assert(self==passion, 'Use passion:getSound instead of passion.getSound')
-  return getResource(self.resources.sounds, love.audio.newSound, pathOrFileOrData, pathOrFileOrData )
+local newSource = function(pathOrFileOrData, sourceType)
+  if(sourceType==nil) then return love.audio.newSource(pathOrFileOrData)
+  else return love.audio.newSource(pathOrFileOrData, sourceType)
+  end
 end
 
-function passion:getMusic(pathOrFileOrDecoder)
-  assert(self==passion, 'Use passion:getMusic instead of passion.getMusic')
-  return getResource(self.resources.musics, love.audio.newMusic, pathOrFileOrDecoder, pathOrFileOrDecoder)
+function passion:getSource(pathOrFileOrData, sourceType)
+  assert(self==passion, 'Use passion:getSource instead of passion.getSource')
+
+  local sourceList = self.resources.sources[pathOrFileOrData]
+  if(sourceList == nil) then
+    self.resources.sources[pathOrFileOrData] = {}
+    sourceList = self.resources.sources[pathOrFileOrData]
+  end
+
+  return getResource(sourceList, newSource, sourceType, pathOrFileOrData, sourceType )
 end
 
 local newDefaultFont = function(size)
