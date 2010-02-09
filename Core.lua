@@ -7,10 +7,6 @@ function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
 end
 
-function passion:applyToAllActors(methodOrName, ...)
-  passion.Actor:applyToAllActors(methodOrName, ...)
-end
-
 -- EXIT
 function passion:exit()
   love.event.push('q')
@@ -66,14 +62,14 @@ end
 local drawn = {}
 local drawIfVisible = function(actor)
   if(actor:getVisible()==true and drawn[actor]==nil) then
-    actor:drawHierarchically()
+    actor:draw()
     drawn[actor] = 1
   end
 end
 
 function passion:draw()
   drawn = {}
-  passion.Actor:applyToAllActors(drawIfVisible)
+  passion.Actor:applyToAllActorsSorted(drawIfVisible, passion.Actor.sortByDrawOrder)
 end
 
 -- Rest of the callbacks

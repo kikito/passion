@@ -44,11 +44,6 @@ end
 function Actor:update(dt) end
 function Actor:draw() end
 
-function Actor:drawHierarchically()
-  self:draw()
-  self:applyToAllChildren('drawHierarchically')
-end
-
 Actor:getterSetter('x') --getX, setX
 Actor:getterSetter('y') -- getY, setY
 Actor:getterSetter('parent')
@@ -58,6 +53,7 @@ Actor:getterSetter('centerX') -- getCenterX, setCenterX
 Actor:getterSetter('centerY') -- getCenterY, setCenterY
 Actor:getterSetter('scaleX', 1) -- getScaleX, setScaleX, with 1 as default value
 Actor:getterSetter('scaleY', 1) --getScaleY, setScaleY, with 1 as defalult value
+Actor:getterSetter('drawOrder', 0)
 
 function Actor:getPosition()
   return self.x, self.y
@@ -104,6 +100,54 @@ function Actor:removeChild(child, resetParent)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
+-- private helper function used to apply methods to collections of actors
+local applyToActorCollection = function(actors, sortFunc, methodOrName, ... )
+  
+  if(type(sortFunc)=='function') then
+
+    local actorsCopy = {}
+    for k,actor in pairs(actors) do actorsCopy[k]=actor end
+    table.sort(actorsCopy, sortFunc)
+    actors = actorsCopy
+
+  end
+
+  if(type(methodOrName)=='string') then
+
+    for _,actor in pairs(actors) do
+      local method = actor[methodOrName]
+      if(type(method)=='function') then
+        if(method(actor, ...) == false) then return end
+      end
+    end
+
+  elseif(type(methodOrName)=='function') then
+
+    for _,actor in pairs(actors) do
+      if(methodOrName(actor, ...) == false) then return end
+    end
+
+  else
+    error('methodOrName must be a function or function name')
+  end
+
+end
+
+-- Applies some method to all the children of an actor
+function Actor:applyToAllChildren(methodOrName, ... )
+  assert(self~=nil, 'Please call actor:applyToAllChildren instead of actor.applyToAllChildren')
+  applyToActorCollection(self._children, nil, methodOrName, ... )
+end
+
+function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
+  assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
+  applyToActorCollection(self._children, sortFunc, methodOrName, ... )
+end
+
+function Actor:sortByDrawOrder(other)
+  return self:getDrawOrder() < other:getDrawOrder()
+end
+
 -- CLASS METHODS
 
 -- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
@@ -145,40 +189,18 @@ function Actor:_unregisterInstance(actor)
   table.remove(self._actors, index)
 end
 
--- private helper function used to apply methods to collections of actors
-local applyToActorCollection = function(actors, methodOrName, ... )
-  if(type(methodOrName)=='string') then
-
-    for _,actor in pairs(actors) do
-      local method = actor[methodOrName]
-      if(type(method)=='function') then
-        method(actor, ...)
-      end
-    end
-
-  elseif(type(methodOrName)=='function') then
-
-    for _,actor in pairs(actors) do methodOrName(actor, ...) end
-
-  else
-    error('methodOrName must be a function or function name')
-  end
-  
-end
-
 -- Applies some method to all the actors of this class (not subclasses)
 function Actor:applyToAllActors(methodOrName, ...)
   assert(self~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
-  if( type(methodOrName)=='function' or 
-     (type(methodOrName)=='string' and type(self[methodOrName])=='function') ) then
-    applyToActorCollection(self._actors, methodOrName, ... )
-  end
+  self:applyToAllActorsSorted(nil, methodOrName, ...)
 end
 
--- Applies some method to all the children of an actor
-function Actor:applyToAllChildren(methodOrName, ...)
-  assert(self~=nil, 'Please call actor:applyToAllChildren instead of actor.applyToAllChildren')
-  applyToActorCollection(self._children, methodOrName, ... )
+function Actor:applyToAllActorsSorted(sortFunc, methodOrName, ...)
+  assert(self~=nil, 'Please call Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
+  if( type(methodOrName)=='function' or 
+     (type(methodOrName)=='string' and type(self[methodOrName])=='function') ) then
+    applyToActorCollection(self._actors, sortFunc, methodOrName, ... )
+  end
 end
 
 local resourceTypes = {
