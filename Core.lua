@@ -172,20 +172,12 @@ function passion:getSource(pathOrFileOrData, sourceType)
   return getResource(sourceList, newSource, sourceType, pathOrFileOrData, sourceType )
 end
 
-local newDefaultFont = function(size)
-  local prevFont = love.graphics.getFont()
-  love.graphics.setFont(size)
-  local font = love.graphics.getFont()
-  if(prevFont~=nil) then love.graphics.setFont(prevFont) end
-  return font
-end
-
 function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
   assert(self==passion, 'Use passion:getFont instead of passion.getFont')
   if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage
-    return getResource(self.resources.fonts, newDefaultFont, size, size)
+    return getResource(self.resources.fonts, love.graphics.newFont, size, size)
 
   elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
 
