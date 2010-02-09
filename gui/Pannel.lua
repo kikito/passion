@@ -33,8 +33,8 @@ Pannel:getterSetter('borderColor', passion.white)
 Pannel:getterSetter('borderWidth', 1)
 Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Pannel:getterSetter('cornerRadius', 0)
-Pannel:setter('width', 0)
-Pannel:setter('height', 0)
+Pannel:setter('width')
+Pannel:setter('height')
 
 function Pannel:getWidth()
   self.width = self.width or 0
@@ -159,6 +159,18 @@ function Pannel:getLocalX() return self.x or 0 end
 function Pannel:getLocalY() return self.y or 0 end
 function Pannel:getLocalPosition() return self.x, self.y end
 
+function Pannel:drawOrder()
+  if(self.drawOrder~=nil) then return self.drawOrder end
+  
+  local parent = self:getParent()
+  if(parent~=nil) then
+    return parent:getDrawOrder() - 1
+  end
+  
+  return 0
+end
+
+
 function Pannel:draw()
   local x, y = self:getPosition()
   local width = self:getWidth()
@@ -169,6 +181,7 @@ function Pannel:draw()
     self:drawBorder(x, y, width, height)
   end
 end
+
 
 function Pannel:drawBackground(x, y, width, height)
   local backgroundColor = self:getBackgroundColor()
