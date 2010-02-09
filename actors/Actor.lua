@@ -104,24 +104,6 @@ function Actor:removeChild(child, resetParent)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
--- Applies some method to all the children of an actor
-function Actor:applyToAllChildren(methodOrName, ...)
-  local method
-  for _,child in pairs(self._children) do
-    if(type(methodOrName)=='string') then
-      method = child[methodOrName]
-    elseif(type(methodOrName)=='function') then
-      method = methodOrName
-    else
-      error('methodOrName must be a function or function name')
-    end
-    
-    if(type(method)=='function') then
-      method(child, ...)
-    end
-  end
-end
-
 -- CLASS METHODS
 
 -- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
@@ -163,28 +145,40 @@ function Actor:_unregisterInstance(actor)
   table.remove(self._actors, index)
 end
 
--- Applies some method to all the actors of this class (not subclasses)
-function Actor:applyToAllActors(methodOrName, ...)
-  assert(self~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
-  local method
-
+-- private helper function used to apply methods to collections of actors
+local applyToActorCollection = function(actors, methodOrName, ... )
   if(type(methodOrName)=='string') then
 
-    method = self[methodOrName]
-    if(type(method)=='function') then
-      for _,actor in pairs(self._actors) do 
-        actor[methodOrName](actor, ...) -- do NOT replace with method(actor, ...) ... it is not the same thing
+    for _,actor in pairs(actors) do
+      local method = actor[methodOrName]
+      if(type(method)=='function') then
+        method(actor, ...)
       end
     end
 
   elseif(type(methodOrName)=='function') then
 
-    method = methodOrName
-    for _,actor in pairs(self._actors) do method(actor, ...) end
+    for _,actor in pairs(actors) do methodOrName(actor, ...) end
 
   else
     error('methodOrName must be a function or function name')
   end
+  
+end
+
+-- Applies some method to all the actors of this class (not subclasses)
+function Actor:applyToAllActors(methodOrName, ...)
+  assert(self~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
+  if( type(methodOrName)=='function' or 
+     (type(methodOrName)=='string' and type(self[methodOrName])=='function') ) then
+    applyToActorCollection(self._actors, methodOrName, ... )
+  end
+end
+
+-- Applies some method to all the children of an actor
+function Actor:applyToAllChildren(methodOrName, ...)
+  assert(self~=nil, 'Please call actor:applyToAllChildren instead of actor.applyToAllChildren')
+  applyToActorCollection(self._children, methodOrName, ... )
 end
 
 local resourceTypes = {
