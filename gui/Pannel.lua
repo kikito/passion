@@ -1,5 +1,6 @@
 require 'passion.gui.Core'
 require 'passion.actors.Actor'
+require 'passion.graphics.init'
 
 passion.gui.Pannel = class('passion.gui.Pannel', passion.Actor)
 local Pannel = passion.gui.Pannel
@@ -170,6 +171,39 @@ function Pannel:drawOrder()
   return 0
 end
 
+local drawBackground = function(self, x, y, width, height)
+  local backgroundColor = self:getBackgroundColor()
+
+  if(backgroundColor~=nil) then
+    local r, g, b, a = love.graphics.getColor()
+
+    love.graphics.setColor(unpack(backgroundColor))
+
+    passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
+
+    love.graphics.setColor(r,g,b,a)
+  end
+end
+
+local drawBorder = function(self, x, y, width, height)
+  local borderColor = self:getBorderColor()
+
+  if(borderColor~=nil) then
+    local r, g, b, a = love.graphics.getColor()
+    local prevLineWidth = love.graphics.getLineWidth()
+    local prevLineStyle = love.graphics.getLineStyle()
+
+    love.graphics.setColor(unpack(borderColor))
+    love.graphics.setLineStyle(self:getBorderStyle())
+    love.graphics.setLineWidth(self:getBorderWidth())
+
+    passion.graphics.roundedRectangle('line', x, y, width, height, self:getCornerRadius())
+
+    love.graphics.setColor(r,g,b,a)
+    love.graphics.setLineWidth(prevLineWidth)
+    love.graphics.setLineStyle(prevLineStyle)
+  end
+end
 
 function Pannel:draw()
   local x, y = self:getPosition()
@@ -177,115 +211,9 @@ function Pannel:draw()
   local height = self:getHeight()
   
   if(x~=nil and y~=nil and width~=nil and height~=nil) then
-    self:drawBackground(x, y, width, height)
-    self:drawBorder(x, y, width, height)
+    drawBackground(self, x, y, width, height)
+    drawBorder(self, x, y, width, height)
   end
 end
 
 
-function Pannel:drawBackground(x, y, width, height)
-  local backgroundColor = self:getBackgroundColor()
-
-  if(backgroundColor~=nil) then
-    local r, g, b, a = love.graphics.getColor()
-    local cornerRadius = self:getCornerRadius()
-    local cornerRadius_2 = cornerRadius * 2
-    local cornerRadius_3 = cornerRadius * 3
-
-    love.graphics.setColor(unpack(backgroundColor))
-
-    if(cornerRadius > 0) then
-      love.graphics.rectangle('fill', x+cornerRadius, y, width-cornerRadius_2, height)
-      love.graphics.rectangle('fill', x, y+cornerRadius, width, height-cornerRadius_2)
-      love.graphics.circle('fill', x+cornerRadius, y+cornerRadius, cornerRadius, cornerRadius_3)
-      love.graphics.circle('fill', x+width-cornerRadius, y+cornerRadius, cornerRadius, cornerRadius_3)
-      love.graphics.circle('fill', x+cornerRadius, y+height-cornerRadius, cornerRadius, cornerRadius_3)
-      love.graphics.circle('fill', x+width-cornerRadius, y+height-cornerRadius, cornerRadius, cornerRadius_3)
-    else
-      love.graphics.rectangle('fill', x, y, width, height)
-    end
-
-    love.graphics.setColor(r,g,b,a)
-  end
-end
-
-
-function Pannel:drawBorder(x, y, width, height)
-  local lineColor = self:getBorderColor()
-
-  if(lineColor~=nil) then
-    local lineWidth = self:getBorderWidth()
-    local lineStyle = self:getBorderStyle()
-    local cornerRadius = self:getCornerRadius()
-    local cornerRadius_2 = cornerRadius * 2
-    local cornerRadius_3 = cornerRadius * 3
-
-    local r, g, b, a = love.graphics.getColor()
-    local w = love.graphics.getLineWidth()
-    local s = love.graphics.getLineStyle()
-
-    love.graphics.setColor(unpack(lineColor))
-    love.graphics.setLineWidth(lineWidth)
-    love.graphics.setLineStyle(lineStyle)
-
-    if(cornerRadius > 0) then
-      love.graphics.line(x+cornerRadius, y, x+width-cornerRadius, y)
-      love.graphics.line(x+width, y+cornerRadius, x+width, y+height-cornerRadius)
-      love.graphics.line(x+cornerRadius, y+height, x+width-cornerRadius, y+height)
-      love.graphics.line(x, y+cornerRadius, x, y+height-cornerRadius)
-
-      self:_drawCorners(x, y, width, height, cornerRadius, lineWidth)
-
-    else
-      love.graphics.rectangle('line', x, y, width, height)
-    end
-
-    love.graphics.setColor(r,g,b,a)
-    love.graphics.setLineWidth(w)
-    love.graphics.setLineStyle(s)
-  end
-end
-
-local math_round = function (num, idp) local mult = 10^(idp or 0) return math.floor(num * mult + 0.5) / mult end 
-
-function Pannel:_drawCorners(x, y, width, height, r, lineWidth)
-    local step = 1.0 / r
-    local theta = 0.0
-    local c = r + 0.0
-    local s = 0.0
-    local pc = c
-    local ps = s
-
-    while(theta <= math.pi / 4.0) do
-      theta = theta + step
-      c = math_round(r*math.cos(theta)) -- rounded cosine
-      s = math_round(r*math.sin(theta)) -- rounded sine
-      
-      r_2 = lineWidth / 2.0
-      r_23 = r_2*3
-
-      love.graphics.line(x+width-r+pc, y+r-ps, x+width-r+c, y+r-s) -- octant 0
-      love.graphics.line(x+width-r+ps, y+r-pc, x+width-r+s, y+r-c) -- octant 1
-      love.graphics.line(x+r-pc, y+r-ps, x+r-c, y+r-s) -- octant 2
-      love.graphics.line(x+r-ps, y+r-pc, x+r-s, y+r-c) -- octant 3
-      love.graphics.line(x+r-pc, y+height-r+ps, x+r-c, y+height-r+s) -- octant 4
-      love.graphics.line(x+r-ps, y+height-r+pc, x+r-s, y+height-r+c) -- octant 5
-      love.graphics.line(x+width-r+pc, y+height-r+ps, x+width-r+c, y+height-r+s) -- octant 6
-      love.graphics.line(x+width-r+ps, y+height-r+pc, x+width-r+s, y+height-r+c) -- octant 8
-
-      if(r_2 > 1) then
-        love.graphics.circle('fill', x+width-r+pc, y+r-ps, r_2, r_23)
-        love.graphics.circle('fill', x+width-r+ps, y+r-pc, r_2, r_23)
-        love.graphics.circle('fill', x+r-pc, y+r-ps, r_2, r_23)
-        love.graphics.circle('fill', x+r-ps, y+r-pc, r_2, r_23)
-        love.graphics.circle('fill', x+r-pc, y+height-r+ps, r_2, r_23)
-        love.graphics.circle('fill', x+r-ps, y+height-r+pc, r_2, r_23)
-        love.graphics.circle('fill', x+width-r+pc, y+height-r+ps, r_2, r_23)
-        love.graphics.circle('fill', x+width-r+ps, y+height-r+pc, r_2, r_23)
-      end
-
-      pc = c
-      ps = s
-    end
-
-end
