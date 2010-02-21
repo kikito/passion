@@ -54,30 +54,29 @@ function Button:checkPoint(mx, my)
 end
 
 function Button:isPressed()
-  return self.currentState == self.states.Pressed or 
-         self.currentState == self.states.PressedFocus
+  return self.isInState('Pressed', true)
 end
 
 function Button:isMouseOver()
-  return not self:isMouseOut()
+  return self.isInState('MouseOver', true)
 end
 
 function Button:isMouseOut()
-  return self.currentState == self.states.MouseOut
+  return self.isInState('MouseOut', true)
 end
 
 -- MouseOut State
 local MouseOut = Button:addState('MouseOut')
-function MouseOut:enterState()
+function MouseOut:poppedState()
   self:onMouseOut()
 end
 function MouseOut:update(dt)
   if((passion.gui.focus == nil or passion.gui.focus == self) and
       self:checkPoint(love.mouse.getPosition())==true) then
-    self:gotoState('MouseOver')
+    self:pushState('MouseOver')
   end
 end
-function MouseOut:exitState()
+function MouseOut:pushedState()
   self:onMouseOver()
 end
 
@@ -86,9 +85,9 @@ local MouseOver = Button:addState('MouseOver')
 function MouseOver:update(dt)
   if((passion.gui.focus == nil or passion.gui.focus == self) and
       self:checkPoint(love.mouse.getPosition())==false) then
-    self:gotoState('MouseOut')
+    self:popState()
   elseif love.mouse.isDown('l') then
-    self:gotoState(self:getFocus()==true and 'PressedFocus' or 'Pressed')
+    self:pushState('Pressed')
   end
 end
 
@@ -99,6 +98,7 @@ end
 local Pressed = Button:addState('Pressed') -- Pressed but not gaining focus
 function Pressed:enterState()
   self:onPress()
+  if(self:getFocus()==true) then self:pushState('PressedFocus') end
 end
 function Pressed:update(dt)
   if(self:checkPoint(love.mouse.getPosition())==false) then
@@ -119,7 +119,6 @@ end
 local PressedFocus = Button:addState('PressedFocus')
 function PressedFocus:enterState()
   passion.gui:setFocus(self)
-  self:onPress()
 end
 function PressedFocus:update(dt)
   if love.mouse.isDown('l')==false then
