@@ -2,17 +2,20 @@
 
 require 'passion.graphics.Core'
 
-
-local math_round = function (num, idp) local mult = 10^(idp or 0) return math.floor(num * mult + 0.5) / mult end
-
 function passion.graphics.drawShape(style, shape)
 
   assert(style=='line' or style=='fill', "style must be either 'line' or 'fill'")
 
-  if(style=='fill') then
+  local shapeType = shape:getType()
 
-  else  -- style=='line'
-
+  if(shapeType=="polygon") then
+    love.graphics.polygon(style, shape:getPoints())
+  elseif(shapeType=="circle") then
+    local r = shape:getRadius()
+    local x, y = shape:getWorldCenter()
+    love.graphics.circle(style, x,y, r, r*3)
+  else
+    error("Unkwnown shape type: "..shapeType)
   end
 
 end
