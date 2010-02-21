@@ -2,6 +2,12 @@
 
 require 'passion.Core'
 
+local addShape = function(self, shape)
+  table.insert(self:getShapes(), shape)
+  shape:setData(self)
+  return shape
+end
+
 passion.HasBody = {
 
   setBody=function(self, body)
@@ -45,7 +51,7 @@ passion.HasBody = {
     if(offsetY==nil or radius==nil) then shape= love.physics.newCircleShape(body, offsetX)
     else shape = love.physics.newCircleShape(body, offsetX, offsetY, radius)
     end
-    return self:addShape(shape)
+    return addShape(self, shape)
   end,
 
   --[[
@@ -68,13 +74,13 @@ passion.HasBody = {
     elseif(angle==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY, w, h)
     else shape = love.physics.newRectangleShape(body, offsetX, offsetY, w, h, angle)
     end
-    return self:addShape(shape)
+    return addShape(self, shape)
   end,
 
   -- Creates a new PolygonShape, using the parameters as an array of points
   newPolygonShape = function( self, ... )
     local body = self:getBody()
-    return self:addShape(love.physics.newPolygonShape( body, ... ))
+    return addShape(self, love.physics.newPolygonShape( body, ... ))
   end,
   
   -- Manage shapes do they don't get garbage-collected
@@ -83,14 +89,13 @@ passion.HasBody = {
     return self.shapes
   end,
   
-  addShape = function(self, shape)
-    table.insert(self:getShapes(), shape)
-    shape:setData(self)
-    return shape
+  -- Draws the shapes
+  drawShapes = function(self, style)
+    for _,shape in pairs(self:getShapes()) do
+      passion.graphics.drawShape(style or 'line', shape)
+    end
   end
 }
-
--- TODO: JOINS
 
 
 --[[
