@@ -17,6 +17,12 @@ StatefulObject.states = {} -- the root state list
 
 local private = setmetatable({}, {__mode = "k"})   -- weak table storing private references
 
+local function invokeCallback(self, state, callbackName, ... )
+  if state==nil then return end
+  local callback = state[callbackName]
+  if(type(callback)=='function') then callback(self, ...) end
+end
+
 -- Instance methods
 
 --[[ constructor
@@ -59,24 +65,24 @@ function StatefulObject:gotoState(newStateName, keepStack)
     assert(nextState~=nil, "State '" .. newStateName .. "' not found")
   end
 
-  -- Invoke exitState on the previous state
-  if(prevState~=nil and type(prevState.exitState) == "function") then prevState.exitState(self, newStateName) end
-
-  -- Empty the stack unless keepStack is true.
-  if(keepStack~=true) then self:popAllStates() end
+  -- Either empty completely the stack, or just call the exitstate callback on current state
+  if(keepStack~=true) then 
+    self:popAllStates()
+  else
+    invokeCallback(self, prevState, 'exitState', newStateName )
+  end
 
   -- replace the top of the stack with the new state
   local stack = private[self].stateStack
   stack[math.max(#stack,1)] = nextState
 
   -- Invoke enterState on the new state. 2nd parameter is the name of the previous state, or nil
-  if(nextState~=nil and type(nextState.enterState) == "function") then
-    nextState.enterState(self, prevState~=nil and prevState.name or nil)
-  end
+  invokeCallback(self, nextState, 'enterState', prevState~=nil and prevState.name or nil)
+
 end
 
 function StatefulObject:pushState(newStateName)
-  assert(type(newState)=='string', "newStateName must be a string.")
+  assert(type(newStateName)=='string', "newStateName must be a string.")
   assert(self.states~=nil, "Attribute 'states' not detected. check that you called instance:pushState and not instance.pushState, and that you invoked super.initialize(self) in the constructor.")
 
   local nextState = self.states[newStateName]
@@ -89,15 +95,15 @@ function StatefulObject:pushState(newStateName)
   end
 
   -- Invoke pausedState on the previous state
-  local prevState = self:getCurrentState()
-  if(prevState~=nil and type(prevState.pausedState) == "function") then prevState.pausedState(self) end
+  invokeCallback(self, self:getCurrentState(), 'pausedState')
 
   -- Do the push
   table.insert(stack, nextState)
 
-  -- Invoke pushState on the next state
-  if(type(nextState.pushedState) == "function") then nextState.pushedState(self) end
-  
+  -- Invoke pushedState & enterState on the next state
+  invokeCallback(self, nextState, 'pushedState')
+  invokeCallback(self, nextState, 'enterState')
+
   return nextState
 end
 
@@ -107,9 +113,10 @@ end
 function StatefulObject:popState(stateName)
   assert(self.states~=nil, "Attribute 'states' not detected. check that you called instance:popState and not instance.popState, and that you invoked super.initialize(self) in the constructor.")
 
-  -- Invoke poppedState on the previous state
+  -- Invoke exitstate & poppedState on the state being popped out
   local prevState = self:getCurrentState()
-  if(prevState~=nil and type(prevState.poppedState) == "function") then prevState.poppedState(self) end
+  invokeCallback(self, prevState, 'exitState')
+  invokeCallback(self, prevState, 'poppedState')
 
   -- Do the pop
   local stack = private[self].stateStack
@@ -117,8 +124,8 @@ function StatefulObject:popState(stateName)
 
   -- Invoke continuedState on the new state
   local newState = self:getCurrentState()
-  if(newState~=nil and type(newState.continuedState) == "function") then newState.continuedState(self) end
-  
+  invokeCallback(self, newState, 'continuedState')
+
   return newState
 end
 
@@ -137,7 +144,7 @@ end
   Returns true if the object is in the state named 'stateName'
   If second(optional) parameter is true, this method returns true if the state is on the stack instead
 ]]
-function StatefulObject:inState(stateName, testStateStack)
+function StatefulObject:isInState(stateName, testStateStack)
   local stack = private[self].stateStack
 
   if(testStateStack==true) then
@@ -172,7 +179,7 @@ end
 -- These methods will not be overriden by the states.
 local ignoredMethods = {
   states=1, initialize=1,
-  gotoState=1, pushState=1, popState=1, popAllStates=1, getCurrentState=1, inState=1,
+  gotoState=1, pushState=1, popState=1, popAllStates=1, getCurrentState=1, isInState=1,
   enterState=1, exitState=1, pushedState=1, poppedState=1, pausedState=1, continuedState=1,
   addState=1, subclass=1, includes=1
 }
