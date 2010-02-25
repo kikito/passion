@@ -6,7 +6,7 @@ require 'passion.graphics.Core'
 -- This variable remembers what the image that was used to create each quad
 local quadImages = setmetatable({}, {__mode = "k"})
 
--- Creates a new quad without you having to provide width and height. It also remembers the image
+-- Creates a new quad without you having to provide rwidth and rheight. It also remembers the image
 -- that was used to create the quad, so you don't have to pass it to drawq
 function passion.graphics.newQuad(image, x, y, width, height, rWidth, rHeight)
   rWidth = rWidth or image:getWidth()
