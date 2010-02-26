@@ -9,7 +9,9 @@ passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor
 
+------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
+------------------------------------
 
 -- The global list of actors
 _actors = {}
@@ -39,36 +41,9 @@ _unregisterInstance = function(theClass, actor)
   table.remove(_actors[theClass], index)
 end
 
--- private helper function used to apply methods to collections of actors
-local _applyToActorCollection = function(actors, sortFunc, methodOrName, ... )
-  
-  if(type(sortFunc)=='function') then
-    local actorsCopy = {}
-    for k,actor in pairs(actors) do actorsCopy[k]=actor end
-    table.sort(actorsCopy, sortFunc)
-    actors = actorsCopy
-  end
-
-  if(type(methodOrName)=='string') then
-    for _,actor in pairs(actors) do
-      local method = actor[methodOrName]
-      if(type(method)=='function') then
-        if(method(actor, ...) == false) then return end
-      end
-    end
-
-  elseif(type(methodOrName)=='function') then
-    for _,actor in pairs(actors) do
-      if(methodOrName(actor, ...) == false) then return end
-    end
-
-  else
-    error('methodOrName must be a function or function name')
-  end
-
-end
-
+------------------------------------
 -- INSTANCE METHODS
+------------------------------------
 
 function Actor:initialize(options) -- options will normally be nil
   super.initialize(self, options)
@@ -83,27 +58,12 @@ function Actor:destroy()
   _unregisterInstance(self.class, self)
 end
 
---FIXME add special control case on HasBody
---FIXME add frozen status
-function Actor:freeze()
-  self._frozen = true
-end
-
-function Actor:unFreeze()
-  self._frozen = false
-end
-
-function Actor:isFrozen()
-  return (self._frozen == true)
-end
-
 function Actor:update(dt) end
 function Actor:draw() end
 
 Actor:getterSetter('x') --getX, setX
 Actor:getterSetter('y') -- getY, setY
 Actor:getterSetter('parent')
-Actor:getterSetter('visible', true)
 Actor:getterSetter('angle') -- getAngle, setAngle
 Actor:getterSetter('centerX') -- getCenterX, setCenterX
 Actor:getterSetter('centerY') -- getCenterY, setCenterY
@@ -132,7 +92,7 @@ end
 
 --[[
   An actor's chilren are other actors. For example, the weels of a car, or controls inside a form.
-  they are also useful for stablishing drawing and updating orders
+  they are also useful for stablishing drawing and updating order.
   setParent is used to define wether we call child:setParent or not(default:yes)
   setParent should be put to false in those rare cases in which a children can have several parents
 ]]
@@ -164,10 +124,52 @@ end
 
 function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
-  _applyToActorCollection(_children[self], sortFunc, methodOrName, ... )
+  passion:applyMethodToCollection(_children[self], sortFunc, methodOrName, ... )
 end
 
+------------------------------------
+-- STATES (INVISIBLE & FROZEN)
+------------------------------------
+
+-- The frozen state just redefines update to do nothing
+-- It has to do some more stuff if the PhysicalBody (freeze and unfreeze the body)
+local Frozen = Actor:addState('Frozen')
+
+function Frozen:update(dt) end -- do nothing
+
+--FIXME add special control case on HasBody
+function Actor:freeze()
+  self:pushState('Frozen')
+end
+
+function Actor:unFreeze()
+  self:popState('Frozen')
+end
+
+function Actor:isFrozen()
+  return self:isInState('Frozen', true)
+end
+
+-- The Invisible state redefines the draw method to do nothing
+local Invisible = Actor:addState('Invisible')
+
+function Invisible:draw() end -- do nothing
+
+function Actor:getVisible()
+  return not self:isInState('Invisible', true)
+end
+
+function Actor:setVisible(vis)
+  if(not vis) then
+    self:pushState('Invisible')
+  else
+    self:popState('Invisible')
+  end
+end
+
+------------------------------------
 -- CLASS METHODS
+------------------------------------
 
 -- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
 -- it also registers the subclass on the list of passion actor classes
@@ -191,15 +193,15 @@ end
 
 -- Applies some method to all the actors of this class (not subclasses)
 function Actor.applyToAllActors(theClass, methodOrName, ...)
-  assert(theClass~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
+  assert(theClass~=nil, 'Please invoke Class:applyToAllActors instead of Class.applyToAllActors')
   theClass:applyToAllActorsSorted(nil, methodOrName, ...)
 end
 
 function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
-  assert(theClass~=nil, 'Please call Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
+  assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
   if( type(methodOrName)=='function' or 
      (type(methodOrName)=='string' and type(theClass[methodOrName])=='function') ) then
-    _applyToActorCollection(_actors[theClass], sortFunc, methodOrName, ... )
+    passion:applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
   end
 end
 
@@ -210,7 +212,7 @@ local resourceTypes = {
 }
 -- Loads images, fonts, sounds & music onto the actor class itself
 function Actor.load(theClass, resourceTypesToLoad)
-  assert(theClass~=nil, 'Please call Class:load instead of Class.load')
+  assert(theClass~=nil, 'Please invoke Class:load instead of Class.load')
   local resourceTypeToLoad
   for resourceTypeName,loadingMethod in pairs(resourceTypes) do
     resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]
