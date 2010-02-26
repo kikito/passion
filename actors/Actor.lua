@@ -9,22 +9,78 @@ passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor
 
+-- PRIVATE METHODS AND ATTRIBUTES
+
 -- The global list of actors
-Actor._actors = setmetatable({}, {__mode = "k"})
+_actors = {}
+_actors[Actor] = setmetatable({}, {__mode = "k"})
+
+-- Each actor's children
+_children = setmetatable({}, {__mode = "k"})
+
+-- Adds an actor to the "list of actors" of its class
+local _registerInstance -- we define the variable first so we can make the function recursive
+_registerInstance = function(theClass, actor)
+  table.insert(_actors[theClass], actor)
+  if(theClass~=Actor) then _registerInstance(theClass.superclass,actor) end
+end
+
+-- Removes an actor from the "list of actors" of its class
+local _unregisterInstance -- we define the variable first so we can make the function recursive
+_unregisterInstance = function(theClass, actor)
+  if(theClass~=Actor) then _unregisterInstance(theClass.superclass,actor) end
+  local index
+  for i, v in ipairs(_actors[theClass]) do
+    if v == arg then
+      index = i
+      break
+    end
+  end
+  table.remove(_actors[theClass], index)
+end
+
+-- private helper function used to apply methods to collections of actors
+local _applyToActorCollection = function(actors, sortFunc, methodOrName, ... )
+  
+  if(type(sortFunc)=='function') then
+    local actorsCopy = {}
+    for k,actor in pairs(actors) do actorsCopy[k]=actor end
+    table.sort(actorsCopy, sortFunc)
+    actors = actorsCopy
+  end
+
+  if(type(methodOrName)=='string') then
+    for _,actor in pairs(actors) do
+      local method = actor[methodOrName]
+      if(type(method)=='function') then
+        if(method(actor, ...) == false) then return end
+      end
+    end
+
+  elseif(type(methodOrName)=='function') then
+    for _,actor in pairs(actors) do
+      if(methodOrName(actor, ...) == false) then return end
+    end
+
+  else
+    error('methodOrName must be a function or function name')
+  end
+
+end
 
 -- INSTANCE METHODS
 
 function Actor:initialize(options) -- options will normally be nil
   super.initialize(self, options)
-  self.class:_registerInstance(self) -- add the actor to the list of actors of its class
-  self._children = {}
+  _registerInstance(self.class, self) -- add the actor to the list of actors of its class and superclasses
+  _children[self] = {}
 end
 
 function Actor:destroy()
   self:gotoState(nil)
   self:applyToAllChildren('destroy')
-  self._children = nil
-  self.class:_unregisterInstance(self)
+  _children[self] = nil
+  _unregisterInstance(self.class, self)
 end
 
 --FIXME add special control case on HasBody
@@ -81,7 +137,7 @@ end
   setParent should be put to false in those rare cases in which a children can have several parents
 ]]
 function Actor:addChild(child, setParent)
-  table.insert(self._children, child)
+  table.insert(_children[self], child)
   if(setParent~=false) then child:setParent(self) end
   return child
 end
@@ -90,58 +146,25 @@ end
 -- if resetParent is set to 'true' (default) then the child parent will be set to nil
 function Actor:removeChild(child, resetParent)
   local index
-  for i, v in ipairs(self._children) do
+  for i, v in ipairs(_children[self]) do
     if v == arg then
       index = i
       break
     end
   end
-  table.remove(self._children, index)
+  table.remove(_children[self], index)
   if(resetParent~=false) then child:setParent(nil) end
-end
-
--- private helper function used to apply methods to collections of actors
-local applyToActorCollection = function(actors, sortFunc, methodOrName, ... )
-  
-  if(type(sortFunc)=='function') then
-
-    local actorsCopy = {}
-    for k,actor in pairs(actors) do actorsCopy[k]=actor end
-    table.sort(actorsCopy, sortFunc)
-    actors = actorsCopy
-
-  end
-
-  if(type(methodOrName)=='string') then
-
-    for _,actor in pairs(actors) do
-      local method = actor[methodOrName]
-      if(type(method)=='function') then
-        if(method(actor, ...) == false) then return end
-      end
-    end
-
-  elseif(type(methodOrName)=='function') then
-
-    for _,actor in pairs(actors) do
-      if(methodOrName(actor, ...) == false) then return end
-    end
-
-  else
-    error('methodOrName must be a function or function name')
-  end
-
 end
 
 -- Applies some method to all the children of an actor
 function Actor:applyToAllChildren(methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildren instead of actor.applyToAllChildren')
-  applyToActorCollection(self._children, nil, methodOrName, ... )
+  self:applyToAllChildrenSorted(nil, methodOrName, ... )
 end
 
 function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
-  applyToActorCollection(self._children, sortFunc, methodOrName, ... )
+  _applyToActorCollection(_children[self], sortFunc, methodOrName, ... )
 end
 
 function Actor:sortByDrawOrder(other)
@@ -153,9 +176,9 @@ end
 -- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
 -- it also registers the subclass on the list of passion actor classes
 -- and creates the _actors array
-local prevSubclass = Actor.subclass
-function Actor:subclass(name, options)
-  local theSubclass = prevSubclass(self, name)
+local _prevSubclass = Actor.subclass -- stores the "default" way of making subclasses
+function Actor.subclass(theClass, name, options)
+  local theSubclass = _prevSubclass(theClass, name)
   options = options or {}
 
   local hasImage = options.hasImage==nil and false or options.hasImage -- equivalent to ? : trinary operator
@@ -165,41 +188,22 @@ function Actor:subclass(name, options)
   if(hasBody) then theSubclass:includes(passion.HasBody) end
 
   passion:addActorClass(theSubclass) -- register the new actor class on the passion system
-  theSubclass._actors = setmetatable({}, {__mode = "k"}) --this will hold references to all the actors created on this class
+  _actors[theSubclass] = setmetatable({}, {__mode = "k"}) --this will hold references to all the actors created on this class
 
   return theSubclass
 end
 
--- Adds an actor to the "list of actors" of its class
-function Actor:_registerInstance(actor)
-  table.insert(self._actors, actor)
-  if(self~=Actor) then self.superclass:_registerInstance(actor) end
-end
-
--- Removes an actor from the "list of actors" of its class
-function Actor:_unregisterInstance(actor)
-  if(self~=Actor) then self.superclass:_unregisterInstance(actor) end
-  local index
-  for i, v in ipairs(self._actors) do
-    if v == arg then
-      index = i
-      break
-    end
-  end
-  table.remove(self._actors, index)
-end
-
 -- Applies some method to all the actors of this class (not subclasses)
-function Actor:applyToAllActors(methodOrName, ...)
-  assert(self~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
-  self:applyToAllActorsSorted(nil, methodOrName, ...)
+function Actor.applyToAllActors(theClass, methodOrName, ...)
+  assert(theClass~=nil, 'Please call Class:applyToAllActors instead of Class.applyToAllActors')
+  theClass:applyToAllActorsSorted(nil, methodOrName, ...)
 end
 
-function Actor:applyToAllActorsSorted(sortFunc, methodOrName, ...)
-  assert(self~=nil, 'Please call Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
+function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
+  assert(theClass~=nil, 'Please call Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
   if( type(methodOrName)=='function' or 
-     (type(methodOrName)=='string' and type(self[methodOrName])=='function') ) then
-    applyToActorCollection(self._actors, sortFunc, methodOrName, ... )
+     (type(methodOrName)=='string' and type(theClass[methodOrName])=='function') ) then
+    _applyToActorCollection(_actors[theClass], sortFunc, methodOrName, ... )
   end
 end
 
@@ -209,21 +213,21 @@ local resourceTypes = {
   fonts = 'getFont'
 }
 -- Loads images, fonts, sounds & music onto the actor class itself
-function Actor:load(resourceTypesToLoad)
-  assert(self~=nil, 'Please call Class:load instead of Class.load')
+function Actor.load(theClass, resourceTypesToLoad)
+  assert(theClass~=nil, 'Please call Class:load instead of Class.load')
   local resourceTypeToLoad
   for resourceTypeName,loadingMethod in pairs(resourceTypes) do
     resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]
     if(type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
-      -- create self.fonts if it doesn't exist
-      if(self[resourceTypeName]==nil) then self[resourceTypeName] = {} end
+      -- create theClass.fonts if it doesn't exist
+      if(theClass[resourceTypeName]==nil) then theClass[resourceTypeName] = {} end
       
       -- parse all the resource names, invoking the right loadingMethod with the right parameters
       for resourceName, params in pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
         if(type(params) == 'table') then
-          self[resourceTypeName][resourceName] = passion[loadingMethod](passion, unpack(params))
+          theClass[resourceTypeName][resourceName] = passion[loadingMethod](passion, unpack(params))
         else
-          self[resourceTypeName][resourceName] = passion[loadingMethod](passion, params)
+          theClass[resourceTypeName][resourceName] = passion[loadingMethod](passion, params)
         end
       end
     end
