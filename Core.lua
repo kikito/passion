@@ -1,19 +1,23 @@
 passion = {}
 
+------------------------------------
 -- ACTOR MANAGING STUFF
-
+------------------------------------
 passion.actorClasses={}
 function passion:addActorClass(actorClass)
   table.insert(self.actorClasses,actorClass)
 end
 
+------------------------------------
 -- EXIT
+------------------------------------
 function passion:exit()
   love.event.push('q')
 end
 
+------------------------------------
 -- PHYSICAL WORLD STUFF
-
+------------------------------------
 function passion:newWorld(w, h)
   self.world = love.physics.newWorld( w, h )
   self.ground = self:newBody(0, 0, 0)
@@ -46,22 +50,20 @@ for _,method in pairs(delegatedMethods) do
   end
 end
 
+------------------------------------
 -- CALLBACK STUFF
+------------------------------------
 
 -- update callback
-local updateIfNotFrozen = function(actor, dt)
-  if(actor:isFrozen()==false) then actor:update(dt) end
-end
-
 function passion:update(dt)
   if self.world ~= nil then self.world:update(dt) end
-  passion.Actor:applyToAllActors(updateIfNotFrozen, dt)
+  passion.Actor:applyToAllActors('update', dt)
 end
 
 -- draw callback
 local _drawn = setmetatable({}, {__mode = "k"})
-local _drawIfVisible = function(actor)
-  if(actor:getVisible()==true and _drawn[actor]==nil) then
+local _drawIfNotDrawn = function(actor)
+  if(_drawn[actor]==nil) then
     actor:draw()
     _drawn[actor] = 1
   end
@@ -73,7 +75,7 @@ end
 
 function passion:draw()
   _drawn = setmetatable({}, {__mode = "k"})
-  passion.Actor:applyToAllActorsSorted( _drawIfVisible, _sortByDrawOrder )
+  passion.Actor:applyToAllActorsSorted( _drawIfNotDrawn, _sortByDrawOrder )
 end
 
 -- Rest of the callbacks
@@ -86,12 +88,18 @@ for _,methodName in ipairs(callbacks) do
   end
 end
 
--- MAIN LOOP STUFF
+------------------------------------
+-- MAIN LOOP
+------------------------------------
 
 --[[ passion.run. Can be used to "replace" love.run. Use it like this:
-function love.run()
-  return passion:run()
-end
+
+    function love.run()
+      return passion:run()
+    end
+
+    We cannot simply attach the events and draw functions and use the default love callback because we need reset
+
 ]]
 function passion.run()
 
@@ -138,7 +146,9 @@ function passion.run()
   end
 end
 
+------------------------------------
 -- RESOURCE LOADING STUFF
+------------------------------------
 
 passion.resources = {
   images = {},
@@ -146,7 +156,7 @@ passion.resources = {
   fonts = {}
 }
 
-local getResource = function(collection, f, key, ...)
+local _getResource = function(collection, f, key, ...)
   local resource = collection[key]
   if(resource == nil) then
     resource = f(...)
@@ -157,7 +167,7 @@ end
 
 function passion:getImage(pathOrFileOrData)
   assert(self==passion, 'Use passion:getImage instead of passion.getImage')
-  return getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
+  return _getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
 local newSource = function(pathOrFileOrData, sourceType)
@@ -175,7 +185,7 @@ function passion:getSource(pathOrFileOrData, sourceType)
     sourceList = self.resources.sources[pathOrFileOrData]
   end
 
-  return getResource(sourceList, newSource, sourceType, pathOrFileOrData, sourceType )
+  return _getResource(sourceList, newSource, sourceType, pathOrFileOrData, sourceType )
 end
 
 function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
@@ -183,7 +193,7 @@ function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
   if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage
-    return getResource(self.resources.fonts, love.graphics.newFont, size, size)
+    return _getResource(self.resources.fonts, love.graphics.newFont, size, size)
 
   elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
 
@@ -198,21 +208,71 @@ function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
 
     if('ttf' == string.lower(extension)) then -- it is a truetype font
       local size = sizeOrGlyphs
-      return getResource(fontList, love.graphics.newFont, size, path, size)
+      return _getResource(fontList, love.graphics.newFont, size, path, size)
     else -- it is an image font, with a path
       print('c')
       local image = self:getImage(path)
       local glyphs = sizeOrGlyphs
-      return getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
+      return _getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
     end
 
   else -- sizeOrPathOrImage is an image -> imagefont, with an image
 
     local image = sizeOrPathOrImage
     local glyphs = sizeOrGlyphs
-    return getResource(self.fonts, love.graphics.newImageFont, image, image, glyphs)
+    return _getResource(self.fonts, love.graphics.newImageFont, image, image, glyphs)
 
   end
 
 end
+
+------------------------------------
+-- MISC STUFF
+------------------------------------
+
+--[[ Helper function used to apply methods to collections
+  * collection is a table containing a bunch of elements to which the function must be applied
+  * sortFunc is a sorting function. It defines the order in which the method will be applied. It can be nil (no sorting)
+  * methodOrName is either a function or a string
+    - If it is a function, it will be applied to all items in the collection, in order
+    - If it is a string, then each item must have a function named like MethodName.
+  * additional parameters can be passed to the methodOrName function. The first parameter will allways be the element
+  Example:
+
+    passion:applyMethodToCollection({a,b,c}, nil, 'update', dt)
+
+  is equivalent to doing this:
+    a:update(dt)
+    b:update(dt)
+    c:update(dt)
+]]
+function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ... )
+  
+  if(type(sortFunc)=='function') then
+    local collectionCopy = {}
+    for k,item in pairs(collection) do collectionCopy[k]=item end
+    table.sort(collectionCopy, sortFunc)
+    collection = collectionCopy
+  end
+
+  if(type(methodOrName)=='string') then
+    for _,item in pairs(collection) do
+      local method = item[methodOrName]
+      if(type(method)=='function') then
+        if(method(item, ...) == false) then return end
+      end
+    end
+
+  elseif(type(methodOrName)=='function') then
+    for _,item in pairs(collection) do
+      if(methodOrName(item, ...) == false) then return end
+    end
+
+  else
+    error('methodOrName must be a function or function name')
+  end
+
+end
+
+
 
