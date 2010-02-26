@@ -167,10 +167,6 @@ function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   _applyToActorCollection(_children[self], sortFunc, methodOrName, ... )
 end
 
-function Actor:sortByDrawOrder(other)
-  return self:getDrawOrder() < other:getDrawOrder()
-end
-
 -- CLASS METHODS
 
 -- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)

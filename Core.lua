@@ -59,17 +59,21 @@ function passion:update(dt)
 end
 
 -- draw callback
-local drawn = {}
-local drawIfVisible = function(actor)
-  if(actor:getVisible()==true and drawn[actor]==nil) then
+local _drawn = setmetatable({}, {__mode = "k"})
+local _drawIfVisible = function(actor)
+  if(actor:getVisible()==true and _drawn[actor]==nil) then
     actor:draw()
-    drawn[actor] = 1
+    _drawn[actor] = 1
   end
 end
 
+local _sortByDrawOrder = function(actor1, actor2) -- sorting function
+  return self:getDrawOrder() < other:getDrawOrder()
+end
+
 function passion:draw()
-  drawn = {}
-  passion.Actor:applyToAllActorsSorted(drawIfVisible, passion.Actor.sortByDrawOrder)
+  _drawn = setmetatable({}, {__mode = "k"})
+  passion.Actor:applyToAllActorsSorted( _drawIfVisible, _sortByDrawOrder )
 end
 
 -- Rest of the callbacks
