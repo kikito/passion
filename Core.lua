@@ -89,40 +89,46 @@ function love.run()
   return passion:run()
 end
 ]]
+function passion.run()
 
--- FIXME addapt to 0.6.1
-
-function passion:run()
-  
   -- registers the love events on passion
   for _,f in ipairs({'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased'}) do
     love[f] = function(...)
       passion[f](passion, ...)
     end
   end
-  
+
   if(type(love.load)=='function') then love.load() end
   if(type(passion.load)=='function') then passion:load() end
-  -- Main loop.
-  while true do
-    love.timer.step()
-    passion:update(love.timer.getDelta())
-    
-    love.graphics.clear()
 
-    passion:draw()
+  local dt = 0
+
+  -- Main loop time.
+  while true do
+    if love.timer then
+      love.timer.step()
+      dt = love.timer.getDelta()
+    end
+    passion:update(dt) -- will pass 0 if love.timer is disabled
+
+    if love.graphics then
+      love.graphics.clear()
+      passion:draw()
+    end
 
     -- Process events.
-    for e,a,b,c in love.event.poll() do
-      if e == 'q' then
-        if love.audio then love.audio.stop() end
-        return
+    if love.event then
+      for e,a,b,c in love.event.poll() do
+        if e == "q" then
+          if love.audio then love.audio.stop() end
+          return
+        end
+        love.handlers[e](a,b,c)
       end
-      love.handlers[e](a,b,c)
     end
-    love.timer.sleep(1)
 
-    love.graphics.present() -- what is this?
+    if love.timer then love.timer.sleep(1) end
+    if love.graphics then love.graphics.present() end
 
     passion:reset() -- do something between the "draw" and "update" calls
   end
