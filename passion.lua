@@ -18,7 +18,8 @@ end
 -- function for drawing actors in the right order. Used in draw callback
 local _sortByDrawOrder = function(actor1, actor2) -- sorting function
   if(actor1==nil or actor2==nil) then return true end
-  return actor1:getDrawOrder() < actor2:getDrawOrder()
+
+  return actor1:getDrawOrder() > actor2:getDrawOrder()
 end
 
 -- PÄSSION will route the following to its internal world object (i.e. passion:setGravity(0, 100) )
@@ -105,7 +106,7 @@ end
 -- draw callback
 function passion:draw()
   _drawn = setmetatable({}, {__mode = "k"})
-  passion.Actor:applyToAllActorsSorted( _drawIfNotDrawn, _sortByDrawOrder )
+  passion.Actor:applyToAllActorsSorted( _sortByDrawOrder, _drawIfNotDrawn )
 end
 
 -- Rest of the callbacks
@@ -264,11 +265,15 @@ end
     c:update(dt)
 ]]
 function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ... )
-  
+
   -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
     local collectionCopy = {}
-    for k,item in pairs(collection) do collectionCopy[k]=item end
+    local i = 1
+    for _,item in pairs(collection) do
+      collectionCopy[i]=item
+      i=i+1
+    end
     table.sort(collectionCopy, sortFunc)
     collection = collectionCopy
   end
@@ -294,5 +299,21 @@ function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ...
 
 end
 
+-- prints a table on the console, recursively. Useful for debugging.
+function passion:dumpTable(t, level, depth)
+  level = level or 1
+  depth = depth or 4
+  
+  if(level>=depth) then return end
+
+  print(string.rep("   ", level) .. tostring(t) .. ':')
+
+  if(type(t)=='table') then
+    for k,item in pairs(t) do
+      print(string.rep("   ", level+1) .. tostring(k) .. ' => '.. tostring(item) )
+      if(type(item)=='table') then dumpTable(item, level + 1) end
+    end
+  end
+end
 
 
