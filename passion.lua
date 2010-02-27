@@ -22,7 +22,7 @@ local _sortByDrawOrder = function(actor1, actor2) -- sorting function
   return actor1:getDrawOrder() > actor2:getDrawOrder()
 end
 
--- PÄSSION will route the following to its internal world object (i.e. passion:setGravity(0, 100) )
+-- PÄSSION will route the following to its internal world object (i.e. passion.setGravity(0, 100) )
 local _delegatedWorldMethods = {
   'getBodyCount' , 'getCallbacks', 'getGravity', 
   'getJointCount', 'getMeter'    , 'isAllowSleep', 
@@ -59,7 +59,7 @@ end
 ------------------------------------
 
 -- I just did this small function because I never remember how to exit in LÖVE :)
-function passion:exit()
+function passion.exit()
   love.event.push('q')
 end
 
@@ -67,28 +67,28 @@ end
 -- PHYSICAL WORLD STUFF
 ------------------------------------
 
-function passion:newWorld(w, h)
-  self.world = love.physics.newWorld( w, h )
-  self.ground = self:newBody(0, 0, 0)
+function passion.newWorld(w, h)
+  passion.world = love.physics.newWorld( w, h )
+  passion.ground = passion.newBody(0, 0, 0)
   return world
 end
-function passion:getWorld()
-  assert(self.world ~= nil, "passion.world is nil. You must invoke passion:newWorld")
-  return self.world
+function passion.getWorld()
+  assert(passion.world ~= nil, "passion.world is nil. You must invoke passion.newWorld")
+  return passion.world
 end
-function passion:getGround()
-  assert(self.ground ~= nil, "passion.ground is nil. You must invoke passion:createWorld before using passion:getGround")
-  return self.ground
+function passion.getGround()
+  assert(passion.ground ~= nil, "passion.ground is nil. You must invoke passion.createWorld before using passion.getGround")
+  return passion.ground
 end
-function passion:newBody(x, y, m )
-  local world = self:getWorld()
+function passion.newBody(x, y, m )
+  local world = passion.getWorld()
   return love.physics.newBody( world, x, y, m )
 end
 
 -- Define world methods in PÄSSION so it can be used "as a world"
 for _,method in pairs(_delegatedWorldMethods) do
   passion[method] = function(self, ...)
-    local world = passion:getWorld()
+    local world = passion.getWorld()
     return world[method](world, ...)
   end
 end
@@ -98,13 +98,13 @@ end
 ------------------------------------
 
 -- update callback
-function passion:update(dt)
-  if self.world ~= nil then self.world:update(dt) end
+function passion.update(dt)
+  if passion.world ~= nil then passion.world:update(dt) end
   passion.Actor:applyToAllActors('update', dt)
 end
 
 -- draw callback
-function passion:draw()
+function passion.draw()
   _drawn = setmetatable({}, {__mode = "k"})
   passion.Actor:applyToAllActorsSorted( _sortByDrawOrder, _drawIfNotDrawn )
 end
@@ -128,11 +128,11 @@ end
 --[[ passion.run. Can be used to "replace" love.run. Use it like this:
 
     function love.run()
-      return passion:run()
+      return passion.run()
     end
 
     We cannot simply attach the events and draw functions and use the default love callback because we need reset
-    FIXME: review the need of passion:reset()
+    FIXME: review the need of passion.reset()
 ]]
 function passion.run()
 
@@ -144,7 +144,7 @@ function passion.run()
   end
 
   if(type(love.load)=='function') then love.load() end
-  if(type(passion.load)=='function') then passion:load() end
+  if(type(passion.load)=='function') then passion.load() end
 
   local dt = 0
 
@@ -154,11 +154,11 @@ function passion.run()
       love.timer.step()
       dt = love.timer.getDelta()
     end
-    passion:update(dt) -- will pass 0 if love.timer is disabled
+    passion.update(dt) -- will pass 0 if love.timer is disabled
 
     if love.graphics then
       love.graphics.clear()
-      passion:draw()
+      passion.draw()
     end
 
     -- Process events.
@@ -175,7 +175,7 @@ function passion.run()
     if love.timer then love.timer.sleep(1) end
     if love.graphics then love.graphics.present() end
 
-    passion:reset() -- do something between the "draw" and "update" calls
+    passion.reset() -- do something between the "draw" and "update" calls
   end
 end
 
@@ -189,39 +189,36 @@ passion.resources = {
   fonts = {}
 }
 
-function passion:getImage(pathOrFileOrData)
-  assert(self==passion, 'Use passion:getImage instead of passion.getImage')
-  return _getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
+function passion.getImage(pathOrFileOrData)
+  return _getResource(passion.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
-function passion:getSource(pathOrFileOrData, sourceType)
-  assert(self==passion, 'Use passion:getSource instead of passion.getSource')
+function passion.getSource(pathOrFileOrData, sourceType)
 
-  local sourceList = self.resources.sources[pathOrFileOrData]
+  local sourceList = passion.resources.sources[pathOrFileOrData]
   if(sourceList == nil) then
-    self.resources.sources[pathOrFileOrData] = {}
-    sourceList = self.resources.sources[pathOrFileOrData]
+    passion.resources.sources[pathOrFileOrData] = {}
+    sourceList = passion.resources.sources[pathOrFileOrData]
   end
 
   return _getResource(sourceList, _newSource, sourceType, pathOrFileOrData, sourceType )
 end
 
-function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
-  assert(self==passion, 'Use passion:getFont instead of passion.getFont')
+function passion.getFont(sizeOrPathOrImage, sizeOrGlyphs)
   if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage
-    return _getResource(self.resources.fonts, love.graphics.newFont, size, size)
+    return _getResource(passion.resources.fonts, love.graphics.newFont, size, size)
 
   elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
 
     local path = sizeOrPathOrImage
     local extension = string.sub(path,-3)
 
-    local fontList = self.resources.fonts[path]
+    local fontList = passion.resources.fonts[path]
     if(fontList == nil) then
-      self.resources.fonts[path] = {}
-      fontList = self.resources.fonts[path]
+      passion.resources.fonts[path] = {}
+      fontList = passion.resources.fonts[path]
     end
 
     if('ttf' == string.lower(extension)) then -- it is a truetype font
@@ -238,7 +235,7 @@ function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
 
     local image = sizeOrPathOrImage
     local glyphs = sizeOrGlyphs
-    return _getResource(self.fonts, love.graphics.newImageFont, image, image, glyphs)
+    return _getResource(passion.fonts, love.graphics.newImageFont, image, image, glyphs)
 
   end
 
@@ -257,14 +254,14 @@ end
   * additional parameters can be passed to the methodOrName function. The first parameter will allways be the element
   Example:
 
-    passion:applyMethodToCollection({a,b,c}, nil, 'update', dt)
+    passion.applyMethodToCollection({a,b,c}, nil, 'update', dt)
 
   is equivalent to doing this:
     a:update(dt)
     b:update(dt)
     c:update(dt)
 ]]
-function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ... )
+function passion.applyMethodToCollection(collection, sortFunc, methodOrName, ... )
 
   -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
@@ -300,7 +297,7 @@ function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ...
 end
 
 -- prints a table on the console, recursively. Useful for debugging.
-function passion:dumpTable(t, level, depth)
+function passion.dumpTable(t, level, depth)
   level = level or 1
   depth = depth or 4
   

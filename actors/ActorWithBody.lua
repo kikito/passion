@@ -59,7 +59,7 @@ end
   Signatures: newBody() or newBody(x, y) or newBody(x, y, mass)
 ]]
 function ActorWithBody:newBody(x, y, mass)
-  world = passion:getWorld()
+  world = passion.getWorld()
   if(x==nil or y==nil) then
     self.body = love.physics.newBody(world)
   elseif(mass==nil) then

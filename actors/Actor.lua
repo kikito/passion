@@ -121,7 +121,7 @@ end
 
 function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
-  passion:applyMethodToCollection(_children[self], sortFunc, methodOrName, ... )
+  passion.applyMethodToCollection(_children[self], sortFunc, methodOrName, ... )
 end
 
 ------------------------------------
@@ -189,7 +189,7 @@ function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
   assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
   if( type(methodOrName)=='function' or 
      (type(methodOrName)=='string' and type(theClass[methodOrName])=='function') ) then
-    passion:applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
+    passion.applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
   end
 end
 
