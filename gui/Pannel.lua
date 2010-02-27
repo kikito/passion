@@ -160,7 +160,7 @@ function Pannel:getLocalX() return self.x or 0 end
 function Pannel:getLocalY() return self.y or 0 end
 function Pannel:getLocalPosition() return self.x, self.y end
 
-function Pannel:drawOrder()
+function Pannel:getDrawOrder()
   if(self.drawOrder~=nil) then return self.drawOrder end
   
   local parent = self:getParent()
