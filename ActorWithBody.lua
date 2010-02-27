@@ -1,4 +1,4 @@
-require 'passion.actors.Actor'
+require 'passion.Actor'
 
 
 passion.ActorWithBody = class('passion.ActorWithBody', passion.Actor)
