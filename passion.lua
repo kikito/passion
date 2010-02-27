@@ -1,16 +1,63 @@
-passion = {}
+passion = {} -- like everything big, it starts so small...
 
 ------------------------------------
--- ACTOR MANAGING STUFF
+-- PRIVATE ATTRIBUTES AND METHODS
 ------------------------------------
-passion.actorClasses={}
-function passion:addActorClass(actorClass)
-  table.insert(self.actorClasses,actorClass)
+
+-- table that controls that actors are not re-drawn. Used in draw callback
+local _drawn = setmetatable({}, {__mode = "k"})
+
+-- function used for drawing. Used in draw callback
+local _drawIfNotDrawn = function(actor)
+  if(_drawn[actor]==nil) then
+    actor:draw()
+    _drawn[actor] = 1
+  end
+end
+
+-- function for drawing actors in the right order. Used in draw callback
+local _sortByDrawOrder = function(actor1, actor2) -- sorting function
+  if(actor1==nil or actor2==nil) then return true end
+  return actor1:getDrawOrder() < actor2:getDrawOrder()
+end
+
+-- PÄSSION will route the following to its internal world object (i.e. passion:setGravity(0, 100) )
+local _delegatedWorldMethods = {
+  'getBodyCount' , 'getCallbacks', 'getGravity', 
+  'getJointCount', 'getMeter'    , 'isAllowSleep', 
+  'setAllowSleep', 'setCallbacks', 'setGravity', 
+  'setMeter'
+}
+
+--[[ It looks for a resource (image, source, font).
+   If the resource is not in collection[key], create it using f(...) - the additional parameters
+   Used in Resource loading. 
+]]
+local _getResource = function(collection, f, key, ...)
+  local resource = collection[key]
+  if(resource == nil) then
+    resource = f(...)
+    collection[key]=resource
+  end
+  return resource
+end
+
+--[[ Function used for creating new sources (images and souncs)
+   We need to create this intermediate function to handle special cases - like the same file
+   opened twice, each one with one sourceType, for example.
+   Used in Resource loading. 
+]]
+local _newSource = function(pathOrFileOrData, sourceType)
+  if(sourceType==nil) then return love.audio.newSource(pathOrFileOrData)
+  else return love.audio.newSource(pathOrFileOrData, sourceType)
+  end
 end
 
 ------------------------------------
 -- EXIT
 ------------------------------------
+
+-- I just did this small function because I never remember how to exit in LÖVE :)
 function passion:exit()
   love.event.push('q')
 end
@@ -18,13 +65,11 @@ end
 ------------------------------------
 -- PHYSICAL WORLD STUFF
 ------------------------------------
+
 function passion:newWorld(w, h)
   self.world = love.physics.newWorld( w, h )
   self.ground = self:newBody(0, 0, 0)
   return world
-end
-function passion:destroyWorld()
-  self.world = nil
 end
 function passion:getWorld()
   assert(self.world ~= nil, "passion.world is nil. You must invoke passion:newWorld")
@@ -39,11 +84,8 @@ function passion:newBody(x, y, m )
   return love.physics.newBody( world, x, y, m )
 end
 
--- Passion will route the following to its internal world object (i.e. passion:setGravity(0, 100)
-local delegatedMethods = {
-  'getBodyCount', 'getCallbacks', 'getGravity', 'getJointCount', 'getMeter', 'isAllowSleep', 'setAllowSleep', 'setCallbacks', 'setGravity', 'setMeter'
-}
-for _,method in pairs(delegatedMethods) do
+-- Define world methods in PÄSSION so it can be used "as a world"
+for _,method in pairs(_delegatedWorldMethods) do
   passion[method] = function(self, ...)
     local world = passion:getWorld()
     return world[method](world, ...)
@@ -61,28 +103,18 @@ function passion:update(dt)
 end
 
 -- draw callback
-local _drawn = setmetatable({}, {__mode = "k"})
-local _drawIfNotDrawn = function(actor)
-  if(_drawn[actor]==nil) then
-    actor:draw()
-    _drawn[actor] = 1
-  end
-end
-
-local _sortByDrawOrder = function(actor1, actor2) -- sorting function
-  return self:getDrawOrder() < other:getDrawOrder()
-end
-
 function passion:draw()
   _drawn = setmetatable({}, {__mode = "k"})
   passion.Actor:applyToAllActorsSorted( _drawIfNotDrawn, _sortByDrawOrder )
 end
 
 -- Rest of the callbacks
-local callbacks = {
-  'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased', 'reset', 'draw'
+local _callbacks = {
+  'joystickpressed', 'joystickreleased',
+  'keypressed', 'keyreleased',
+  'mousepressed', 'mousereleased', 'reset'
 }
-for _,methodName in ipairs(callbacks) do
+for _,methodName in ipairs(_callbacks) do
   passion[methodName] = function(self, ...)
     passion.Actor:applyToAllActors(methodName, ...)
   end
@@ -99,7 +131,7 @@ end
     end
 
     We cannot simply attach the events and draw functions and use the default love callback because we need reset
-
+    FIXME: review the need of passion:reset()
 ]]
 function passion.run()
 
@@ -156,24 +188,9 @@ passion.resources = {
   fonts = {}
 }
 
-local _getResource = function(collection, f, key, ...)
-  local resource = collection[key]
-  if(resource == nil) then
-    resource = f(...)
-    collection[key]=resource
-  end
-  return resource
-end
-
 function passion:getImage(pathOrFileOrData)
   assert(self==passion, 'Use passion:getImage instead of passion.getImage')
   return _getResource(self.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
-end
-
-local newSource = function(pathOrFileOrData, sourceType)
-  if(sourceType==nil) then return love.audio.newSource(pathOrFileOrData)
-  else return love.audio.newSource(pathOrFileOrData, sourceType)
-  end
 end
 
 function passion:getSource(pathOrFileOrData, sourceType)
@@ -185,7 +202,7 @@ function passion:getSource(pathOrFileOrData, sourceType)
     sourceList = self.resources.sources[pathOrFileOrData]
   end
 
-  return _getResource(sourceList, newSource, sourceType, pathOrFileOrData, sourceType )
+  return _getResource(sourceList, _newSource, sourceType, pathOrFileOrData, sourceType )
 end
 
 function passion:getFont(sizeOrPathOrImage, sizeOrGlyphs)
@@ -248,6 +265,7 @@ end
 ]]
 function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ... )
   
+  -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
     local collectionCopy = {}
     for k,item in pairs(collection) do collectionCopy[k]=item end
@@ -255,6 +273,7 @@ function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ...
     collection = collectionCopy
   end
 
+  -- If methodOrName is a string, then apply the method named like it on each element in collection
   if(type(methodOrName)=='string') then
     for _,item in pairs(collection) do
       local method = item[methodOrName]
@@ -263,6 +282,7 @@ function passion:applyMethodToCollection(collection, sortFunc, methodOrName, ...
       end
     end
 
+  -- If it is a function, just apply it to every item on the collection
   elseif(type(methodOrName)=='function') then
     for _,item in pairs(collection) do
       if(methodOrName(item, ...) == false) then return end

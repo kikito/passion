@@ -4,14 +4,14 @@
 -- Based on YaciCode, from Julien Patte and LuaObject, from Sébastien Rocca-Serra
 -----------------------------------------------------------------------------------
 
-local classes = setmetatable({}, {__mode = "k"})   -- weak table storing references to all declared classes
+local _classes = setmetatable({}, {__mode = "k"})   -- weak table storing references to all declared _classes
 
 -- The 'Object' class
 Object = { name = "Object" }
 
   -- creates a new instance
 Object.new = function(class, ...)
-  assert(classes[class]~=nil, "Use class:new instead of class.new")
+  assert(_classes[class]~=nil, "Use class:new instead of class.new")
 
   local instance = setmetatable({ class = class }, class.__classDict) -- the class dictionary is the instance's metatable
   instance:initialize(...)
@@ -20,7 +20,7 @@ end
 
 -- creates a subclass
 Object.subclass = function(superclass, name)
-  assert(classes[superclass]~=nil, "Use class:subclass instead of class.subclass")
+  assert(_classes[superclass]~=nil, "Use class:subclass instead of class.subclass")
   if type(name)~="string" then name = "Unnamed" end
 
   local theClass = { name = name, superclass = superclass, __classDict = {} }
@@ -54,7 +54,7 @@ Object.subclass = function(superclass, name)
   -- instance methods go after the setmetatable, so we can use "super"
   theClass.initialize = function(instance,...) super.initialize(instance) end
 
-  classes[theClass]=theClass --registers the new class on the list of classes
+  _classes[theClass]=theClass --registers the new class on the list of _classes
 
   return theClass
 end
@@ -63,7 +63,7 @@ end
   -- module is a lua table of functions. The functions will be copied to the class
   -- if present in the module, the included() method will be called
 Object.includes = function(class, module, ... )
-  assert(classes[class]~=nil, "Use class:includes instead of class.includes")
+  assert(_classes[class]~=nil, "Use class:includes instead of class.includes")
   for methodName,method in pairs(module) do
     if methodName ~="included" then class[methodName] = method end
   end
@@ -71,7 +71,7 @@ Object.includes = function(class, module, ... )
 end
 
 
-classes[Object]=Object -- adds Object to the list of classes
+_classes[Object]=Object -- adds Object to the list of _classes
 
 Object.__classDict = {
   initialize = function(instance, ...) end,   -- end of the initialize() call chain
@@ -101,13 +101,14 @@ end
 
 -- Returns true if class is a subclass of other, false otherwise
 function subclassOf(other, class)
+  if class == nil or other==nil then return false end
   if class.superclass==nil then return false end --class is Object, or a non-class
   return class.superclass == other or subclassOf(other, class.superclass)
 end
 
--- Returns true if obj is an instance of class (or one of its subclasses) false otherwise
+-- Returns true if obj is an instance of class (or one of its sub_classes) false otherwise
 function instanceOf(class, obj)
-  if obj==nil or classes[class]==nil or classes[obj.class]==nil then return false end
+  if obj==nil or _classes[class]==nil or _classes[obj.class]==nil then return false end
   if obj.class==class then return true end
   return subclassOf(class, obj.class)
 end

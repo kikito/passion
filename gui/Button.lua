@@ -39,10 +39,7 @@ function Button:onMouseOver() end
 function Button:onMouseOut() end
 function Button:onFocus() end
 function Button:onBlur() end
--- A button doesn't react to the mouse (unless in the right state - see below)
-function Button:mousepressed(mx, my, button) end
-function Button:mousereleased(mx, my, button) end
-function Button:update(dt) end
+
 
 function Button:checkPoint(mx, my)
   local x, y = self:getPosition()

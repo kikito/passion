@@ -1,9 +1,6 @@
-require 'passion.MiddleClass'
-require 'passion.MindState'
-require 'passion.Core'
-require 'passion.actors.HasImage'
-require 'passion.actors.HasBody'
 
+require 'passion.oop.init'
+require 'passion.passion'
 
 passion.Actor = class('passion.Actor', StatefulObject)
 
@@ -137,7 +134,6 @@ local Frozen = Actor:addState('Frozen')
 
 function Frozen:update(dt) end -- do nothing
 
---FIXME add special control case on HasBody
 function Actor:freeze()
   self:pushState('Frozen')
 end
@@ -171,23 +167,14 @@ end
 -- CLASS METHODS
 ------------------------------------
 
--- redefine the subclass function so it admits two options: hasImage & hasBody (default to false, both)
--- it also registers the subclass on the list of passion actor classes
--- and creates the _actors array
 local _prevSubclass = Actor.subclass -- stores the "default" way of making subclasses
-function Actor.subclass(theClass, name, options)
+--[[ redefine the subclass function, adding more functionality
+     (creates the _actors array)
+]]
+function Actor.subclass(theClass, name)
+  assert(theClass~=nil, 'Please invoke Class:subclass instead of Class.subclass')
   local theSubclass = _prevSubclass(theClass, name)
-  options = options or {}
-
-  local hasImage = options.hasImage==nil and false or options.hasImage -- equivalent to ? : trinary operator
-  local hasBody = options.hasBody==nil and false or options.hasBody
-
-  if(hasImage) then theSubclass:includes(passion.HasImage) end
-  if(hasBody) then theSubclass:includes(passion.HasBody) end
-
-  passion:addActorClass(theSubclass) -- register the new actor class on the passion system
-  _actors[theSubclass] = setmetatable({}, {__mode = "k"}) --this will hold references to all the actors created on this class
-
+  _actors[theSubclass] = setmetatable({}, {__mode = "k"})
   return theSubclass
 end
 
@@ -197,6 +184,7 @@ function Actor.applyToAllActors(theClass, methodOrName, ...)
   theClass:applyToAllActorsSorted(nil, methodOrName, ...)
 end
 
+-- Same as applyToAllActors, but it allows for using a sorting function
 function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
   assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
   if( type(methodOrName)=='function' or 

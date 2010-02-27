@@ -1,3 +1,5 @@
+require 'passion.passion'
+
 passion.gui = {}
 
 function passion.gui:setFocus(element)

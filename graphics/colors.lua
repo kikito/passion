@@ -1,4 +1,4 @@
-require 'passion.Core'
+require 'passion.passion'
 
 passion.aliceBlue = {240,248,255}
 passion.antiqueWhite = {250,235,215}

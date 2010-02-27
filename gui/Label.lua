@@ -62,11 +62,14 @@ function Label:draw()
   elseif(valign=='bottom') then y = y + height - fontSize
   end
 
+  --uncomment to debug the rectangle used for drawing the text
+  --love.graphics.rectangle('line', x, y, width, height)
+
   -- FIXME remove this when love starts printing fonts the top-leftly
   y = y + fontSize
 
-
   love.graphics.printf(text, x, y, width, align)
+
 
   -- restore previous values of font & color
   if(prevFont~=nil) then love.graphics.setFont(prevFont) end

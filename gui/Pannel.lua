@@ -1,6 +1,6 @@
-require 'passion.gui.Core'
-require 'passion.actors.Actor'
-require 'passion.graphics.init'
+require 'passion.oop.init'
+require 'passion.passion'
+require 'passion.actors.init'
 
 passion.gui.Pannel = class('passion.gui.Pannel', passion.Actor)
 local Pannel = passion.gui.Pannel

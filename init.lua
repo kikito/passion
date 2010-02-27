@@ -1,8 +1,11 @@
 --module 'passion'
 
-require 'passion.Core'
-require 'passion.constants.Colors'
-require 'passion.actors.Actor'
+require 'passion.oop.init'
+
+require 'passion.passion'
+
+require 'passion.graphics.init'
+require 'passion.actors.init'
 require 'passion.gui.init'
 
 
