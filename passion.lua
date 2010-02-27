@@ -30,30 +30,6 @@ local _delegatedWorldMethods = {
   'setMeter'
 }
 
---[[ It looks for a resource (image, source, font).
-   If the resource is not in collection[key], create it using f(...) - the additional parameters
-   Used in Resource loading. 
-]]
-local _getResource = function(collection, f, key, ...)
-  local resource = collection[key]
-  if(resource == nil) then
-    resource = f(...)
-    collection[key]=resource
-  end
-  return resource
-end
-
---[[ Function used for creating new sources (images and souncs)
-   We need to create this intermediate function to handle special cases - like the same file
-   opened twice, each one with one sourceType, for example.
-   Used in Resource loading. 
-]]
-local _newSource = function(pathOrFileOrData, sourceType)
-  if(sourceType==nil) then return love.audio.newSource(pathOrFileOrData)
-  else return love.audio.newSource(pathOrFileOrData, sourceType)
-  end
-end
-
 ------------------------------------
 -- EXIT
 ------------------------------------
@@ -180,68 +156,6 @@ function passion.run()
 end
 
 ------------------------------------
--- RESOURCE LOADING STUFF
-------------------------------------
-
-passion.resources = {
-  images = {},
-  sources = {},
-  fonts = {}
-}
-
-function passion.getImage(pathOrFileOrData)
-  return _getResource(passion.resources.images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
-end
-
-function passion.getSource(pathOrFileOrData, sourceType)
-
-  local sourceList = passion.resources.sources[pathOrFileOrData]
-  if(sourceList == nil) then
-    passion.resources.sources[pathOrFileOrData] = {}
-    sourceList = passion.resources.sources[pathOrFileOrData]
-  end
-
-  return _getResource(sourceList, _newSource, sourceType, pathOrFileOrData, sourceType )
-end
-
-function passion.getFont(sizeOrPathOrImage, sizeOrGlyphs)
-  if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
-
-    local size = sizeOrPathOrImage
-    return _getResource(passion.resources.fonts, love.graphics.newFont, size, size)
-
-  elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
-
-    local path = sizeOrPathOrImage
-    local extension = string.sub(path,-3)
-
-    local fontList = passion.resources.fonts[path]
-    if(fontList == nil) then
-      passion.resources.fonts[path] = {}
-      fontList = passion.resources.fonts[path]
-    end
-
-    if('ttf' == string.lower(extension)) then -- it is a truetype font
-      local size = sizeOrGlyphs
-      return _getResource(fontList, love.graphics.newFont, size, path, size)
-    else -- it is an image font, with a path
-      print('c')
-      local image = self:getImage(path)
-      local glyphs = sizeOrGlyphs
-      return _getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
-    end
-
-  else -- sizeOrPathOrImage is an image -> imagefont, with an image
-
-    local image = sizeOrPathOrImage
-    local glyphs = sizeOrGlyphs
-    return _getResource(passion.fonts, love.graphics.newImageFont, image, image, glyphs)
-
-  end
-
-end
-
-------------------------------------
 -- MISC STUFF
 ------------------------------------
 
@@ -311,6 +225,21 @@ function passion.dumpTable(t, level, depth)
       if(type(item)=='table') then dumpTable(item, level + 1) end
     end
   end
+end
+
+--[[ Aux function used in Resource loading. 
+   If the resource is not in collection[key], create it using f(...)
+   I need to make it "public" because I use it on the graphics, audio and fonts modules for
+   implementing getImage, getSource and getFont.
+   Regular users shouldn't be using it (that is why it begins with an underscore)
+]]
+function passion._getResource(collection, f, key, ...)
+  local resource = collection[key]
+  if(resource == nil) then
+    resource = f(...)
+    collection[key]=resource
+  end
+  return resource
 end
 
 

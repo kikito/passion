@@ -6,12 +6,20 @@ passion.graphics = {}
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
--- This variable remembers what the image that was used to create each quad
+-- This variable stores the images loaded
+local _images = {}
+
+-- This variable stores what image was used to create each quad created with passion.graphics.newQuad
 local _quadImages = setmetatable({}, {__mode = "k"})
 
 ------------------------------------
 -- PUBLIC FUNCTIONS
 ------------------------------------
+
+-- Gets or creates an image from a filepath, a file or data
+function passion.graphics.getImage(pathOrFileOrData)
+  return passion._getResource(_images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
+end
 
 -- Draws a given shape, using 'fill' or 'line as the style'. Useful for debugging
 function passion.graphics.drawShape(style, shape)

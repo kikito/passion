@@ -194,9 +194,9 @@ function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
 end
 
 local resourceTypes = {
-  images = 'getImage',
-  sources = 'getSource',
-  fonts = 'getFont'
+  images = passion.graphics.getImage,
+  sources = passion.audio.getSource,
+  fonts = passion.fonts.getFont
 }
 -- Loads images, fonts, sounds & music onto the actor class itself
 function Actor.load(theClass, resourceTypesToLoad)
