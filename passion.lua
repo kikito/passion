@@ -220,7 +220,21 @@ function passion.applyMethodToCollection(collection, sortFunc, methodOrName, ...
   else
     error('methodOrName must be a function or function name')
   end
+end
 
+--[[ Removes an item from a table.
+  Only works reliably with 'array-type' collections (collections indexed with integers)
+  Removes only the first appearance of item
+]]
+function passion.removeItemFromCollection(collection, item)
+  local index
+  for i, v in pairs(collection) do
+    if v == item then
+      index = i
+      break
+    end
+  end
+  if(index~=nil) then table.remove(collection, index) end
 end
 
 -- prints a table on the console, recursively. Useful for debugging.

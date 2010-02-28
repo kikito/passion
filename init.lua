@@ -5,6 +5,7 @@
 require 'passion.oop.init'
 
 require 'passion.passion'
+require 'passion.constants'
 
 require 'passion.graphics.init'
 require 'passion.fonts.init'
