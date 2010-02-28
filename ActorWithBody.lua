@@ -19,14 +19,17 @@ local _addShape = function(self, shape)
   return shape
 end
 
--- FIXME review this list of methods
+-- Methods from body. They will be handled directly by the Actor
 local _delegatedMethods = {
-  'applyForce', 'applyImpulse', 'applyTorque', 'getAngle', 'getAngularDamping', 'getAngularVelocity', 'getInertia', 'getLinearDamping',
-  'getLinearVelocity', 'getLinearVelocityFromLocalPoint', 'getLinearVelocityFromWorldPoint', 'getLocalCenter',
-  'getLocalPoint', 'getLocalVector', 'getMass', 'getPosition', 'getWorldCenter', 'getWorldPoint', 'getWorldVector',
-  'getX', 'getY', 'isBullet', 'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
-  'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setInertia', 'setLinearDamping', 'setLinearVelocity',
-  'setMass', 'setMassFromShapes', 'setPosition', 'setX', 'setY', 'wakeUp'
+  'applyForce', 'applyImpulse', 'applyTorque', 'getAngle', 'getAngularDamping',
+  'getAngularVelocity', 'getFixedRotation', 'getInertia', 'getLinearDamping',
+  'getLinearVelocity', 'getLinearVelocityFromLocalPoint', 'getLinearVelocityFromWorldPoint',
+  'getLocalCenter', 'getLocalPoint', 'getLocalVector', 'getMass', 'getPosition',
+  'getWorldCenter', 'getWorldPoint', 'getWorldVector', 'getX', 'getY', 'isBullet',
+  'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
+  'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setFixedRotation',
+  'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 'setPosition',
+  'setVelocity', 'setX', 'setY', 'wakeUp'
 }
 
 ------------------------------------
