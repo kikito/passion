@@ -8,8 +8,7 @@ passion.audio = {}
 local _sources = {}
 
 --[[ Function used for creating new sources
-   We need to create this intermediate function to handle special cases, for example,
-   the same file opened twice, each one with one sourceType, for example.
+   We need to use a function in order to cope with the several ways to load a resource
 ]]
 local _newSource = function(pathOrFileOrData, sourceType)
   if(sourceType==nil) then return love.audio.newSource(pathOrFileOrData)
