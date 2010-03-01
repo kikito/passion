@@ -10,6 +10,7 @@ require 'passion.constants'
 require 'passion.graphics.init'
 require 'passion.fonts.init'
 require 'passion.audio.init'
+require 'passion.timer.init'
 
 require 'passion.Actor'
 require 'passion.ActorWithBody'

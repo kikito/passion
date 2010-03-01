@@ -1,5 +1,8 @@
 require 'passion.passion'
 
+-- This file contains constant definitions (for now, only colors)
+
+-- You can browse these colors here: http://www.w3schools.com/Html/html_colorvalues.asp
 passion.aliceBlue = {240,248,255}
 passion.antiqueWhite = {250,235,215}
 passion.aqua = {0,255,255}
