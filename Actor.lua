@@ -28,14 +28,7 @@ end
 local _unregisterInstance -- we define the variable first so we can make the function recursive
 _unregisterInstance = function(theClass, actor)
   if(theClass~=Actor) then _unregisterInstance(theClass.superclass,actor) end
-  local index
-  for i, v in ipairs(_actors[theClass]) do
-    if v == arg then
-      index = i
-      break
-    end
-  end
-  table.remove(_actors[theClass], index)
+  passion.removeItemFromCollection(_actors[theClass], actor)
 end
 
 ------------------------------------
@@ -102,14 +95,7 @@ end
 -- Removes a child.
 -- if resetParent is set to 'true' (default) then the child parent will be set to nil
 function Actor:removeChild(child, resetParent)
-  local index
-  for i, v in ipairs(_children[self]) do
-    if v == arg then
-      index = i
-      break
-    end
-  end
-  table.remove(_children[self], index)
+  passion:removeItemFromCollection(_children[self], child)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
@@ -207,7 +193,6 @@ function Actor.load(theClass, resourceTypesToLoad)
     if(type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
       -- create theClass.fonts if it doesn't exist
       if(theClass[resourceTypeName]==nil) then theClass[resourceTypeName] = {} end
-      
       -- parse all the resource names, invoking the right loadingMethod with the right parameters
       for resourceName, params in pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
         if(type(params) == 'table') then
