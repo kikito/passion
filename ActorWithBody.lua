@@ -9,12 +9,12 @@ local ActorWithBody = passion.ActorWithBody
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
--- stores the shapes of each actor
-_shapes = setmetatable({}, {__mode = "k"})
+-- stores the shapes of each actor, and its pre-freezing properties
+_private = setmetatable({}, {__mode = "k"})
 
 -- used for adding shapes to the collection of shapes of the body
 local _addShape = function(self, shape)
-  table.insert(_shapes[self], shape)
+  table.insert(_private[self].shapes, shape)
   shape:setData(self)
   return shape
 end
@@ -39,7 +39,7 @@ local _delegatedMethods = {
 -- class constructor. The options can be used to initialize states
 function ActorWithBody:initialize(options)
   super.initialize(self, options)
-  _shapes[self]={}
+  _private[self]={ shapes={} }
 end
 
 --[[ class destructor
@@ -134,7 +134,7 @@ end
 
 -- Draws the shapes. Useful for debugging purposes
 function ActorWithBody:drawShapes(style)
-  for _,shape in pairs(_shapes[self]) do
+  for _,shape in pairs(_private[self].shapes) do
     passion.graphics.drawShape(style or 'line', shape)
   end
 end
@@ -165,13 +165,27 @@ local Frozen = ActorWithBody.states.Frozen
 ]] 
 function Frozen:enterState()
   if(self.body~=nil) then
+    _private[self].prev = {}
 
+    local p = _private[self].prev
+
+    p.centerX, p.centerY, p.mass, p.inertia = self:getMass()
+    p.velX, p.velY = self:getLinearVelocity()
+    p.velW = self:getAngularVelocity()
+
+    self:setMass(p.centerX, p.centerY, 0, 0)
+    self:setLinearVelocity(0,0)
+    self:setAngularVelocity(0)
   end
 end
 
 function Frozen:exitState()
   if(self.body~=nil) then
+    local p = _private[self].prev
 
+    self:setMass(p.centerX, p.centerY, p.mass, p.inertia)
+    self:setLinearVelocity(p.velX,p.velY)
+    self:setAngularVelocity(p.velW)
   end
 end
 
