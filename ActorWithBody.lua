@@ -29,7 +29,7 @@ local _delegatedMethods = {
   'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
   'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setFixedRotation',
   'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 'setPosition',
-  'setVelocity', 'setX', 'setY', 'wakeUp'
+  'setLinearVelocity', 'setX', 'setY', 'wakeUp'
 }
 
 ------------------------------------
@@ -169,7 +169,9 @@ function Frozen:enterState()
 
     local p = _private[self].prev
 
-    p.centerX, p.centerY, p.mass, p.inertia = self:getMass()
+    p.centerX, p.centerY = self:getLocalCenter()
+    p.mass = self:getMass()
+    p.inertia = self:getInertia()
     p.velX, p.velY = self:getLinearVelocity()
     p.velW = self:getAngularVelocity()
 
