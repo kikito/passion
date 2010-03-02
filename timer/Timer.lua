@@ -25,8 +25,6 @@ function Timer:initialize(seconds, f, ...)
   self.start = love.timer.getMicroTime( )
 
   table.insert(_timers, self)
-  
-  passion.dumpTable(self)
 
 end
 
