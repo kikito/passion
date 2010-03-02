@@ -22,6 +22,8 @@ end
 
 function passion.audio.getSource(pathOrFileOrData, sourceType)
 
+  sourceType = sourceType or "stream"
+
   local sourceList = _sources[pathOrFileOrData]
   if(sourceList == nil) then
     _sources[pathOrFileOrData] = {}
