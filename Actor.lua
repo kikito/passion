@@ -173,10 +173,7 @@ end
 -- Same as applyToAllActors, but it allows for using a sorting function
 function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
   assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
-  if( type(methodOrName)=='function' or 
-     (type(methodOrName)=='string' and type(theClass[methodOrName])=='function') ) then
-    passion.applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
-  end
+  passion.applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
 end
 
 local resourceTypes = {
@@ -196,9 +193,9 @@ function Actor.load(theClass, resourceTypesToLoad)
       -- parse all the resource names, invoking the right loadingMethod with the right parameters
       for resourceName, params in pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
         if(type(params) == 'table') then
-          theClass[resourceTypeName][resourceName] = passion[loadingMethod](passion, unpack(params))
+          theClass[resourceTypeName][resourceName] = loadingMethod(unpack(params))
         else
-          theClass[resourceTypeName][resourceName] = passion[loadingMethod](passion, params)
+          theClass[resourceTypeName][resourceName] = loadingMethod(params)
         end
       end
     end
