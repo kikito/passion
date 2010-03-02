@@ -107,7 +107,7 @@ local _callbacks = {
   'mousepressed', 'mousereleased', 'reset'
 }
 for _,methodName in ipairs(_callbacks) do
-  passion[methodName] = function(self, ...)
+  passion[methodName] = function(...)
     passion.Actor:applyToAllActors(methodName, ...)
   end
 end
@@ -167,7 +167,5 @@ function passion.run()
     
     if love.timer then love.timer.sleep(1) end
     if love.graphics then love.graphics.present() end
-
-    passion.reset() -- do something between the "draw" and "update" calls
   end
 end
