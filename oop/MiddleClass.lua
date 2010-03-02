@@ -111,7 +111,7 @@ end
 -- Returns true if obj is an instance of aClass (or one of its subclasses) false otherwise
 function instanceOf(aClass, obj)
   if obj==nil or _classes[aClass]==nil or _classes[obj.class]==nil then return false end
-  if obj.class==class then return true end
+  if obj.class==aClass then return true end
   return subclassOf(aClass, obj.class)
 end
 
