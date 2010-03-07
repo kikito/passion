@@ -6,10 +6,10 @@ passion = {} -- like everything big, it starts so small...
 -- LOVE VERSION CONTROL
 ------------------------------------
 
-passion.loveVersion = 61
-passion.loveVersionString = '0.6.1'
+passion.loveVersion = 62
+passion.loveVersionString = '0.6.2'
 
-assert(passion.loveVersion >= love._version, 'Your love version (' .. love._version_string .. ') is too old. PASSION requires love ' .. passion.loveVersionString .. '.')
+assert(passion.loveVersion <= love._version, 'Your love version (' .. love._version_string .. ') is too old. PASSION requires love ' .. passion.loveVersionString .. '.')
 
 if(passion.loveVersion < love._version) then
   print('Warning: Your love version (' .. love._version_string .. ') is newer than the one this PASSION lib was designed for(' .. passion.loveVersionString .. ')')

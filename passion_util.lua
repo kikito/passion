@@ -1,8 +1,8 @@
-------------------------------------
--- UTILITY METHODS STUFF
-------------------------------------
-
 -- This file contains helper methods used through passion
+
+------------------------------------
+-- PUBLIC METHODS
+------------------------------------
 
 --[[ Helper function used to apply methods to collections
   * collection is a table containing a bunch of elements to which the function must be applied
