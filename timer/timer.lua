@@ -17,6 +17,8 @@ function passion.timer.every(seconds, f, ...)
 
 end
 
-function passion.timer.update()
-  passion.timer.Timer:update()
+function passion.timer.update(dt)
+
+  passion.timer.Timer:update(dt)
+
 end

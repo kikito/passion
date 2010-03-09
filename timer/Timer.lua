@@ -22,21 +22,19 @@ function Timer:initialize(seconds, f, ...)
   self.seconds = seconds
   self.callback = f
   self.arguments = {...}
-  self.start = love.timer.getMicroTime( )
+  self.running = 0
 
   table.insert(_timers, self)
 
 end
 
-function Timer:check(dt)
+function Timer:tic(dt)
+  self.running = self.running + dt
 
-  local now = love.timer.getMicroTime()
-
-  if((now - self.start) >= self.seconds) then
+  if(self.running >= self.seconds) then
     self.callback(unpack(self.arguments))
     self:destroy()
   end
-
 end
 
 function Timer:destroy()
@@ -48,7 +46,7 @@ end
 ------------------------------------
 
 function Timer.update(theClass, dt)
-  passion.applyMethodToCollection(_timers, nil, 'check')
+  passion.applyMethodToCollection(_timers, nil, 'tic', dt)
 end
 
 

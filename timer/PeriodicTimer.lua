@@ -14,12 +14,12 @@ function PeriodicTimer:initialize(seconds, f, ...)
 
 end
 
-function PeriodicTimer:check()
+function PeriodicTimer:tic(dt)
 
-  local now = love.timer.getMicroTime()
+  self.running = self.running + dt
 
-  if((now - self.start) >= self.seconds) then
+  if(self.running >= self.seconds) then
     self.callback(unpack(self.arguments))
-    self.start = now
+    self.running=0
   end
 end
