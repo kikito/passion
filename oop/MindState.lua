@@ -22,10 +22,16 @@ StatefulObject.states = {} -- the root state list
 local _private = setmetatable({}, {__mode = "k"})   -- weak table storing private references
 
 -- helper function used to call state callbacks (enterState, exitState, etc)
-local function _invokeCallback(self, state, callbackName, ... )
+local _invokeCallback = function(self, state, callbackName, ... )
   if state==nil then return end
   local callback = state[callbackName]
   if(type(callback)=='function') then callback(self, ...) end
+end
+
+local _getStack=function(self)
+  local stack = _private[self].stateStack
+  assert(stack~=nil, "Could not find the stack for the object. Make sure you invoked super.initialize(self) on the constructor.")
+  return stack
 end
 
 -- These methods will not be overriden by the states.
@@ -92,7 +98,7 @@ function StatefulObject:gotoState(newStateName, keepStack)
   end
 
   -- replace the top of the stack with the new state
-  local stack = _private[self].stateStack
+  local stack = _getStack(self)
   stack[math.max(#stack,1)] = nextState
 
   -- Invoke enterState on the new state. 2nd parameter is the name of the previous state, or nil
@@ -114,7 +120,7 @@ function StatefulObject:pushState(newStateName)
   assert(nextState~=nil, "State '" .. newStateName .. "' not found")
 
   -- If we attempt to push a state and the state is already on return (do nothing)
-  local stack = _private[self].stateStack
+  local stack = _getStack(self)
   for _,state in ipairs(stack) do 
     if(state.name == newStateName) then return end
   end
@@ -146,7 +152,7 @@ function StatefulObject:popState(stateName)
   _invokeCallback(self, prevState, 'poppedState')
 
   -- Do the pop
-  local stack = _private[self].stateStack
+  local stack = _getStack(self)
   table.remove(stack, #stack)
 
   -- Invoke continuedState on the new state
@@ -168,7 +174,7 @@ end
   The current state's name can be obtained doing object:getCurrentState().name
 ]]
 function StatefulObject:getCurrentState()
-  local stack = _private[self].stateStack
+  local stack = _getStack(self)
   if #stack == 0 then return nil end
   return(stack[#stack])
 end
@@ -178,7 +184,7 @@ end
   If second(optional) parameter is true, this method returns true if the state is on the stack instead
 ]]
 function StatefulObject:isInState(stateName, testStateStack)
-  local stack = _private[self].stateStack
+  local stack = _getStack(self)
 
   if(testStateStack==true) then
     for _,state in ipairs(stack) do 
