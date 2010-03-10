@@ -33,6 +33,13 @@ _unregisterInstance = function(theClass, actor)
   passion.removeItemFromCollection(_actors[theClass], actor)
 end
 
+-- If methodOrname is a function, it returns it. If it is a name, it returns the method named.
+local _getMethod = function(actor, methodOrName)
+  local method = (type(methodOrName)=='string' and actor[methodOrName] or methodOrName)
+  assert(type(method)=='function', 'methodOrName(' .. tostring(methodOrName) .. ') must be either a function or a valid method name')
+  return method
+end
+
 ------------------------------------
 -- INSTANCE METHODS
 ------------------------------------
@@ -110,6 +117,18 @@ end
 function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
   passion.applyMethodToCollection(_children[self], sortFunc, methodOrName, ... )
+end
+
+-- timer function. Executes one action after some seconds have passed
+function Actor:after(seconds, methodOrName, ...)
+  local method = _getMethod(self, methodOrName)
+  return passion.timer.after(seconds, method, self, ...)
+end
+
+-- timer function. Executes an action periodically.
+function Actor:every(seconds, methodOrName, ...)
+  local method = _getMethod(self, methodOrName)
+  return passion.timer.every(seconds, method, self, ...)
 end
 
 ------------------------------------
