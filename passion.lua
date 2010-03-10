@@ -91,6 +91,7 @@ end
 -- update callback
 function passion.update(dt)
   if passion.world ~= nil then passion.world:update(dt) end
+  passion.timer.update(dt)
   passion.Actor:applyToAllActors('update', dt)
 end
 
@@ -100,16 +101,28 @@ function passion.draw()
   passion.Actor:applyToAllActorsSorted( _sortByDrawOrder, _drawIfNotDrawn )
 end
 
--- Rest of the callbacks
-local _callbacks = {
-  'joystickpressed', 'joystickreleased',
-  'keypressed', 'keyreleased',
-  'mousepressed', 'mousereleased', 'reset'
-}
-for _,methodName in ipairs(_callbacks) do
-  passion[methodName] = function(...)
-    passion.Actor:applyToAllActors(methodName, ...)
-  end
+function passion.keypressed(key)
+  Beholder.trigger('keypressed_' .. key)
+end
+
+function passion.keyreleased(key)
+  Beholder.trigger('keyreleased_' .. key)
+end
+
+function passion.mousepressed(x, y, button)
+  Beholder.trigger('mousepressed_' .. button, x, y)
+end
+
+function passion.mousereleased(x, y, button)
+  Beholder.trigger('mousereleased_' .. button, x, y)
+end
+
+function passion.joystickpressed(joystick, button)
+  Beholder.trigger('joystickpressed_' .. joystick .. '_' .. button)
+end
+
+function passion.joystickreleased(joystick, button)
+  Beholder.trigger('joystickreleased_' .. joystick .. '_' .. button)
 end
 
 ------------------------------------
@@ -162,8 +175,6 @@ function passion.run()
         love.handlers[e](a,b,c)
       end
     end
-    
-    passion.timer.update()
     
     if love.timer then love.timer.sleep(1) end
     if love.graphics then love.graphics.present() end

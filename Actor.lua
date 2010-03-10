@@ -6,6 +6,8 @@ passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor
 
+Actor:includes(Beholder) --observer fields
+
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
