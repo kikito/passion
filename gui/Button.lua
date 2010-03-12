@@ -90,45 +90,23 @@ end
 
 -- Pressed State.
 
--- Buttons on this state have been pressed, but don't capture the gui's focus
--- (moving the mouse out will remove the "pressure")
-local Pressed = Button:addState('Pressed') -- Pressed but not gaining focus
+-- Buttons on this state have been pressed
+-- If they have the "focus", they don't release the mouse control, unless the l button is up
+-- (mouse can go outside of the button but if it is down then the mouse keeps being pressed)
+local Pressed = Button:addState('Pressed')
 function Pressed:enterState()
+  if(self:getFocus()==true) then passion.gui.setFocus(self) end
   self:onPress()
-  if(self:getFocus()==true) then self:pushState('PressedFocus') end
 end
 function Pressed:update(dt)
-  if(self:checkPoint(love.mouse.getPosition())==false) then
-    self:gotoState('MouseOut')
-  elseif love.mouse.isDown('l')==false then
+  if love.mouse.isDown('l')==false or
+     (self:getFocus()==false and self:checkPoint(love.mouse.getPosition())==false) then
     self:onClick()
-    self:gotoState('MouseOver')
+    self:popState()
   end
 end
 function Pressed:exitState()
   self:onRelease()
-end
-
--- PressedFocused State.
-
--- Buttons on this state have been pressed, and "capture" the focus
--- (Other controls will not react to the mouse until it is released)
-local PressedFocus = Button:addState('PressedFocus')
-function PressedFocus:enterState()
-  passion.gui:setFocus(self)
-end
-function PressedFocus:update(dt)
-  if love.mouse.isDown('l')==false then
-    if(self:checkPoint(love.mouse.getPosition())==true) then
-      self:onClick()
-      self:gotoState('MouseOver')
-    else
-      self:gotoState('MouseOut')
-    end
-  end
-end
-function PressedFocus:exitState()
-  self:onRelease()
-  passion.gui:setFocus(nil)
+  if(self:getFocus()==true) then passion.gui.setFocus(nil) end
 end
 

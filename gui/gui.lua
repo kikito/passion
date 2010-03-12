@@ -2,14 +2,17 @@ require 'passion.passion'
 
 passion.gui = {}
 
-function passion.gui:setFocus(element)
-  if(self.focus ~= nil and self.focus ~= element) then
-    if(type(self.focus.onBlur)=='function') then self.focus:onBlur() end
-    self.focus = nil
+local gui = passion.gui
+
+function passion.gui.setFocus(element)
+  local currFocus = gui.focus
+  if(currFocus ~= nil and currFocus ~= element) then
+    if(type(currFocus.onBlur)=='function') then currFocus:onBlur() end
+    gui.focus = nil
   end
   
-  if(self.focus ~= element) then
+  if(gui.focus ~= element) then
     if(type(element.onFocus)=='function') then element:onFocus() end
-    passion.gui.focus = element
+    gui.focus = element
   end
 end
