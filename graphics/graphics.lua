@@ -45,36 +45,42 @@ end
 ]] 
 function passion.graphics.roundedRectangle(mode, x, y, width, height, cornerRadius)
   
-  local xround, yround = cornerRadius, cornerRadius
+  cornerRadius = cornerRadius or 0
   
-  local points = {}
-  local precision = (xround + yround) * .1
-  local tI, hP = table.insert, .5*math.pi
-    if xround > width*.5 then xround = width*.5 end
-    if yround > height*.5 then yround = height*.5 end
-  local X1, Y1, X2, Y2 = x + xround, y + yround, x + width - xround, y + height - yround
-  local sin, cos = math.sin, math.cos
-  for i = 0, precision do
-    local a = (i/precision-1)*hP
-    tI(points, X2 + xround*cos(a))
-    tI(points, Y1 + yround*sin(a))
+  if cornerRadius == 0 then
+    love.graphics.rectangle(mode, x, y, width, height)
+  else
+    local xround, yround = cornerRadius, cornerRadius
+    
+    local points = {}
+    local precision = (xround + yround) * .1
+    local tI, hP = table.insert, .5*math.pi
+      if xround > width*.5 then xround = width*.5 end
+      if yround > height*.5 then yround = height*.5 end
+    local X1, Y1, X2, Y2 = x + xround, y + yround, x + width - xround, y + height - yround
+    local sin, cos = math.sin, math.cos
+    for i = 0, precision do
+      local a = (i/precision-1)*hP
+      tI(points, X2 + xround*cos(a))
+      tI(points, Y1 + yround*sin(a))
+    end
+    for i = 0, precision do
+      local a = (i/precision)*hP
+      tI(points, X2 + xround*cos(a))
+      tI(points, Y2 + yround*sin(a))
+    end
+    for i = 0, precision do
+      local a = (i/precision+1)*hP
+      tI(points, X1 + xround*cos(a))
+      tI(points, Y2 + yround*sin(a))
+    end
+    for i = 0, precision do
+      local a = (i/precision+2)*hP
+      tI(points, X1 + xround*cos(a))
+      tI(points, Y1 + yround*sin(a))
+    end
+    love.graphics.polygon(mode, unpack(points))
   end
-  for i = 0, precision do
-    local a = (i/precision)*hP
-    tI(points, X2 + xround*cos(a))
-    tI(points, Y2 + yround*sin(a))
-  end
-  for i = 0, precision do
-    local a = (i/precision+1)*hP
-    tI(points, X1 + xround*cos(a))
-    tI(points, Y2 + yround*sin(a))
-  end
-  for i = 0, precision do
-    local a = (i/precision+2)*hP
-    tI(points, X1 + xround*cos(a))
-    tI(points, Y1 + yround*sin(a))
-  end
-  love.graphics.polygon(mode, unpack(points))
 end
 
 --[[ Creates a new quad without you having to provide rwidth and rheight. Remembers the image used.
