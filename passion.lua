@@ -78,7 +78,7 @@ end
 
 -- Define world methods in PÄSSION so it can be used "as a world"
 for _,method in pairs(_delegatedWorldMethods) do
-  passion[method] = function(self, ...)
+  passion[method] = function(...)
     local world = passion.getWorld()
     return world[method](world, ...)
   end
