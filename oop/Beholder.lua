@@ -59,7 +59,7 @@ function Beholder.trigger(eventId, ...)
             method = object[action]
             assert(type(method)=='function', 'method '.. action .. 'not found on object ' .. tostring(object))
           elseif(type(action)=='function') then
-            method = methodOrName
+            method = action
           else
             error('Action must be a function or method name. Was ' .. tostring(action))
           end
