@@ -1,1 +1,1 @@
-require 'passion.fonts.fonts'
+require 'passion/fonts/fonts.lua'

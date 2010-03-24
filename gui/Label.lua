@@ -1,5 +1,3 @@
-require 'passion.gui.Pannel'
-
 passion.gui.Label = class('passion.gui.Label', passion.gui.Pannel)
 local Label = passion.gui.Label
 

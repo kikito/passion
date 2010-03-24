@@ -1,7 +1,3 @@
-require 'passion.oop.init'
-require 'passion.passion'
-require 'passion.Actor'
-
 passion.gui.Pannel = class('passion.gui.Pannel', passion.Actor)
 local Pannel = passion.gui.Pannel
 

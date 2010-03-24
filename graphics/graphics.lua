@@ -1,5 +1,3 @@
-require 'passion.passion'
-
 passion.graphics = {}
 
 ------------------------------------

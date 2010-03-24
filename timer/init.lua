@@ -1,3 +1,3 @@
-require 'passion.timer.timer'
-require 'passion.timer.Timer'
-require 'passion.timer.PeriodicTimer'
+require 'passion/timer/timer.lua'
+require 'passion/timer/Timer.lua'
+require 'passion/timer/PeriodicTimer.lua'

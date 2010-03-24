@@ -1,6 +1,3 @@
-require 'passion.oop.init'
-
-
 passion.timer.Timer = class('passion.timer.Timer', StatefulObject)
 
 ------------------------------------

@@ -1,6 +1,3 @@
-require 'passion.Actor'
-
-
 passion.ActorWithBody = class('passion.ActorWithBody', passion.Actor)
 
 local ActorWithBody = passion.ActorWithBody

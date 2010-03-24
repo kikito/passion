@@ -1,5 +1,3 @@
-require 'passion.gui.Label'
-
 passion.gui.Button = class('passion.gui.Button', passion.gui.Label)
 
 local Button = passion.gui.Button

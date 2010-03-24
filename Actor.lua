@@ -1,7 +1,3 @@
-
-require 'passion.oop.init'
-require 'passion.passion'
-
 passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor

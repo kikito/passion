@@ -1,5 +1,3 @@
-require 'passion.timer.Timer'
-
 -- a timer that executes its callback periodically, instead of just once.
 passion.timer.PeriodicTimer = class('passion.timer.PeriodicTimer', passion.timer.Timer)
 

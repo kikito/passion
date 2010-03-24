@@ -1,5 +1,3 @@
-require 'passion.passion'
-
 -- This file contains constant definitions (for now, only colors)
 
 -- You can browse these colors here: http://www.w3schools.com/Html/html_colorvalues.asp

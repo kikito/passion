@@ -1,5 +1,5 @@
-require 'passion.oop.MiddleClass'
-require 'passion.oop.MindState'
-require 'passion.oop.Beholder'
+require 'passion/oop/MiddleClass.lua'
+require 'passion/oop/MindState.lua'
+require 'passion/oop/Beholder.lua'
 
 
