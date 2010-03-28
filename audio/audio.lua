@@ -19,11 +19,13 @@ local _pools = {}
 
 -- given a source, it returns it if it is not being played, or looks in the pool for a copy that isn't.
 local _getFreeSource = function(source)
-  if(source:isStopped()) then return source end
+  if(source:isStopped()) then
+    return source
+  end
 
   local pool = _pools[source]
   if(pool==nil) then return nil end
-  for _,pooledSource in ipairs(collection) do
+  for _,pooledSource in ipairs(pool) do
     if(pooledSource:isStopped()) then
       return pooledSource
     end
@@ -57,7 +59,7 @@ function passion.audio.getSource(pathOrFileOrData, sourceType, instances)
     local pool = _pools[source]
     if(pool == nil) then
       _pools[source]={}
-      pool = pools[source]
+      pool = _pools[source]
     end
     if(#pool < instances) then
       local newInstances = instances-#pool-1
@@ -76,6 +78,6 @@ function passion.audio.play(source)
   local freeSource = _getFreeSource(source)
 
   if(freeSource~=nil) then
-    love.audio.play(source)
+    love.audio.play(freeSource)
   end
 end
