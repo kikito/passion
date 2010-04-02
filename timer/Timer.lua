@@ -78,7 +78,7 @@ end
 
 -- calls "tic" on all timers
 function Timer.update(theClass, dt)
-  passion.applyMethodToCollection(_timers, nil, 'tic', dt)
+  passion.apply(_timers, nil, 'tic', dt)
 end
 
 

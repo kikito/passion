@@ -112,7 +112,7 @@ end
 
 function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
   assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
-  passion.applyMethodToCollection(_children[self], sortFunc, methodOrName, ... )
+  passion.apply(_children[self], sortFunc, methodOrName, ... )
 end
 
 -- timer function. Executes one action after some seconds have passed
@@ -190,7 +190,7 @@ end
 -- Same as applyToAllActors, but it allows for using a sorting function
 function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
   assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
-  passion.applyMethodToCollection(_actors[theClass], sortFunc, methodOrName, ... )
+  passion.apply(_actors[theClass], sortFunc, methodOrName, ... )
 end
 
 local resourceTypes = {

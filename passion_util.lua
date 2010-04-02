@@ -13,14 +13,14 @@
   * additional parameters can be passed to the methodOrName function. The first parameter will allways be the element
   Example:
 
-    passion.applyMethodToCollection({a,b,c}, nil, 'update', dt)
+    passion.apply({a,b,c}, nil, 'update', dt)
 
   is equivalent to doing this:
     a:update(dt)
     b:update(dt)
     c:update(dt)
 ]]
-function passion.applyMethodToCollection(collection, sortFunc, methodOrName, ... )
+function passion.apply(collection, sortFunc, methodOrName, ... )
 
   -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
