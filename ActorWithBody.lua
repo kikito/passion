@@ -16,6 +16,16 @@ local _addShape = function(self, shape)
   return shape
 end
 
+-- calculates the maximum between two numbers. If the first is nil, just return the second
+local _max = function(a,b,c,d,e)
+  return math.max(a==nil and b or a, b,c,d,e)
+end
+
+-- calculates the minimum between two numbers. If the first is nil, just return the second
+local _min = function(a,b,c,d,e)
+  return math.min(a==nil and b or a, b,c,d,e)
+end
+
 -- Methods from body. They will be handled directly by the Actor
 local _delegatedMethods = {
   'applyForce', 'applyImpulse', 'applyTorque', 'getAngle', 'getAngularDamping',
@@ -123,10 +133,28 @@ function ActorWithBody:newRectangleShape(offsetX, offsetY, w, h, angle )
   return _addShape(self, shape)
 end
 
-  -- Creates a new PolygonShape, using the parameters as an array of points
+-- Creates a new PolygonShape, using the parameters as an array of points
 function ActorWithBody:newPolygonShape( ... )
   local body = self:getBody()
   return _addShape(self, love.physics.newPolygonShape( body, ... ))
+end
+
+--[[ Gets the body's bounding box.
+     Expensive-ish on complex bodies: It gets the bounding box of all shapes
+     returns the bounding box like this: x,y,width,height
+     "y" is the biggest number, not the smallest
+]] 
+function ActorWithBody:getBoundingBox()
+  local x1,y1,x2,y2,x3,y3,x4,y4
+  local maxX, maxY, minX, minY
+  for _,shape in pairs(_private[self].shapes) do
+    x1,y1,x2,y2,x3,y3,x4,y4 = shape:getBoundingBox()
+    maxX = _max(maxX, x1,x2,x3,x4)
+    maxY = _max(maxY, y1,y2,y3,y4)
+    minX = _min(minX, x1,x2,x3,x4)
+    minY = _min(minY, y1,y2,y3,y4)
+  end
+  return minX, minY, maxX-minX, maxY-minY
 end
 
 -- Draws the shapes. Useful for debugging purposes
