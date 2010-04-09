@@ -72,8 +72,10 @@ function passion.getGround()
   return passion.ground
 end
 function passion.newBody(x, y, m )
-  local world = passion.getWorld()
-  return love.physics.newBody( world, x, y, m )
+  return love.physics.newBody( passion.getWorld(), x, y, m )
+end
+function passion.destroyWorld()
+  passion.getWorld():destroy()
 end
 
 -- Define world methods in PÄSSION so it can be used "as a world"
@@ -158,6 +160,7 @@ function passion.run()
       love.timer.step()
       dt = love.timer.getDelta()
     end
+
     passion.update(dt) -- will pass 0 if love.timer is disabled
 
     if love.graphics then
