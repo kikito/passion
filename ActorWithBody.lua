@@ -29,14 +29,14 @@ end
 -- Methods from body. They will be handled directly by the Actor
 local _delegatedMethods = {
   'applyForce', 'applyImpulse', 'applyTorque', 'getAngle', 'getAngularDamping',
-  'getAngularVelocity', 'getFixedRotation', 'getInertia', 'getLinearDamping',
+  'getAngularVelocity', 'getFixedRotation', 'getGroupIndex', 'getInertia', 'getLinearDamping',
   'getLinearVelocity', 'getLinearVelocityFromLocalPoint', 'getLinearVelocityFromWorldPoint',
   'getLocalCenter', 'getLocalPoint', 'getLocalVector', 'getMass', 'getPosition',
   'getWorldCenter', 'getWorldPoint', 'getWorldVector', 'getX', 'getY', 'isBullet',
   'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
   'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setFixedRotation',
-  'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 'setPosition',
-  'setLinearVelocity', 'setX', 'setY', 'wakeUp'
+  'setGroupIndex', 'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 
+  'setPosition', 'setLinearVelocity', 'setX', 'setY', 'wakeUp'
 }
 
 ------------------------------------
