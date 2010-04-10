@@ -20,11 +20,11 @@ if love.physics then
 
   local c_mt = getmetatable(love.physics.newCircleShape(body, 10,10, 5))
   c_mt.setGroupIndex = c_mt.setGroupIndex or setGroupIndex
-  c_mt.getGroupIndex = c_mt.setGroupIndex or getGroupIndex
+  c_mt.getGroupIndex = c_mt.getGroupIndex or getGroupIndex
 
   local p_mt = getmetatable(love.physics.newPolygonShape(body, 20,20, 30,20, 20,30))
   p_mt.setGroupIndex = p_mt.setGroupIndex or setGroupIndex
-  p_mt.getGroupIndex = p_mt.setGroupIndex or getGroupIndex
+  p_mt.getGroupIndex = p_mt.getGroupIndex or getGroupIndex
 
   body:destroy()
   world = nil
