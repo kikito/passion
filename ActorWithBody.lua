@@ -29,13 +29,13 @@ end
 -- Methods from body. They will be handled directly by the Actor
 local _delegatedMethods = {
   'applyForce', 'applyImpulse', 'applyTorque', 'getAngle', 'getAngularDamping',
-  'getAngularVelocity', 'getFixedRotation', 'getGroupIndex', 'getInertia', 'getLinearDamping',
+  'getAngularVelocity', 'getFixedRotation', 'getInertia', 'getLinearDamping',
   'getLinearVelocity', 'getLinearVelocityFromLocalPoint', 'getLinearVelocityFromWorldPoint',
   'getLocalCenter', 'getLocalPoint', 'getLocalVector', 'getMass', 'getPosition',
   'getWorldCenter', 'getWorldPoint', 'getWorldVector', 'getX', 'getY', 'isBullet',
   'isDynamic', 'isFrozen', 'isSleeping', 'isStatic', 'putToSleep', 'setAllowSleeping',
   'setAngle', 'setAngularDamping', 'setAngularVelocity', 'setBullet', 'setFixedRotation',
-  'setGroupIndex', 'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 
+  'setInertia', 'setLinearDamping', 'setMass', 'setMassFromShapes', 
   'setPosition', 'setLinearVelocity', 'setX', 'setY', 'wakeUp'
 }
 
@@ -157,11 +157,20 @@ function ActorWithBody:getBoundingBox()
   return minX, minY, maxX-minX, maxY-minY
 end
 
+
+function ActorWithBody:applyToShapes(methodOrName, ...)
+  assert(self~=nil, 'Use actor:applyToShapes instead of actor.applyToShapes')
+  self:applyToShapesSorted(nil, methodOrName, ...)
+end
+
+function ActorWithBody:applyToShapesSorted(sortFunc, methodOrName, ...)
+  assert(self~=nil, 'Use actor:applyToShapesSorted instead of actor.applyToShapesSorted')
+  passion.apply(_private[self].shapes, sortFunc, methodOrName, ... )
+end
+
 -- Draws the shapes. Useful for debugging purposes
 function ActorWithBody:drawShapes(style)
-  for _,shape in pairs(_private[self].shapes) do
-    passion.graphics.drawShape(style or 'line', shape)
-  end
+  self:applyToShapes(passion.graphics.drawShape, style or 'line', shape)
 end
 
 --[[ Implement all the love.Body methods so the actor can be used as a body.
