@@ -2,6 +2,8 @@
 -- passion general loading order - do not alterate without a reason!
 -- TODO: skip loading of modules if love modules are deactivated
 
+require 'passion/fixes/init.lua'
+
 require 'passion/oop/init.lua'
 
 require 'passion/passion.lua'
