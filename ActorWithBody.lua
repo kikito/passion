@@ -39,6 +39,11 @@ local _delegatedMethods = {
   'setPosition', 'setLinearVelocity', 'setX', 'setY', 'wakeUp'
 }
 
+-- Draws a shape. Used internally by ActorWithBody.drawShapes
+local drawShape = function(shape, style)
+  passion.graphics.drawShape(style, shape)
+end
+
 ------------------------------------
 -- INSTANCE METHODS
 ------------------------------------
@@ -153,16 +158,24 @@ end
      x,y are the smallest numbers (upper-left corner by default)
 ]] 
 function ActorWithBody:getBoundingBox()
-  local x1,y1,x2,y2,x3,y3,x4,y4
-  local maxX, maxY, minX, minY
-  for _,shape in pairs(_private[self].shapes) do
-    x1,y1,x2,y2,x3,y3,x4,y4 = shape:getBoundingBox()
-    maxX = _max(maxX, x1,x2,x3,x4)
-    maxY = _max(maxY, y1,y2,y3,y4)
-    minX = _min(minX, x1,x2,x3,x4)
-    minY = _min(minY, y1,y2,y3,y4)
+  local shapes = _private[self].shapes
+
+  if(#shapes > 0) then
+    local x1,y1,x2,y2,x3,y3,x4,y4
+    local maxX, maxY, minX, minY
+
+    for _,shape in pairs(shapes) do
+      x1,y1,x2,y2,x3,y3,x4,y4 = shape:getBoundingBox()
+      maxX = _max(maxX, x1,x2,x3,x4)
+      maxY = _max(maxY, y1,y2,y3,y4)
+      minX = _min(minX, x1,x2,x3,x4)
+      minY = _min(minY, y1,y2,y3,y4)
+    end
+    return minX, minY, maxX-minX, maxY-minY
+  else
+    local x, y = self:getPosition()
+    return x, y, 0, 0
   end
-  return minX, minY, maxX-minX, maxY-minY
 end
 
 
@@ -178,7 +191,7 @@ end
 
 -- Draws the shapes. Useful for debugging purposes
 function ActorWithBody:drawShapes(style)
-  self:applyToShapes(passion.graphics.drawShape, style or 'line', shape)
+  self:applyToShapes(drawShape, style or 'line')
 end
 
 --[[ Implement all the love.Body methods so the actor can be used as a body.
