@@ -37,14 +37,6 @@ local _sortByDrawOrder = function(actor1, actor2) -- sorting function
   return actor1:getDrawOrder() > actor2:getDrawOrder()
 end
 
--- PÄSSION will route the following to its internal world object (i.e. passion.setGravity(0, 100) )
-local _delegatedWorldMethods = {
-  'getBodyCount' , 'getCallbacks', 'getGravity', 
-  'getJointCount', 'getMeter'    , 'isAllowSleep', 
-  'setAllowSleep', 'setCallbacks', 'setGravity', 
-  'setMeter'
-}
-
 ------------------------------------
 -- EXIT
 ------------------------------------
@@ -55,44 +47,12 @@ function passion.exit()
 end
 
 ------------------------------------
--- PHYSICAL WORLD STUFF
-------------------------------------
-
-function passion.newWorld(w, h)
-  passion.world = love.physics.newWorld( w, h )
-  passion.ground = passion.newBody(0, 0, 0)
-  return world
-end
-function passion.getWorld()
-  assert(passion.world ~= nil, "passion.world is nil. You must invoke passion.newWorld")
-  return passion.world
-end
-function passion.getGround()
-  assert(passion.ground ~= nil, "passion.ground is nil. You must invoke passion.createWorld before using passion.getGround")
-  return passion.ground
-end
-function passion.newBody(x, y, m )
-  return love.physics.newBody( passion.getWorld(), x, y, m )
-end
-function passion.destroyWorld()
-  passion.getWorld():destroy()
-end
-
--- Define world methods in PÄSSION so it can be used "as a world"
-for _,method in pairs(_delegatedWorldMethods) do
-  passion[method] = function(...)
-    local world = passion.getWorld()
-    return world[method](world, ...)
-  end
-end
-
-------------------------------------
 -- CALLBACK STUFF
 ------------------------------------
 
 -- update callback
 function passion.update(dt)
-  if passion.world ~= nil then passion.world:update(dt) end
+  passion.physics.update(dt)
   passion.timer.update(dt)
   passion.Actor:applyToAllActors('update', dt)
 end
@@ -178,7 +138,7 @@ function passion.run()
         love.handlers[e](a,b,c)
       end
     end
-    
+
     if love.timer then love.timer.sleep(1) end
     if love.graphics then love.graphics.present() end
   end

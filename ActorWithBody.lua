@@ -65,11 +65,19 @@ function ActorWithBody:setBody(body)
   return self.body
 end
 
+function ActorWithBody:setWorld(world)
+  self.world = world
+end
+
+function ActorWithBody:getWorld()
+  return self.world or passion.physics.getWorld()
+end
+
 --[[ Creates a new body for the current actor
   Signatures: newBody() or newBody(x, y) or newBody(x, y, mass)
 ]]
 function ActorWithBody:newBody(x, y, mass)
-  world = passion.getWorld()
+  world = self:getWorld()
   if(x==nil or y==nil) then
     self.body = love.physics.newBody(world)
   elseif(mass==nil) then
@@ -142,7 +150,7 @@ end
 --[[ Gets the body's bounding box.
      Expensive-ish on complex bodies: It gets the bounding box of all shapes
      returns the bounding box like this: x,y,width,height
-     "y" is the biggest number, not the smallest
+     x,y are the smallest numbers (upper-left corner by default)
 ]] 
 function ActorWithBody:getBoundingBox()
   local x1,y1,x2,y2,x3,y3,x4,y4
