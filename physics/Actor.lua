@@ -1,6 +1,6 @@
-passion.ActorWithBody = class('passion.ActorWithBody', passion.Actor)
+passion.physics.Actor = class('passion.physics.Actor', passion.Actor)
 
-local ActorWithBody = passion.ActorWithBody
+local Actor = passion.physics.Actor
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -39,7 +39,7 @@ local _delegatedMethods = {
   'setPosition', 'setLinearVelocity', 'setX', 'setY', 'wakeUp'
 }
 
--- Draws a shape. Used internally by ActorWithBody.drawShapes
+-- Draws a shape. Used internally by Actor.drawShapes
 local drawShape = function(shape, style)
   passion.graphics.drawShape(style, shape)
 end
@@ -49,7 +49,7 @@ end
 ------------------------------------
 
 -- class constructor. The options can be used to initialize states
-function ActorWithBody:initialize(options)
+function Actor:initialize(options)
   super.initialize(self, options)
   _private[self]={ shapes={} }
 end
@@ -59,29 +59,29 @@ end
   so everything is destroyed properly.
   If you are not implementing a destructor in your subclass, this will be taken care of automatically.
 ]]
-function ActorWithBody:destroy()
+function Actor:destroy()
   if(self.body~=nil) then self.body:destroy() end
   super.destroy(self)
 end
 
-function ActorWithBody:setBody(body)
+function Actor:setBody(body)
   if(self.body~=nil) then self.body:destroy() end
   self.body = body
   return self.body
 end
 
-function ActorWithBody:setWorld(world)
+function Actor:setWorld(world)
   self.world = world
 end
 
-function ActorWithBody:getWorld()
+function Actor:getWorld()
   return self.world or passion.physics.getWorld()
 end
 
 --[[ Creates a new body for the current actor
   Signatures: newBody() or newBody(x, y) or newBody(x, y, mass)
 ]]
-function ActorWithBody:newBody(x, y, mass)
+function Actor:newBody(x, y, mass)
   world = self:getWorld()
   if(x==nil or y==nil) then
     self.body = love.physics.newBody(world)
@@ -96,7 +96,7 @@ end
 --[[ Returns the body actor, or throws an error
   * If raise error is nil or true, it will raise an error if the actor does not have a body
 ]]
-function ActorWithBody:getBody(raiseError)
+function Actor:getBody(raiseError)
   raiseError = raiseError or false
   if raiseError then
     assert(self.body ~= nil, "self.body is nil. You must invoke newBody or setBody on the Actor's constructor")
@@ -114,7 +114,7 @@ Creates a new CircleShape, or a CircleShape with an offset
     * offsetY: The y-component of the offset.
     * radius: The radius of the circle
 ]]
-function ActorWithBody:newCircleShape(offsetX, offsetY, radius)
+function Actor:newCircleShape(offsetX, offsetY, radius)
   local body = self:getBody()
   local shape
   if(offsetY==nil or radius==nil) then shape= love.physics.newCircleShape(body, offsetX)
@@ -136,7 +136,7 @@ Creates a new RectangleShape, or a RectangleShape with an offset
   * h: The height of the rectangle.
   * angle: The orientation of the rectangle (degrees).
 ]]
-function ActorWithBody:newRectangleShape(offsetX, offsetY, w, h, angle )
+function Actor:newRectangleShape(offsetX, offsetY, w, h, angle )
   local body = self:getBody()
   local shape
   if(w==nil or h==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY)
@@ -147,7 +147,7 @@ function ActorWithBody:newRectangleShape(offsetX, offsetY, w, h, angle )
 end
 
 -- Creates a new PolygonShape, using the parameters as an array of points
-function ActorWithBody:newPolygonShape( ... )
+function Actor:newPolygonShape( ... )
   local body = self:getBody()
   return _addShape(self, love.physics.newPolygonShape( body, ... ))
 end
@@ -157,7 +157,7 @@ end
      returns the bounding box like this: x,y,width,height
      x,y are the smallest numbers (upper-left corner by default)
 ]] 
-function ActorWithBody:getBoundingBox()
+function Actor:getBoundingBox()
   local shapes = _private[self].shapes
 
   if(#shapes > 0) then
@@ -179,18 +179,18 @@ function ActorWithBody:getBoundingBox()
 end
 
 
-function ActorWithBody:applyToShapes(methodOrName, ...)
+function Actor:applyToShapes(methodOrName, ...)
   assert(self~=nil, 'Use actor:applyToShapes instead of actor.applyToShapes')
   self:applyToShapesSorted(nil, methodOrName, ...)
 end
 
-function ActorWithBody:applyToShapesSorted(sortFunc, methodOrName, ...)
+function Actor:applyToShapesSorted(sortFunc, methodOrName, ...)
   assert(self~=nil, 'Use actor:applyToShapesSorted instead of actor.applyToShapesSorted')
   passion.apply(_private[self].shapes, sortFunc, methodOrName, ... )
 end
 
 -- Draws the shapes. Useful for debugging purposes
-function ActorWithBody:drawShapes(style)
+function Actor:drawShapes(style)
   self:applyToShapes(drawShape, style or 'line')
 end
 
@@ -203,7 +203,7 @@ end
   and the same goes for the rest of the functions
 ]]
 for _,method in pairs(_delegatedMethods) do
-  ActorWithBody[method] = function(self, ...)
+  Actor[method] = function(self, ...)
     local body = self:getBody()
     return body[method](body, ...)
   end 
@@ -212,7 +212,7 @@ end
 ------------------------------------
 -- FROZEN STATE
 ------------------------------------
-local Frozen = ActorWithBody.states.Frozen
+local Frozen = Actor.states.Frozen
 
 --[[ Freeze the body, if it exists
   The best way I could find was resetting all important variables (mass, velocity, angularvel) to 0

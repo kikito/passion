@@ -13,10 +13,10 @@ require 'passion/passion_util.lua'
 require 'passion/graphics/init.lua'
 require 'passion/fonts/init.lua'
 require 'passion/audio/init.lua'
-require 'passion/timer/init.lua'
-require 'passion/physics/init.lua'
 
 require 'passion/Actor.lua'
-require 'passion/ActorWithBody.lua'
+
+require 'passion/timer/init.lua'
+require 'passion/physics/init.lua'
 
 require 'passion/gui/init.lua'
