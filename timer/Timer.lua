@@ -1,4 +1,12 @@
-passion.timer.Timer = class('passion.timer.Timer', StatefulObject)
+local passion = passion
+local unpack = unpack
+local table = table
+local class = class
+local StatefulObject = StatefulObject
+
+module('passion.timer')
+
+Timer = class('passion.timer.Timer', StatefulObject)
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -6,9 +14,6 @@ passion.timer.Timer = class('passion.timer.Timer', StatefulObject)
 
 -- This variable holds the list of all the timers created
 _timers = {}
-
-
-local Timer = passion.timer.Timer
 
 ------------------------------------
 -- PUBLIC INSTANCE METHODS
@@ -69,7 +74,7 @@ end
 
 -- Destroys the timer, removig it from the timers collection
 function Timer:destroy()
-  passion.removeItemFromCollection(_timers, self)
+  passion.remove(_timers, self)
 end
 
 ------------------------------------
@@ -78,7 +83,7 @@ end
 
 -- calls "tic" on all timers
 function Timer.update(theClass, dt)
-  passion.apply(_timers, nil, 'tic', dt)
+  passion.apply(_timers, 'tic', dt)
 end
 
 

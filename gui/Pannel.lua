@@ -1,5 +1,13 @@
-passion.gui.Pannel = class('passion.gui.Pannel', passion.Actor)
-local Pannel = passion.gui.Pannel
+local passion=passion
+local love=love
+local class=class
+local pairs=pairs
+local assert=assert
+local type=type
+local unpack=unpack
+
+module('passion.gui')
+Pannel = class('passion.gui.Pannel', passion.Actor)
 
 -- instance methods
 

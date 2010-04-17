@@ -1,4 +1,10 @@
-passion = {} -- like everything big, it starts so small...
+local love = love
+local assert = assert
+local print = print
+local setmetatable = setmetatable
+local ipairs = ipairs
+
+module('passion')
 
 -- This file contains the core methods of the passion lib
 
@@ -6,20 +12,20 @@ passion = {} -- like everything big, it starts so small...
 -- LOVE VERSION CONTROL
 ------------------------------------
 
-passion.loveVersion = 62
-passion.loveVersionString = '0.6.2'
+loveVersion = 62
+loveVersionString = '0.6.2'
 
-assert(passion.loveVersion <= love._version, 'Your love version (' .. love._version_string .. ') is too old. PASSION requires love ' .. passion.loveVersionString .. '.')
+assert(loveVersion <= love._version, 'Your love version (' .. love._version_string .. ') is too old. PASSION requires love ' .. loveVersionString .. '.')
 
-if(passion.loveVersion < love._version) then
-  print('Warning: Your love version (' .. love._version_string .. ') is newer than the one this PASSION lib was designed for(' .. passion.loveVersionString .. ')')
+if(loveVersion < love._version) then
+  print('Warning: Your love version (' .. love._version_string .. ') is newer than the one this PASSION lib was designed for(' .. loveVersionString .. ')')
 end
 
 ------------------------------------
 -- PRIVATE ATTRIBUTES AND METHODS
 ------------------------------------
 
--- table that controls that actors are not re-drawn. Used in draw callback
+-- controls actors so they are not re-drawn. Used in draw callback
 local _drawn = setmetatable({}, {__mode = "k"})
 
 -- function used for drawing. Used in draw callback
@@ -42,7 +48,7 @@ end
 ------------------------------------
 
 -- I did this small function because I never remember how to exit in LÖVE :)
-function passion.exit()
+function exit()
   love.event.push('q')
 end
 
@@ -50,96 +56,81 @@ end
 -- CALLBACK STUFF
 ------------------------------------
 
--- update callback
-function passion.update(dt)
-  passion.physics.update(dt)
-  passion.timer.update(dt)
-  passion.Actor:applyToAllActors('update', dt)
+-- passion.update callback
+function update(dt)
+  physics.update(dt)
+  timer.update(dt)
+  Actor:apply('update', dt)
 end
 
--- draw callback
-function passion.draw()
+-- passion.draw callback
+function draw()
   _drawn = setmetatable({}, {__mode = "k"})
-  passion.Actor:applyToAllActorsSorted( _sortByDrawOrder, _drawIfNotDrawn )
+  Actor:applySorted( _sortByDrawOrder, _drawIfNotDrawn )
 end
 
-function passion.keypressed(key)
+-- guess
+function keypressed(key)
   Beholder.trigger('keypressed_' .. key)
 end
 
-function passion.keyreleased(key)
+function keyreleased(key)
   Beholder.trigger('keyreleased_' .. key)
 end
 
-function passion.mousepressed(x, y, button)
+function mousepressed(x, y, button)
   Beholder.trigger('mousepressed_' .. button, x, y)
 end
 
-function passion.mousereleased(x, y, button)
+function mousereleased(x, y, button)
   Beholder.trigger('mousereleased_' .. button, x, y)
 end
 
-function passion.joystickpressed(joystick, button)
+function joystickpressed(joystick, button)
   Beholder.trigger('joystickpressed_' .. joystick .. '_' .. button)
 end
 
-function passion.joystickreleased(joystick, button)
+function joystickreleased(joystick, button)
   Beholder.trigger('joystickreleased_' .. joystick .. '_' .. button)
 end
 
 ------------------------------------
--- MAIN LOOP
+-- LÖVE hooks
 ------------------------------------
 
---[[ passion.run. Can be used to "replace" love.run. Use it like this:
+--[[
+  This section defines LÖVE functions to their PÄSSION counterparts. For example,
+  love.draw and love.update are defined like this:
 
-    function love.run()
-      return passion.run()
-    end
-
-    We cannot simply attach the events and draw functions and use the default love callback because we need reset
-    FIXME: review the need of passion.reset()
-]]
-function passion.run()
-
-  -- registers the love events on passion
-  for _,f in ipairs({'joystickpressed', 'joystickreleased', 'keypressed', 'keyreleased', 'mousepressed', 'mousereleased'}) do
-    love[f] = function(...)
-      passion[f](...)
-    end
+  function love.draw()
+    passion.draw()
   end
 
-  if(type(love.load)=='function') then love.load() end
-  if(type(passion.load)=='function') then passion.load() end
+  function love.(dt)
+    passion.update(dt)
+  end
+  
+  You may redefine love. functions as you want. If you want PÄSSION to work reliably,
+  you must include the calls to the passion methods - so if you re-define love.draw, you
+  must not forget to call passion.draw inside it.
 
-  local dt = 0
+  function love.draw()
+    my_cool_drawing_stuff()
+    passion.draw()
+  end
+  
+  
+]]
 
-  -- Main loop time.
-  while true do
-    if love.timer then
-      love.timer.step()
-      dt = love.timer.getDelta()
-    end
-
-    passion.update(dt) -- will pass 0 if love.timer is disabled
-
-    if love.graphics then
-      love.graphics.clear()
-      passion.draw()
-    end
-
-    -- Process events.
-    if love.event then
-      for e,a,b,c in love.event.poll() do
-        if e == "q" then
-          if love.audio then love.audio.stop() end
-          return
-        end
-        love.handlers[e](a,b,c)
-      end
-    end
-
-    if love.timer then love.timer.sleep(1) end
-    if love.graphics then love.graphics.present() end
+for _,f in ipairs({
+  'draw', 'update',
+  'joystickpressed', 'joystickreleased',
+  'keypressed', 'keyreleased',
+  'mousepressed', 'mousereleased',
+}) do
+  love[f] = function(...)
+    passion[f](...)
   end
 end
+
+

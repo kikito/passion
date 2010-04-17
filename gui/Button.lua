@@ -1,10 +1,24 @@
-passion.gui.Button = class('passion.gui.Button', passion.gui.Label)
+module('passion.gui', package.seeall)
 
-local Button = passion.gui.Button
+Button = class('passion.gui.Button', passion.gui.Label)
 
 Button.VALID_OPTIONS = {
   'onClick', 'onPress', 'onRelease', 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
 }
+
+local _focus = nil
+
+local _setFocus= function(button)
+  if(_focus ~= nil and _focus ~= button) then
+    if(type(_focus.onBlur)=='function') then _focus:onBlur() end
+    _focus = nil
+  end
+  
+  if(_focus ~= button) then
+    if(type(button.onFocus)=='function') then button:onFocus() end
+    _focus = button
+  end
+end
 
 function Button:initialize(options)
   super.initialize(self, options)
@@ -66,7 +80,7 @@ function MouseOut:poppedState()
   self:onMouseOut()
 end
 function MouseOut:update(dt)
-  if((passion.gui.focus == nil or passion.gui.focus == self) and
+  if((_focus == nil or _focus == self) and
       self:checkPoint(love.mouse.getPosition())==true) then
     self:pushState('MouseOver')
   end
@@ -78,7 +92,7 @@ end
 -- MouseOver State
 local MouseOver = Button:addState('MouseOver')
 function MouseOver:update(dt)
-  if((passion.gui.focus == nil or passion.gui.focus == self) and
+  if((_focus == nil or _focus == self) and
       self:checkPoint(love.mouse.getPosition())==false) then
     self:popState()
   elseif love.mouse.isDown('l') then
@@ -93,7 +107,7 @@ end
 -- (mouse can go outside of the button but if it is down then the mouse keeps being pressed)
 local Pressed = Button:addState('Pressed')
 function Pressed:enterState()
-  if(self:getFocus()==true) then passion.gui.setFocus(self) end
+  if(self:getFocus()==true) then _setFocus(self) end
   self:onPress()
 end
 function Pressed:update(dt)
@@ -105,6 +119,6 @@ function Pressed:update(dt)
 end
 function Pressed:exitState()
   self:onRelease()
-  if(self:getFocus()==true) then passion.gui.setFocus(nil) end
+  if(self:getFocus()==true) then _setFocus(nil) end
 end
 

@@ -26,7 +26,7 @@ end
 local _unregisterInstance -- we define the variable first so we can make the function recursive
 _unregisterInstance = function(theClass, actor)
   if(theClass~=Actor) then _unregisterInstance(theClass.superclass,actor) end
-  passion.removeItemFromCollection(_actors[theClass], actor)
+  passion.remove(_actors[theClass], actor)
 end
 
 -- If methodOrname is a function, it returns it. If it is a name, it returns the method named.
@@ -48,7 +48,7 @@ end
 
 function Actor:destroy()
   self:gotoState(nil)
-  self:applyToAllChildren('destroy')
+  self:applyToChildren('destroy')
   _children[self] = nil
   _unregisterInstance(self.class, self)
 end
@@ -100,19 +100,19 @@ end
 -- Removes a child.
 -- if resetParent is set to 'true' (default) then the child parent will be set to nil
 function Actor:removeChild(child, resetParent)
-  passion:removeItemFromCollection(_children[self], child)
+  passion.remove(_children[self], child)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
 -- Applies some method to all the children of an actor
-function Actor:applyToAllChildren(methodOrName, ... )
-  assert(self~=nil, 'Please call actor:applyToAllChildren instead of actor.applyToAllChildren')
-  self:applyToAllChildrenSorted(nil, methodOrName, ... )
+function Actor:applyToChildren(methodOrName, ... )
+  assert(self~=nil, 'Please call actor:applyToChildren instead of actor.applyToChildren')
+  passion.apply(_children[self], methodOrName, ... )
 end
 
-function Actor:applyToAllChildrenSorted(sortFunc, methodOrName, ... )
-  assert(self~=nil, 'Please call actor:applyToAllChildrenSorted instead of actor.applyToAllChildrenSorted')
-  passion.apply(_children[self], sortFunc, methodOrName, ... )
+function Actor:applyToChildrenSorted(sortFunc, methodOrName, ... )
+  assert(self~=nil, 'Please call actor:applyToChildrenSorted instead of actor.applyToChildrenSorted')
+  passion.applySorted(_children[self], sortFunc, methodOrName, ... )
 end
 
 -- timer function. Executes one action after some seconds have passed
@@ -182,15 +182,15 @@ function Actor.subclass(theClass, name)
 end
 
 -- Applies some method to all the actors of this class (not subclasses)
-function Actor.applyToAllActors(theClass, methodOrName, ...)
-  assert(theClass~=nil, 'Please invoke Class:applyToAllActors instead of Class.applyToAllActors')
-  theClass:applyToAllActorsSorted(nil, methodOrName, ...)
+function Actor.apply(theClass, methodOrName, ...)
+  assert(theClass~=nil, 'Please invoke Class:apply instead of Class.apply')
+  passion.apply(_actors[theClass], methodOrName, ...)
 end
 
--- Same as applyToAllActors, but it allows for using a sorting function
-function Actor.applyToAllActorsSorted(theClass, sortFunc, methodOrName, ...)
-  assert(theClass~=nil, 'Please invoke Class:applyToAllActorsSorted instead of Class.applyToAllActorsSorted')
-  passion.apply(_actors[theClass], sortFunc, methodOrName, ... )
+-- Same as apply, but it allows for using a sorting function
+function Actor.applySorted(theClass, sortFunc, methodOrName, ...)
+  assert(theClass~=nil, 'Please invoke Class:applySorted instead of Class.applySorted')
+  passion.applySorted(_actors[theClass], sortFunc, methodOrName, ... )
 end
 
 local resourceTypes = {

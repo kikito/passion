@@ -1,13 +1,22 @@
-passion.physics.Actor = class('passion.physics.Actor', passion.Actor)
+local passion=passion
+local love=love
+local class=class
+local table=table
+local setmetatable=setmetatable
+local math=math
+local assert=assert
+local pairs=pairs
 
-local Actor = passion.physics.Actor
+module('passion.physics')
+
+Actor = class('passion.physics.Actor', passion.Actor)
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
 -- stores the shapes of each actor, and its pre-freezing properties
-_private = setmetatable({}, {__mode = "k"})
+local _private = setmetatable({}, {__mode = "k"})
 
 -- used for adding shapes to the collection of shapes of the body
 local _addShape = function(self, shape)
@@ -181,12 +190,12 @@ end
 
 function Actor:applyToShapes(methodOrName, ...)
   assert(self~=nil, 'Use actor:applyToShapes instead of actor.applyToShapes')
-  self:applyToShapesSorted(nil, methodOrName, ...)
+  passion.apply(_private[self].shapes, methodOrName, ...)
 end
 
 function Actor:applyToShapesSorted(sortFunc, methodOrName, ...)
   assert(self~=nil, 'Use actor:applyToShapesSorted instead of actor.applyToShapesSorted')
-  passion.apply(_private[self].shapes, sortFunc, methodOrName, ... )
+  passion.applySorted(_private[self].shapes, sortFunc, methodOrName, ... )
 end
 
 -- Draws the shapes. Useful for debugging purposes

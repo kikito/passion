@@ -1,13 +1,22 @@
-passion.graphics = {}
+local passion=passion
+local love=love
+local math=math
+local table=table
+local assert=assert
+local error=error
+local unpack=unpack
+local setmetatable=setmetatable
+
+module('passion.graphics')
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
--- This variable stores the images loaded
+-- stores the images loaded
 local _images = {}
 
--- This variable stores what image was used to create each quad created with passion.graphics.newQuad
+-- stores what image was used to create each quad created with newQuad
 local _quadImages = setmetatable({}, {__mode = "k"})
 
 ------------------------------------
@@ -15,12 +24,12 @@ local _quadImages = setmetatable({}, {__mode = "k"})
 ------------------------------------
 
 -- Gets or creates an image from a filepath, a file or data
-function passion.graphics.getImage(pathOrFileOrData)
+function getImage(pathOrFileOrData)
   return passion._getResource(_images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
 -- Draws a given shape, using 'fill' or 'line as the style'. Useful for debugging
-function passion.graphics.drawShape(style, shape)
+function drawShape(style, shape)
 
   assert(style=='line' or style=='fill', "style must be either 'line' or 'fill'")
 
@@ -41,7 +50,7 @@ end
     "borrowed" from http://love2d.org/forum/viewtopic.php?f=5&t=1323
     FIXME: review the sin/cos calls. Maybe optimize without xround, yround.
 ]] 
-function passion.graphics.roundedRectangle(mode, x, y, width, height, cornerRadius)
+function roundedRectangle(mode, x, y, width, height, cornerRadius)
   
   cornerRadius = cornerRadius or 0
   
@@ -84,7 +93,7 @@ end
 --[[ Creates a new quad without you having to provide rwidth and rheight. Remembers the image used.
      This means that you don't have to pass the image to drawq - it is stored in PÄSSION.
 ]]
-function passion.graphics.newQuad(image, x, y, width, height, rWidth, rHeight)
+function newQuad(image, x, y, width, height, rWidth, rHeight)
   rWidth = rWidth or image:getWidth()
   rHeight = rHeight or image:getHeight()
   local quad = love.graphics.newQuad( x, y, width, height, rWidth, rHeight )
@@ -93,12 +102,12 @@ function passion.graphics.newQuad(image, x, y, width, height, rWidth, rHeight)
 end
 
 --[[ Similar to love.graphics.drawq, but you don't have to provide the image 
-     In order for it to work, you need to create de quad with passion.graphics.newQua, 
+     In order for it to work, you need to create de quad with newQua, 
      not with love.graphics.newQuad
 ]]
-function passion.graphics.drawq(quad, x, y, r, sx, sy, ox, oy)
+function drawq(quad, x, y, r, sx, sy, ox, oy)
   local image = _quadImages[quad]
-  assert(image~=nil, "Image not found for the quad. Please use passion.graphics.newQuad instead of love.graphics.newQuad")
+  assert(image~=nil, "Image not found for the quad. Please use newQuad instead of love.graphics.newQuad")
   love.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 end
 

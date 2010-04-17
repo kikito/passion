@@ -1,4 +1,9 @@
-passion.audio = {}
+local passion=passion
+local love=love
+local table=table
+local ipairs=ipairs
+
+module('passion.audio')
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -41,7 +46,7 @@ end
   The instances parameters controls how many "copies" of the source are created, so the same source
   can be played simultaneously more than once (defaults to 1 = no copies)
 ]]
-function passion.audio.getSource(pathOrFileOrData, sourceType, instances)
+function getSource(pathOrFileOrData, sourceType, instances)
 
   sourceType = sourceType or "stream"
   instances = instances or 1
@@ -73,8 +78,9 @@ function passion.audio.getSource(pathOrFileOrData, sourceType, instances)
 
 end
 
+--passion.audio.play
 --Plays a source. It looks for a copy of the source if it isn't stopped.
-function passion.audio.play(source)
+function play(source)
   local freeSource = _getFreeSource(source)
 
   if(freeSource~=nil) then

@@ -1,15 +1,35 @@
+module('passion', package.seeall)
+
 -- This file contains helper methods used through passion
 
 ------------------------------------
 -- PUBLIC METHODS
 ------------------------------------
 
+--[[ Invokes a function over an object, with parameters.
+  MethodOrName can be either a function or a method name. The following lines are equivalent:
+
+    player:moveRight(10)
+    passion.invoke(player, function() player:moveRight(10) end)
+    passion.invoke(player, 'moveRight', 10)
+
+This is useful for implementing things like passion.apply easily.
+]]
+function invoke(object, methodOrName, ...)
+  local method = methodOrName
+  if(type(methodOrName)=='string') then method = object[methodOrName] end
+
+  assert(type(method)=='function', 'methodOrName must be a function or function name')
+
+  return method(object, ...)
+end
+
 --[[ Helper function used to apply methods to collections
   * collection is a table containing a bunch of elements to which the function must be applied
   * sortFunc is a sorting function. It defines the order in which the method will be applied. It can be nil (no sorting)
   * methodOrName is either a function or a string
-    - If it is a function, it will be applied to all items in the collection, in order
-    - If it is a string, then each item must have a function named like MethodName.
+    - If it is a function, it will be applied to all objects in the collection, in order
+    - If it is a string, then each object must have a function named like MethodName.
   * additional parameters can be passed to the methodOrName function. The first parameter will allways be the element
   Example:
 
@@ -20,48 +40,39 @@
     b:update(dt)
     c:update(dt)
 ]]
-function passion.apply(collection, sortFunc, methodOrName, ... )
+function apply(collection, methodOrName, ... )
+  for _,object in pairs(collection) do
+    if(invoke(object, methodOrName, ...) == false) then return end
+  end
+end
+
+-- sorted version of passion.apply
+function applySorted(collection, sortFunc, methodOrName, ... )
 
   -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
     local collectionCopy = {}
     local i = 1
-    for _,item in pairs(collection) do
-      collectionCopy[i]=item
+    for _,object in pairs(collection) do
+      collectionCopy[i]=object
       i=i+1
     end
     table.sort(collectionCopy, sortFunc)
     collection = collectionCopy
   end
 
-  -- If methodOrName is a string, then apply the method named like it on each element in collection
-  if(type(methodOrName)=='string') then
-    for _,item in pairs(collection) do
-      local method = item[methodOrName]
-      if(type(method)=='function') then
-        if(method(item, ...) == false) then return end
-      end
-    end
-
-  -- If it is a function, just apply it to every item on the collection
-  elseif(type(methodOrName)=='function') then
-    for _,item in pairs(collection) do
-      if(methodOrName(item, ...) == false) then return end
-    end
-
-  else
-    error('methodOrName must be a function or function name')
-  end
+  apply(collection, methodOrName, ...)
 end
 
---[[ Removes an item from a table.
+
+--[[ Removes an object from a table.
   Only works reliably with 'array-type' collections (collections indexed with integers)
-  Removes only the first appearance of item
+  Removes only the first appearance of object
 ]]
-function passion.removeItemFromCollection(collection, item)
+function remove(collection, object)
   local index
   for i, v in pairs(collection) do
-    if v == item then
+    if v == object then
       index = i
       break
     end
@@ -70,7 +81,7 @@ function passion.removeItemFromCollection(collection, item)
 end
 
 -- prints a table on the console, recursively. Useful for debugging.
-function passion.dumpTable(t, level, depth)
+function dumpTable(t, level, depth)
   level = level or 1
   depth = depth or 4
   
@@ -79,9 +90,9 @@ function passion.dumpTable(t, level, depth)
   print(string.rep("   ", level) .. tostring(t) .. ':')
 
   if(type(t)=='table') then
-    for k,item in pairs(t) do
-      print(string.rep("   ", level+1) .. tostring(k) .. ' => '.. tostring(item) )
-      if(type(item)=='table') then passion.dumpTable(item, level + 1) end
+    for k,object in pairs(t) do
+      print(string.rep("   ", level+1) .. tostring(k) .. ' => '.. tostring(object) )
+      if(type(object)=='table') then dumpTable(object, level + 1) end
     end
   end
 end
@@ -92,7 +103,7 @@ end
    implementing getImage, getSource and getFont.
    Regular users shouldn't be using it (that is why it begins with an underscore)
 ]]
-function passion._getResource(collection, f, key, ...)
+function _getResource(collection, f, key, ...)
   local resource = collection[key]
   if(resource == nil) then
     resource = f(...)

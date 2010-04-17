@@ -1,4 +1,9 @@
-passion.fonts = {}
+local passion=passion
+local love=love
+local string=string
+local type=type
+
+module('passion.fonts')
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -18,7 +23,7 @@ local _fonts = {}
     - Otherwise it tries to create an image font from it
   * If an image is provided, it tries to create an image font
 ]]
-function passion.fonts.getFont(sizeOrPathOrImage, sizeOrGlyphs)
+function getFont(sizeOrPathOrImage, sizeOrGlyphs)
   if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage

@@ -1,5 +1,12 @@
-passion.gui.Label = class('passion.gui.Label', passion.gui.Pannel)
-local Label = passion.gui.Label
+local passion=passion
+local love=love
+local class=class
+local assert=assert
+local unpack=unpack
+
+module('passion.gui')
+
+Label = class('passion.gui.Label', passion.gui.Pannel)
 
 --obtain the default font
 love.graphics.setFont(12)
