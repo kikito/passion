@@ -8,7 +8,6 @@ require 'passion/oop/init.lua'
 
 require 'passion/passion.lua'
 require 'passion/passion_constants.lua'
-require 'passion/passion_util.lua'
 
 require 'passion/graphics/init.lua'
 require 'passion/fonts/init.lua'
