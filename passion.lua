@@ -1,4 +1,9 @@
-passion={}
+local love = love
+local Beholder = Beholder
+local assert = assert
+local print = print
+local setmetatable = setmetatable
+local ipairs = ipairs
 
 -- This file contains the core methods of the passion lib
 
