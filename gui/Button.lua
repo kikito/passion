@@ -1,4 +1,9 @@
-module('passion.gui', package.seeall)
+local passion=passion
+local love=love
+local type=type
+local class=class
+
+module('passion.gui')
 
 Button = class('passion.gui.Button', passion.gui.Label)
 

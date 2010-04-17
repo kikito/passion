@@ -3,6 +3,7 @@ local love=love
 local class=class
 local assert=assert
 local unpack=unpack
+local math=math
 
 module('passion.gui')
 
