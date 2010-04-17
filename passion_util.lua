@@ -1,4 +1,12 @@
-module('passion', package.seeall)
+local passion=passion
+local table=table
+local type=type
+local assert=assert
+local print=print
+local pairs=pairs
+local tostring=tostring
+
+module('passion')
 
 -- This file contains helper methods used through passion
 

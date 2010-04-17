@@ -129,7 +129,7 @@ for _,f in ipairs({
   'mousepressed', 'mousereleased',
 }) do
   love[f] = function(...)
-    passion[f](...)
+    _M[f](...)
   end
 end
 
