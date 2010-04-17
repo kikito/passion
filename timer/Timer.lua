@@ -1,13 +1,6 @@
-local passion = passion
-local unpack = unpack
-local table = table
-local class = class
-local StatefulObject = StatefulObject
+passion.timer.Timer = class('passion.timer.Timer', StatefulObject)
 
-module('passion.timer')
-
-Timer = class('passion.timer.Timer', StatefulObject)
-
+local Timer = passion.timer.Timer
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------

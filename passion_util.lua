@@ -1,13 +1,3 @@
-local passion=passion
-local table=table
-local type=type
-local assert=assert
-local print=print
-local pairs=pairs
-local tostring=tostring
-
-module('passion')
-
 -- This file contains helper methods used through passion
 
 ------------------------------------
@@ -23,7 +13,7 @@ module('passion')
 
 This is useful for implementing things like passion.apply easily.
 ]]
-function invoke(object, methodOrName, ...)
+function passion.invoke(object, methodOrName, ...)
   local method = methodOrName
   if(type(methodOrName)=='string') then method = object[methodOrName] end
 
@@ -48,14 +38,14 @@ end
     b:update(dt)
     c:update(dt)
 ]]
-function apply(collection, methodOrName, ... )
+function passion.apply(collection, methodOrName, ... )
   for _,object in pairs(collection) do
-    if(invoke(object, methodOrName, ...) == false) then return end
+    if(passion.invoke(object, methodOrName, ...) == false) then return end
   end
 end
 
 -- sorted version of passion.apply
-function applySorted(collection, sortFunc, methodOrName, ... )
+function passion.applySorted(collection, sortFunc, methodOrName, ... )
 
   -- If sortFunc exists, make a copy of collection and sort it
   if(type(sortFunc)=='function') then
@@ -69,7 +59,7 @@ function applySorted(collection, sortFunc, methodOrName, ... )
     collection = collectionCopy
   end
 
-  apply(collection, methodOrName, ...)
+  passion.apply(collection, methodOrName, ...)
 end
 
 
@@ -77,7 +67,7 @@ end
   Only works reliably with 'array-type' collections (collections indexed with integers)
   Removes only the first appearance of object
 ]]
-function remove(collection, object)
+function passion.remove(collection, object)
   local index
   for i, v in pairs(collection) do
     if v == object then
@@ -89,7 +79,7 @@ function remove(collection, object)
 end
 
 -- prints a table on the console, recursively. Useful for debugging.
-function dumpTable(t, level, depth)
+function passion.dumpTable(t, level, depth)
   level = level or 1
   depth = depth or 4
   
@@ -100,7 +90,7 @@ function dumpTable(t, level, depth)
   if(type(t)=='table') then
     for k,object in pairs(t) do
       print(string.rep("   ", level+1) .. tostring(k) .. ' => '.. tostring(object) )
-      if(type(object)=='table') then dumpTable(object, level + 1) end
+      if(type(object)=='table') then passion.dumpTable(object, level + 1) end
     end
   end
 end
@@ -111,7 +101,7 @@ end
    implementing getImage, getSource and getFont.
    Regular users shouldn't be using it (that is why it begins with an underscore)
 ]]
-function _getResource(collection, f, key, ...)
+function passion._getResource(collection, f, key, ...)
   local resource = collection[key]
   if(resource == nil) then
     resource = f(...)
@@ -119,5 +109,3 @@ function _getResource(collection, f, key, ...)
   end
   return resource
 end
-
-

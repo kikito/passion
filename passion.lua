@@ -1,10 +1,4 @@
-local love = love
-local assert = assert
-local print = print
-local setmetatable = setmetatable
-local ipairs = ipairs
-
-module('passion')
+passion={}
 
 -- This file contains the core methods of the passion lib
 
@@ -26,7 +20,7 @@ end
 ------------------------------------
 
 -- controls actors so they are not re-drawn. Used in draw callback
-local _drawn = setmetatable({}, {__mode = "k"})
+local _drawn = nil
 
 -- function used for drawing. Used in draw callback
 local _drawIfNotDrawn = function(actor)
@@ -48,7 +42,7 @@ end
 ------------------------------------
 
 -- I did this small function because I never remember how to exit in LÖVE :)
-function exit()
+function passion.exit()
   love.event.push('q')
 end
 
@@ -57,40 +51,40 @@ end
 ------------------------------------
 
 -- passion.update callback
-function update(dt)
-  physics.update(dt)
-  timer.update(dt)
-  Actor:apply('update', dt)
+function passion.update(dt)
+  passion.physics.update(dt)
+  passion.timer.update(dt)
+  passion.Actor:apply('update', dt)
 end
 
 -- passion.draw callback
-function draw()
+function passion.draw()
   _drawn = setmetatable({}, {__mode = "k"})
-  Actor:applySorted( _sortByDrawOrder, _drawIfNotDrawn )
+  passion.Actor:applySorted( _sortByDrawOrder, _drawIfNotDrawn )
 end
 
 -- guess
-function keypressed(key)
+function passion.keypressed(key)
   Beholder.trigger('keypressed_' .. key)
 end
 
-function keyreleased(key)
+function passion.keyreleased(key)
   Beholder.trigger('keyreleased_' .. key)
 end
 
-function mousepressed(x, y, button)
+function passion.mousepressed(x, y, button)
   Beholder.trigger('mousepressed_' .. button, x, y)
 end
 
-function mousereleased(x, y, button)
+function passion.mousereleased(x, y, button)
   Beholder.trigger('mousereleased_' .. button, x, y)
 end
 
-function joystickpressed(joystick, button)
+function passion.joystickpressed(joystick, button)
   Beholder.trigger('joystickpressed_' .. joystick .. '_' .. button)
 end
 
-function joystickreleased(joystick, button)
+function passion.joystickreleased(joystick, button)
   Beholder.trigger('joystickreleased_' .. joystick .. '_' .. button)
 end
 
@@ -129,7 +123,7 @@ for _,f in ipairs({
   'mousepressed', 'mousereleased',
 }) do
   love[f] = function(...)
-    _M[f](...)
+    passion[f](...)
   end
 end
 

@@ -1,4 +1,4 @@
-module('passion.timer')
+passion.timer={}
 
 ------------------------------------
 -- PUBLIC FUNCTIONS
@@ -6,15 +6,15 @@ module('passion.timer')
 
 -- These functions encapsulate the timer creation so it is transparent to the user.
 
-function after(seconds, f, ...)
-  return Timer:new(seconds, f, ...)
+function passion.timer.after(seconds, f, ...)
+  return passion.timer.Timer:new(seconds, f, ...)
 end
 
 
-function every(seconds, f, ...)
-  return PeriodicTimer:new(seconds, f, ...)
+function passion.timer.every(seconds, f, ...)
+  return passion.timer.PeriodicTimer:new(seconds, f, ...)
 end
 
-function update(dt)
-  Timer:update(dt)
+function passion.timer.update(dt)
+  passion.timer.Timer:update(dt)
 end
