@@ -19,3 +19,5 @@ require 'passion/timer/init.lua'
 require 'passion/physics/init.lua'
 
 require 'passion/gui/init.lua'
+
+require 'passion/ai/init.lua'

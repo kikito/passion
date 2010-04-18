@@ -8,6 +8,7 @@ local table=table
 local type=type
 local pairs=pairs
 local tostring=tostring
+local string=string
 
 -- This file contains the core methods of the passion lib
 module('passion')
