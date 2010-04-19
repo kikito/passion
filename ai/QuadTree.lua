@@ -107,16 +107,16 @@ function QuadTree:query(x,y,w,h)
 
   for _,item in pairs(self.items) do
     if(_intersect(x,y,w,h, item:getBoundingBox())) then
-      table.add(results, item)
+      table.insert(results, item)
     end
   end
 
   for _,node in ipairs(self.nodes) do
-    nx,ny,nw,ny = node:getBoundingBox()
+    nx,ny,nw,nh = node:getBoundingBox()
 
     -- case 1: area is contained on the node completely
     -- add the items that intersect and then break the loop
-    if(_contained(x,y,w,h, nx,ny,nw,ny)) then
+    if(_contained(x,y,w,h, nx,ny,nw,nh)) then
       for _,item in ipairs(node:query(x,y,w,h)) do
         table.insert(results, item)
       end
@@ -124,14 +124,14 @@ function QuadTree:query(x,y,w,h)
 
     -- case 2: node is completely contained on the area
     -- add all the items on the node and continue the loop
-    elseif(_contained(nx,ny,nw,nh, x,y,w,y)) then
+    elseif(_contained(nx,ny,nw,nh, x,y,w,h)) then
       for _,item in ipairs(node:getAllItems()) do
         table.insert(results, item)
       end
 
     -- case 3: node and area are intersecting
     -- add the items contained on the node's children and continue the loop
-    elseif(_intersect(x,y,w,h, nx,ny,nw,ny)) then
+    elseif(_intersect(x,y,w,h, nx,ny,nw,nh)) then
       for _,item in ipairs(node:query(x,y,w,h)) do
         table.insert(results, item)
       end
