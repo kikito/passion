@@ -1,0 +1,78 @@
+h1. PÄSSION
+
+An Object-oriented game engine for "LÖVE":http://www.love2d.org
+
+h2. Main features
+
+* Object orientation provided through "MiddleClass & MindState":http://github.com/kikito/middleclass
+* Modularized on several packages, accesible through the passion module (i.e. passion.graphics)
+* There is one recommended Actor class (passion.Actor) as well as a physics-enabled Actor class (passion.physics.Actor).
+
+h2. Module list
+
+h3. passion
+
+He heart of the system. Contains basic initialization routines, as well as callback implementations.
+It also includes several helper functions (such as passion.apply, passion.invoke or passion.dumpTable)
+
+h3. passion.Actor
+
+Not a package per se, but a class. Your "game objects" (enemies, bullets, the player, even score displays) should ultimately be a subclass of passion.Actor. Very rarely you will ned to subclass from Object itself (or StatefulObject).
+
+passion.Actor packages a ton of functionality. The most interesting is:
+
+* You don't have to store your actors on a global variable. PÄSSION stores a reference to all actors created.
+* It has an :update(dt) method. PÄSSION calls it automatically on every actor once the actors are created.
+* It as a :draw() method, as well as a drawOrder() method. PÄSSION calls it automatically on every call.
+* There are built-in parent-child methods, as well as methods for managing children.
+* A class method called "apply" allows you to parse all the actors of one class (subclasses included). For example, Bullets:apply('check', player) will call the method bullet:check(player) on all instances of Bullets (or subclasses of Bullet).
+* Timer-related functions (see below)
+* Freezing and invisibility - related methods and states. You can make an actor frozen but visible, invisible but not frozen, or frozen and visible. This is controlled via state stacking.
+* Other convenience methods such as set/getPosition, set/getCenter, etc.
+
+h3. passion.physics
+
+Provides two main features:
+* a way of independently refreshing the physics word (passion.physics.update) so that the game is a bit more impervious to window moving.
+* a subclass of passion.Actor (passion.physics.Actor) that is physics-aware. It is essentially an Actor attached to a Body.
+
+h3. passion.graphics
+
+Handles several graphical operations not provided by raw LÖVE. Notably, rounded-corner rectangles, image loading (through passion.graphics.getImage) and simplified quad management (quads "remember" the images they are attached to)
+
+h3. passion.audio
+
+The main two functions on this module are passion.audio.getSource and passsion.audio.play. The former loads a resource, similarly to what love.audio.loadSource does. However, this function "caches" resources, so a resource is not loaded twice. It also accepts a second parameter that allows playing the same source several times, simultaneously - as long as it is played using passion.audio.play instead of love.audio.play.
+
+h3. passion.fonts
+
+Contains only one function, passion.fonts.getFont. Loads fonts with caching - this means that the same font isn't loaded twice - the second time the font is "remembered" and returned.
+
+h3. passion.timers
+
+Contains several timing-related functions.
+* passion.timer.after executes a function after a certain amount of time has passed. The execution happens only once.
+* passion.timer.every executes a function periodically.
+Both functions require passion.timer.update(dt) to be executed periodically (this is normally automatically in passion.update(dt))
+
+The functions also return instances of the timers they create. These timers can be stored and manipulated. For instance, they can be "reset" (so their remaining time changes) as well as destroyed (so they will not trigger any action).
+
+It is worth noting that passion.Actor has a simplified version of these functionalities (passion.Actor.after and passion.Actor.every) that allow the execution of methods via names as well as via anonimous functions (i.e. actor:after(3, 'destroy') )
+
+h3. passion.gui
+
+An incomplete but functional gui library. It contains pannels, labels and buttons for now.
+
+h3. passion.oop
+
+Not a module *per se*. More like a set of functionalities needed for passion to work correctly. It includes "MiddleClass and MindState":http://github.com/kikito/middleclass as well as a messaging facility known as Beholder. Beholder is the way PÄSSION has of handling events (such as keypresses or mousereleases). It can also work as a generic messanging system.
+
+h3. passion.colors
+
+Defines a list of useful color names.
+
+h3. passion.fixes
+
+This is the only module that modifies the love library. It only modifies recognized bugs when possible. It does not add new functionality. It is expected to rapidly change with every LÖVE version.
+
+
