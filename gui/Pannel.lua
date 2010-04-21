@@ -34,7 +34,7 @@ function Pannel:parseOptions(options, validOptions)
 end
 
 Pannel:getterSetter('backgroundColor')
-Pannel:getterSetter('borderColor', passion.white)
+Pannel:getterSetter('borderColor', passion.colors.white)
 Pannel:getterSetter('borderWidth', 1)
 Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Pannel:getterSetter('cornerRadius', 0)

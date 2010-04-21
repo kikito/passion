@@ -22,7 +22,7 @@ end
 
 Label:getterSetter('text',       '')
 Label:getterSetter('font',       defaultFont)
-Label:getterSetter('fontColor',  passion.white)
+Label:getterSetter('fontColor',  passion.colors.white)
 Label:getterSetter('align',      'left')   -- or right or center
 Label:getterSetter('valign',     'center') -- or top or bottom
 Label:getterSetter('borderColor', nil)

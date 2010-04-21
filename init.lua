@@ -7,7 +7,7 @@ require 'passion/fixes/init.lua'
 require 'passion/oop/init.lua'
 
 require 'passion/passion.lua'
-require 'passion/passion_constants.lua'
+require 'passion/colors/init.lua'
 
 require 'passion/graphics/init.lua'
 require 'passion/fonts/init.lua'

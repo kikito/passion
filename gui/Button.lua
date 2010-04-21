@@ -42,7 +42,7 @@ Button:getterSetter('onBlur')
 Button:getterSetter('focus', true) -- if set to false, buttons don't capture the mouse when clicked
 
 -- make button borders visible by default, with text centered, and some border
-Button:getter('borderColor', passion.white)
+Button:getter('borderColor', passion.colors.white)
 Button:getter('borderWidth', 2)
 Button:getter('cornerRadius', 5)
 Button:getter('padding', 5)
