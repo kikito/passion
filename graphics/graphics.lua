@@ -114,15 +114,18 @@ function drawq(quad, x, y, r, sx, sy, ox, oy)
   love.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 end
 
-function resetCamera()
-  _currentCamera = defaultCamera
+function setColor(r,g,b,a)
+  if(type(r)=="table") then
+    a = r[3] or g
+    b = r[2]
+    g = r[1]
+    r = r[0]
+  end
+  love.graphics.setColor(r,g,b,a)
 end
 
-function setCamera(newCamera)
-  if(newCamera == _currentCamera) then return end
-
-  _currentCamera:unset()
-  _currentCamera = newCamera or defaultCamera
-  _currentCamera:set()
+function setAlpha(alpha)
+  local r,g,b = love.graphics.getColor()
+  love.graphics.setColor(r,g,b,alpha)
 end
 
