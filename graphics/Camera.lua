@@ -2,9 +2,8 @@ local _G = _G
 
 module('passion.graphics')
 
--- The following code is based *heavily* on Pekka Karjalainen's work.
+-- The following code is based *heavily* on pekka (Pekka Karjalainen)'s work.
 -- I could not have done it without it.
-
 
 ------------------------------------------
 --           MATRIX STUFF               --
@@ -13,7 +12,8 @@ module('passion.graphics')
 local Matrix = _G.class('Matrix')
 
 -- create a new matrix and initialize it with the values of the identity matrix
-function Matrix:new()
+function Matrix:initialize()
+  super.initialize(self)
   self:reset()
 end
 
@@ -82,16 +82,27 @@ local _cameras = _G.setmetatable({}, {__mode = "k"}) -- list of all available ca
 
 local _current = nil -- current camera being used
 
--- private method used for adding operations to the camera's queue
-local _addOperation= function(self, f, ...)
-  _G.table.insert(self.operations, {f=f, params={...}})
+local _recalculate = function(self)
+
+  if(self.dirty==false) then return end
+  self.matrix:reset()
+  self.matrix:leftTranslate(self.x, self.y)
+  self.matrix:leftRotate(self.angle)
+  self.matrix:leftScale(self.sx, self.sy)
+
+  self.inverse:reset()
+  self.inverse:leftTranslate(-self.x, -self.y)
+  self.inverse:leftRotate(-self.angle)
+  self.inverse:leftScale(1.0/self.sx, 1.0/self.sy)
+
+  self.dirty = false
 end
 
 function Camera:initialize()
   super.initialize(self)
-  self.inversionMatrix = Matrix:new()
-  self.transformMatrix = Matrix:new()
-  self.operations = {}
+  self.matrix = Matrix:new()
+  self.inverse = Matrix:new()
+  self:reset()
   _cameras[self]=self
 end
 
@@ -101,48 +112,61 @@ function Camera:update(dt)
 end
 
 function Camera:reset()
-  self.operations = {}
-  self.inversionMatrix:reset()
-  self.transformMatrix:reset()
+  self.x, self.y, self.sx, self.sy, self.angle = 0.0,0.0,1.0,1.0,0.0
+  self.dirty = true
+end
+
+function Camera:setPosition(x,y)
+  self.x, self.y = x,y
+  self.dirty = true
+end
+
+function Camera:setScale(sx,sy)
+  self.sx, self.sy = sx,sy
+  self.dirty = true
+end
+
+function Camera:setAngle(angle)
+  self.angle = angle
+  self.dirty = true
+end
+
+function Camera:getPosition()
+  return self.x, self.y
+end
+
+function Camera:getScale()
+  return self.sx, self.sy
+end
+
+function Camera:getAngle()
+  return self.angle
 end
 
 function Camera:translate(dx,dy)
-  _addOperation(self, _G.love.graphics.translate, dx, dy)
-  self.transformMatrix:leftTranslate(dx, dy)
-  self.inversionMatrix:leftTranslate(-dx, -dy)
+  self:setPosition(self.x + dx, self.y + dy)
 end
 
-function Camera:scale(dsx, dsy)
-  _addOperation(self, _G.love.graphics.scale, dsx, dsy)
-  _G.passion.dumpTable(self)
-  self.transformMatrix:leftScale(dsx, dsy)
-  self.inversionMatrix:leftScale(1.0/dsx, 1.0/dsy)
+function Camera:scale(sdx,sdy)
+  self:setScale(self.sx * sdx, self.sy * sdy)
 end
 
-function Camera:rotate(rotation)
-  _addOperation(self, _G.love.graphics.rotate, rotation)
-  self.transformMatrix:leftRotate(rotation)
-  self.inversionMatrix:leftRotate(-rotation)
-end
-
-function Camera:invert(x,y)
-  return self.inversionMatrix:multVector(x,y)
-end
-
-function Camera:transform(x,y)
-  return self.transformMatrix:multVector(x,y)
+function Camera:rotate(angle)
+  self:setAngle(self.angle + angle)
 end
 
 function Camera:set()
   if(_current==self) then return end
+  
   if(_current~=nil) then
     _current:unset()
   end
-  _current = self
+  _recalculate(self)
   _G.love.graphics.push()
-  for _,ops in _G.ipairs(self.operations) do
-    ops.f(_G.unpack(ops.params))
-  end
+  _G.love.graphics.translate(self.x, self.y)
+  _G.love.graphics.rotate(self.angle)
+  _G.love.graphics.scale(self.sx, self.sy)
+  _current = self
 end
 
 function Camera:unset()
@@ -150,20 +174,34 @@ function Camera:unset()
   _current = nil
 end
 
+function Camera:draw(actor)
+  self:set()
+  actor:draw()
+  self:unset()
+end
+
+
+function Camera:getMatrix()
+  _recalculate(self)
+  return self.matrix
+end
+
+function Camera:getInverse()
+  _recalculate(self)
+  return self.inverse
+end
+
+function Camera:invert(x,y)
+  return self:getInverse():multVector(x,y)
+end
+
+function Camera:transform(x,y)
+  return self:getMatrix():multVector(x,y)
+end
+
 function Camera:destroy()
   _cameras[self]=nil
   super.destroy(self)
-end
-
--- Class methods
-
-function Camera.apply(theClass, methodOrName, ...)
-  _G.assert(theClass~=nil, 'Please invoke Class:apply instead of Class.apply')
-  _G.passion.apply(_cameras, methodOrName, ...)
-end
-
-function Camera.getCurrent(theClass)
-  return _current
 end
 
 ------------------------------------------
@@ -171,3 +209,22 @@ end
 ------------------------------------------
 
 defaultCamera = Camera:new()
+
+
+------------------------------------------
+--         CLASS METHODS                --
+------------------------------------------
+function Camera.getCurrent(theClass)
+  return _current
+end
+
+function Camera.apply(theClass, methodName, ...)
+  _G.passion.apply(_cameras, methodName, ...)
+end
+
+function Camera.clear(theClass)
+  if(_current ~= nil) then _current:unset() end
+  _current = nil
+end
+
+

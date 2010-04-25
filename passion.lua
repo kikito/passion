@@ -32,8 +32,7 @@ end
 
 -- function used for drawing. Used in draw callback
 local _drawWithCameras = function(actor)
-  local cameras = actor:getCameras()
-  for _,camera in pairs(cameras) do
+  for _,camera in pairs(actor:getCameras()) do
     camera:set()
     actor:draw()
   end
@@ -70,6 +69,7 @@ end
 -- passion.draw callback
 function draw()
   Actor:applySorted( _sortByDrawOrder, _drawWithCameras )
+  graphics.Camera:clear()
 end
 
 -- guess
