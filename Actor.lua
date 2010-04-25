@@ -127,6 +127,11 @@ function Actor:every(seconds, methodOrName, ...)
   return passion.timer.every(seconds, method, self, ...)
 end
 
+-- Override this to change which cameras are used to render an actor
+function Actor:getCameras()
+  return { passion.graphics.defaultCamera }
+end
+
 ------------------------------------
 -- STATES (INVISIBLE & FROZEN)
 ------------------------------------

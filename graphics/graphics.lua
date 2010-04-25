@@ -19,6 +19,9 @@ local _images = {}
 -- stores what image was used to create each quad created with newQuad
 local _quadImages = setmetatable({}, {__mode = "k"})
 
+-- stores the current camera being used
+local _currentCamera = nil
+
 ------------------------------------
 -- PUBLIC FUNCTIONS
 ------------------------------------
@@ -111,4 +114,15 @@ function drawq(quad, x, y, r, sx, sy, ox, oy)
   love.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 end
 
+function resetCamera()
+  _currentCamera = defaultCamera
+end
+
+function setCamera(newCamera)
+  if(newCamera == _currentCamera) then return end
+
+  _currentCamera:unset()
+  _currentCamera = newCamera or defaultCamera
+  _currentCamera:set()
+end
 

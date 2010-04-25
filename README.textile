@@ -63,6 +63,10 @@ h3. passion.gui
 
 An incomplete but functional gui library. It contains pannels, labels and buttons for now.
 
+h3. passion.ai
+
+This is a very heterogeneous module where I plan to add several AI-related functionalities. For now it has a very nice QuadTree. In the future I plan to add other stuff like A* algorithms.
+
 h3. passion.oop
 
 Not a module *per se*. More like a set of functionalities needed for passion to work correctly. It includes "MiddleClass and MindState":http://github.com/kikito/middleclass as well as a messaging facility known as Beholder. Beholder is the way PÄSSION has of handling events (such as keypresses or mousereleases). It can also work as a generic messanging system.

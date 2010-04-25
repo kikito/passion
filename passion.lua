@@ -30,14 +30,12 @@ end
 -- PRIVATE ATTRIBUTES AND METHODS
 ------------------------------------
 
--- controls actors so they are not re-drawn. Used in draw callback
-local _drawn = nil
-
 -- function used for drawing. Used in draw callback
-local _drawIfNotDrawn = function(actor)
-  if(_drawn[actor]==nil) then
+local _drawWithCameras = function(actor)
+  local cameras = actor:getCameras()
+  for _,camera in pairs(cameras) do
+    camera:set()
     actor:draw()
-    _drawn[actor] = 1
   end
 end
 
@@ -66,12 +64,12 @@ function update(dt)
   physics.update(dt)
   timer.update(dt)
   Actor:apply('update', dt)
+  graphics.Camera:apply('update', dt)
 end
 
 -- passion.draw callback
 function draw()
-  _drawn = setmetatable({}, {__mode = "k"})
-  Actor:applySorted( _sortByDrawOrder, _drawIfNotDrawn )
+  Actor:applySorted( _sortByDrawOrder, _drawWithCameras )
 end
 
 -- guess
@@ -156,7 +154,7 @@ function invoke(object, methodOrName, ...)
   local method = methodOrName
   if(type(methodOrName)=='string') then method = object[methodOrName] end
 
-  assert(type(method)=='function', 'methodOrName must be a function or function name')
+  assert(type(method)=='function', tostring(methodOrName) .. ' must be a function or function name')
 
   return method(object, ...)
 end
