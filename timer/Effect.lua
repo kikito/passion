@@ -29,14 +29,14 @@ end
 function Effect:initialize(object, seconds, properties, easing, callback, ...)
 
   self.object = object
-  self.easing = easing or Effect[easing] or Effect.linear
+  self.easing = type(easing)=='function' and easing or (Effect[easing] or Effect.linear)
   self.objective = properties
 
   self.beginning = {}
   self.change = {}
   for name, objective in pairs(properties) do
     self.beginning[name] = _getValue(self, name)
-    self.change[name] = objective - self.begining[name]
+    self.change[name] = objective - self.beginning[name]
   end
 
   super.initialize(self, seconds, callback, ...)
@@ -54,11 +54,11 @@ function Effect:tic(dt)
       self.callback(unpack(self.arguments))
     end
     self:destroy()
-  end
-
-  for name, objective in pairs(self.objective) do
-    local newValue = self.easing(self.running, self.beginning[name], self.change[name], self.seconds)
-    _setValue(self, name, newValue)
+  else
+    for name, objective in pairs(self.objective) do
+      local newValue = self.easing(self.running, self.beginning[name], self.change[name], self.seconds)
+      _setValue(self, name, newValue)
+    end
   end
 end
 

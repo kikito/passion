@@ -183,51 +183,52 @@ function Pannel:getDrawOrder()
   return 0
 end
 
-local drawBackground = function(self, x, y, width, height)
-  local backgroundColor = self:getBackgroundColor()
-
-  if(backgroundColor~=nil) then
-    local r, g, b, a = love.graphics.getColor()
-
-    passion.graphics.setColor(backgroundColor)
-    passion.graphics.setAlpha(self:getAlpha())
-
-    passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
-
-    love.graphics.setColor(r,g,b,a)
-  end
-end
-
-local drawBorder = function(self, x, y, width, height)
-  local borderColor = self:getBorderColor()
-
-  if(borderColor~=nil) then
-    local r, g, b, a = love.graphics.getColor()
-    local prevLineWidth = love.graphics.getLineWidth()
-    local prevLineStyle = love.graphics.getLineStyle()
-
-    passion.graphics.setColor(borderColor)
-    passion.graphics.setAlpha(self:getAlpha())
-    love.graphics.setLineStyle(self:getBorderStyle())
-    love.graphics.setLineWidth(self:getBorderWidth())
-
-    passion.graphics.roundedRectangle('line', x, y, width, height, self:getCornerRadius())
-
-    love.graphics.setColor(r,g,b,a)
-    love.graphics.setLineWidth(prevLineWidth)
-    love.graphics.setLineStyle(prevLineStyle)
-  end
-end
-
 function Pannel:draw()
   local x, y = self:getPosition()
   local width = self:getWidth()
   local height = self:getHeight()
   
   if(x~=nil and y~=nil and width~=nil and height~=nil) then
-    drawBackground(self, x, y, width, height)
-    drawBorder(self, x, y, width, height)
+
+    local backgroundColor = self:getBackgroundColor()
+    local borderColor = self:getBorderColor()
+    local alpha = self:getAlpha()
+
+    local r, g, b, a = love.graphics.getColor()
+
+    if(backgroundColor~=nil) then
+      passion.graphics.setColor(backgroundColor)
+      passion.graphics.setAlpha(alpha)
+      passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
+    end
+
+    if(borderColor~=nil) then
+      local prevLineWidth = love.graphics.getLineWidth()
+      local prevLineStyle = love.graphics.getLineStyle()
+
+      passion.graphics.setColor(borderColor)
+      passion.graphics.setAlpha(alpha)
+      love.graphics.setLineStyle(self:getBorderStyle())
+      love.graphics.setLineWidth(self:getBorderWidth())
+
+      passion.graphics.roundedRectangle('line', x, y, width, height, self:getCornerRadius())
+
+      love.graphics.setLineWidth(prevLineWidth)
+      love.graphics.setLineStyle(prevLineStyle)
+    end
+
+    love.graphics.setColor(r,g,b,a)
+
   end
 end
+
+function Pannel:fadeIn(seconds, callback, ...)
+  self:effect(seconds, {alpha=255}, 'linear', callback, ...)
+end
+
+function Pannel:fadeOut(seconds, callback, ...)
+  self:effect(seconds, {alpha=0}, 'linear', callback, ...)
+end
+
 
 
