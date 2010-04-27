@@ -62,7 +62,10 @@ function Label:draw()
 
   love.graphics.setFont(font)
 
-  if(fontColor~=nil) then love.graphics.setColor(unpack(fontColor)) end
+  if(fontColor~=nil) then
+    passion.graphics.setColor(fontColor)
+    passion.graphics.setAlpha(self:getAlpha())
+  end
 
   if(valign=='center') then y = (y + height/2.0 - fontSize/2.0)
   elseif(valign=='bottom') then y = y + height - fontSize
@@ -75,7 +78,6 @@ function Label:draw()
   y = y + fontSize
 
   love.graphics.printf(text, x, y, width, align)
-
 
   -- restore previous values of font & color
   if(prevFont~=nil) then love.graphics.setFont(prevFont) end

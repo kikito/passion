@@ -13,7 +13,7 @@ Pannel = class('passion.gui.Pannel', passion.Actor)
 
 local VALID_OPTIONS = { 
   'x', 'y', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 
-  'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
+  'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding', 'alpha'
 }
 
 function Pannel:initialize(options)
@@ -40,6 +40,7 @@ Pannel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Pannel:getterSetter('cornerRadius', 0)
 Pannel:setter('width')
 Pannel:setter('height')
+Pannel:setter('alpha')
 
 function Pannel:getWidth()
   self.width = self.width or 0
@@ -151,6 +152,13 @@ function Pannel:getY()
   return self:getLocalY() + (parent == nil and 0 or (parent:getY() + parent:getTopPadding()))
 end
 
+function Pannel:getAlpha()
+  if(self.alpha~=nil) then return self.alpha end
+  local parent = self:getParent()
+  if(parent ~= nil) then return parent:getAlpha() end
+  return 255
+end
+
 function Pannel:getPosition()
   local parent = self:getParent()
   if(parent == nil) then
@@ -181,7 +189,8 @@ local drawBackground = function(self, x, y, width, height)
   if(backgroundColor~=nil) then
     local r, g, b, a = love.graphics.getColor()
 
-    love.graphics.setColor(unpack(backgroundColor))
+    passion.graphics.setColor(backgroundColor)
+    passion.graphics.setAlpha(self:getAlpha())
 
     passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
 
@@ -197,7 +206,8 @@ local drawBorder = function(self, x, y, width, height)
     local prevLineWidth = love.graphics.getLineWidth()
     local prevLineStyle = love.graphics.getLineStyle()
 
-    love.graphics.setColor(unpack(borderColor))
+    passion.graphics.setColor(borderColor)
+    passion.graphics.setAlpha(self:getAlpha())
     love.graphics.setLineStyle(self:getBorderStyle())
     love.graphics.setLineWidth(self:getBorderWidth())
 

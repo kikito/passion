@@ -7,7 +7,7 @@ module('passion.gui')
 
 Button = class('passion.gui.Button', passion.gui.Label)
 
-Button.VALID_OPTIONS = {
+local VALID_OPTIONS = {
   'onClick', 'onPress', 'onRelease', 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
 }
 
@@ -27,7 +27,7 @@ end
 
 function Button:initialize(options)
   super.initialize(self, options)
-  self:parseOptions(options, Button.VALID_OPTIONS)
+  self:parseOptions(options, VALID_OPTIONS)
 
   self:gotoState('MouseOut')
 end

@@ -1,11 +1,4 @@
-local passion=passion
-local love=love
-local math=math
-local table=table
-local assert=assert
-local error=error
-local unpack=unpack
-local setmetatable=setmetatable
+local _G=_G
 
 module('passion.graphics')
 
@@ -17,7 +10,7 @@ module('passion.graphics')
 local _images = {}
 
 -- stores what image was used to create each quad created with newQuad
-local _quadImages = setmetatable({}, {__mode = "k"})
+local _quadImages = _G.setmetatable({}, {__mode = "k"})
 
 -- stores the current camera being used
 local _currentCamera = nil
@@ -28,24 +21,24 @@ local _currentCamera = nil
 
 -- Gets or creates an image from a filepath, a file or data
 function getImage(pathOrFileOrData)
-  return passion._getResource(_images, love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
+  return _G.passion._getResource(_images, _G.love.graphics.newImage, pathOrFileOrData, pathOrFileOrData)
 end
 
 -- Draws a given shape, using 'fill' or 'line as the style'. Useful for debugging
 function drawShape(style, shape)
 
-  assert(style=='line' or style=='fill', "style must be either 'line' or 'fill'")
+  _G.assert(style=='line' or style=='fill', "style must be either 'line' or 'fill'")
 
   local shapeType = shape:getType()
 
   if(shapeType=="polygon") then
-    love.graphics.polygon(style, shape:getPoints())
+    _G.love.graphics.polygon(style, shape:getPoints())
   elseif(shapeType=="circle") then
     local r = shape:getRadius()
     local x, y = shape:getWorldCenter()
-    love.graphics.circle(style, x,y, r, r*3)
+    _G.love.graphics.circle(style, x,y, r, r*3)
   else
-    error("Unkwnown shape type: "..shapeType)
+    _G.error("Unkwnown shape type: "..shapeType)
   end
 end
 
@@ -58,17 +51,17 @@ function roundedRectangle(mode, x, y, width, height, cornerRadius)
   cornerRadius = cornerRadius or 0
   
   if cornerRadius == 0 then
-    love.graphics.rectangle(mode, x, y, width, height)
+    _G.love.graphics.rectangle(mode, x, y, width, height)
   else
     local xround, yround = cornerRadius, cornerRadius
     
     local points = {}
     local precision = (xround + yround) * .1
-    local tI, hP = table.insert, .5*math.pi
+    local tI, hP = _G.table.insert, .5*_G.math.pi
       if xround > width*.5 then xround = width*.5 end
       if yround > height*.5 then yround = height*.5 end
     local X1, Y1, X2, Y2 = x + xround, y + yround, x + width - xround, y + height - yround
-    local sin, cos = math.sin, math.cos
+    local sin, cos = _G.math.sin, _G.math.cos
     for i = 0, precision do
       local a = (i/precision-1)*hP
       tI(points, X2 + xround*cos(a))
@@ -89,7 +82,7 @@ function roundedRectangle(mode, x, y, width, height, cornerRadius)
       tI(points, X1 + xround*cos(a))
       tI(points, Y1 + yround*sin(a))
     end
-    love.graphics.polygon(mode, unpack(points))
+    _G.love.graphics.polygon(mode, _G.unpack(points))
   end
 end
 
@@ -99,7 +92,7 @@ end
 function newQuad(image, x, y, width, height, rWidth, rHeight)
   rWidth = rWidth or image:getWidth()
   rHeight = rHeight or image:getHeight()
-  local quad = love.graphics.newQuad( x, y, width, height, rWidth, rHeight )
+  local quad = _G.love.graphics.newQuad( x, y, width, height, rWidth, rHeight )
   _quadImages[quad] = image
   return quad
 end
@@ -110,22 +103,23 @@ end
 ]]
 function drawq(quad, x, y, r, sx, sy, ox, oy)
   local image = _quadImages[quad]
-  assert(image~=nil, "Image not found for the quad. Please use newQuad instead of love.graphics.newQuad")
-  love.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy)
+  _G.assert(image~=nil, "Image not found for the quad. Please use newQuad instead of love.graphics.newQuad")
+  _G.love.graphics.drawq(image, quad, x, y, r, sx, sy, ox, oy)
 end
 
 function setColor(r,g,b,a)
-  if(type(r)=="table") then
-    a = r[3] or g
-    b = r[2]
-    g = r[1]
-    r = r[0]
+  if(_G.type(r)=="table") then
+    a = g or r[4]
+    b = r[3]
+    g = r[2]
+    r = r[1]
   end
-  love.graphics.setColor(r,g,b,a)
+  a = a or 255
+  _G.love.graphics.setColor(r,g,b,a)
 end
 
 function setAlpha(alpha)
-  local r,g,b = love.graphics.getColor()
-  love.graphics.setColor(r,g,b,alpha)
+  local r,g,b = _G.love.graphics.getColor()
+  _G.love.graphics.setColor(r,g,b,alpha)
 end
 
