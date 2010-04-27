@@ -127,6 +127,11 @@ function Actor:every(seconds, methodOrName, ...)
   return passion.timer.every(seconds, method, self, ...)
 end
 
+-- timer function. Changes the properties of the actor gradually over a period of time
+function Actor:effect(seconds, properties, easing, callback, ...)
+  return passion.timer.effect(self, seconds, properties, easing, callback, ...)
+end
+
 -- Override this to change which cameras are used to render an actor
 function Actor:getCameras()
   return { passion.graphics.defaultCamera }

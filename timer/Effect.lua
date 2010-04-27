@@ -62,7 +62,7 @@ function Effect:tic(dt)
   end
 end
 
--- easing functions adapted from http://hosted.zeh.com.br/Effect/docs/en-us/misc/transitions.html
+-- easing functions adapted from http://hosted.zeh.com.br/Tweener/docs/en-us/misc/transitions.html
 
 function Effect.linear(t, b, c, d)
   return c*t/d + b
