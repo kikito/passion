@@ -2,6 +2,7 @@ local passion=passion
 local love=love
 local type=type
 local class=class
+local print=print
 
 module('passion.gui')
 
@@ -81,7 +82,7 @@ end
 
 -- MouseOut State
 local MouseOut = Button:addState('MouseOut')
-function MouseOut:poppedState()
+function MouseOut:continuedState()
   self:onMouseOut()
 end
 function MouseOut:update(dt)
@@ -90,7 +91,7 @@ function MouseOut:update(dt)
     self:pushState('MouseOver')
   end
 end
-function MouseOut:pushedState()
+function MouseOut:pausedState()
   self:onMouseOver()
 end
 
