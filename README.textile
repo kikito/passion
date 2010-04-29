@@ -61,7 +61,7 @@ It is worth noting that passion.Actor has a simplified version of these function
 
 h3. passion.gui
 
-An incomplete but functional gui library. It contains pannels, labels and buttons for now.
+An incomplete but functional gui library. It contains panels, labels and buttons for now.
 
 h3. passion.ai
 

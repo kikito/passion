@@ -7,7 +7,7 @@ local math=math
 
 module('passion.gui')
 
-Label = class('passion.gui.Label', passion.gui.Pannel)
+Label = class('passion.gui.Label', passion.gui.Panel)
 
 --obtain the default font
 love.graphics.setFont(12)
@@ -58,7 +58,7 @@ function Label:draw()
   local prevFont = love.graphics.getFont()
   local pr,pg,pb,pa = love.graphics.getColor() -- previous font color
 
-  super.draw(self) -- draws background and borders using the Pannel implementation
+  super.draw(self) -- draws background and borders using the Panel implementation
 
   love.graphics.setFont(font)
 
