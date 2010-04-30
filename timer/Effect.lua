@@ -7,9 +7,9 @@ local Effect = passion.timer.Effect
 local _getValue = function(self, name)
   local getter = self.object[Object:getterFor(name)]
   if(getter~=nil) then
-    return getter(self.object) or 0
+    return getter(self.object)
   else
-    return self.object[name] or 0
+    return self.object[name]
   end
 end
 
@@ -22,6 +22,39 @@ local _setValue = function(self, name, value)
   end
 end
 
+local _getDifference
+_getDifference = function(name, objective, beginning)
+  local to,tb = type(objective), type(beginning)
+  if(to=='number' or tb=='number') then
+    return (objective or 0) - (beginning or 0)
+  elseif(to=='table' or tb=='number') then
+    local result = {}
+    beginning = beginning or {}
+    for k,v in pairs(objective) do
+      result[k] = _getDifference(k, v, beginning[k])
+    end
+    return result
+  else
+    error('The property ' .. name .. ' must be a number or table. Was ' .. to .. ', ' .. tb)
+  end
+end
+
+local _easingWithTables
+_easingWithTables = function(name, easing, t, b, c, d)
+  local tb,tc = type(c)
+  if(tc=='number' or tb=='number') then
+    return easing(t, b or 0, c, d)
+  elseif(tc=='table' or tb=='table') then
+    local result = {}
+    b = b or {}
+    for k,v in pairs(c) do
+      result[k] = _easingWithTables(k, easing, t, b[k], v, d)
+    end
+    return result
+  else
+    error('The property ' .. name .. ' must be a number or table. Was ' .. tb .. ', ' .. tc)
+  end
+end
 
 ------------------------------------
 -- PUBLIC INSTANCE METHODS
@@ -36,7 +69,7 @@ function Effect:initialize(object, seconds, properties, easing, callback, ...)
   self.change = {}
   for name, objective in pairs(properties) do
     self.beginning[name] = _getValue(self, name)
-    self.change[name] = objective - self.beginning[name]
+    self.change[name] = _getDifference(name, objective, self.beginning[name])
   end
 
   super.initialize(self, seconds, callback, ...)
@@ -56,7 +89,10 @@ function Effect:tic(dt)
     self:destroy()
   else
     for name, objective in pairs(self.objective) do
-      local newValue = self.easing(self.running, self.beginning[name], self.change[name], self.seconds)
+      local newValue = _easingWithTables(
+        name, self.easing,
+        self.running, self.beginning[name], self.change[name], self.seconds
+      )
       _setValue(self, name, newValue)
     end
   end
