@@ -5,6 +5,7 @@ local pairs=pairs
 local assert=assert
 local type=type
 local unpack=unpack
+local Object=Object
 
 module('passion.gui')
 Panel = class('passion.gui.Panel', passion.Actor)
@@ -13,11 +14,12 @@ Panel = class('passion.gui.Panel', passion.Actor)
 
 local VALID_OPTIONS = { 
   'x', 'y', 'width', 'height', 'backgroundColor', 'borderColor', 'borderWidth', 'borderStyle', 'cornerRadius', 
-  'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding', 'alpha'
+  'padding', 'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding', 'alpha', 'parent'
 }
 
 function Panel:initialize(options)
   super.initialize(self)
+  self.internalCamera = passion.graphics.Camera:new()
   self:parseOptions(options, VALID_OPTIONS)
 end
 
@@ -38,66 +40,20 @@ Panel:getterSetter('borderColor', passion.colors.white)
 Panel:getterSetter('borderWidth', 1)
 Panel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Panel:getterSetter('cornerRadius', 0)
-Panel:setter('width')
-Panel:setter('height')
+Panel:getterSetter('width', 0)
+Panel:getterSetter('height', 0)
 Panel:setter('alpha')
+Panel:getterSetter('camera', passion.graphics.defaultCamera)
 
-function Panel:getWidth()
-  self.width = self.width or 0
-  local maxWidth = self:getMaxWidth()
-  if(maxWidth ~= nil and maxWidth < self.width) then self.width = maxWidth end
-  return self.width
-end
-
-function Panel:getHeight()
-  self.height = self.height or 0
-  local maxHeight = self:getMaxHeight()
-  if(maxHeight ~= nil and maxHeight < self.height) then self.height = maxHeight end
-  return self.height
-end
-
--- returns the max height that the Panel can have, if it is inside of another Panel (otherwise, nil)
--- FIXME: take local y into account
-function Panel:getMaxHeight()
-  local parent = self:getParent()
-  if(parent ~= nil) then return parent:getInternalHeight() end
-  return nil
-end
-
--- returns the max width that the Panel can have, if it is inside of another Panel (otherwise, nil)
--- FIXME: take local y into account
-function Panel:getMaxWidth()
-  local parent = self:getParent()
-  if(parent ~= nil) then return parent:getInternalWidth() end
-  return nil
-end
-
--- returns the height of the 'Internal' box (the space inside the Panel, with the padding taken out)
-function Panel:getInternalHeight()
-  return (self:getHeight() - self:getTopPadding() - self:getBottomPadding())
-end
-
--- returns the width of the 'Internal' box (the space inside the Panel, with the padding taken out)
-function Panel:getInternalWidth()
-  return (self:getWidth() - self:getLeftPadding() - self:getRightPadding())
-end
-
--- returns x, y, width and height, with x and y being the top-left corner
-function Panel:getBoundingBox()
-  local x, y = self:getPosition()
-  return x, y, self:getWidth(), self:getHeight()
-end
-
--- returns the boundingbox minus the padding. It also returns x,y,InternalWidth,InternalHeight
-function Panel:getInternalBox()
-  local x, y = self:getPosition()
-  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getInternalWidth(), self:getInternalHeight()
-end
+--------------------------------------------------
+--            PADDING METHODS
+--------------------------------------------------
 
 -- define getters & setters for paddings (i.e. setLeftPadding, getLeftPadding)
+-- paddings must be equal or greater than the corner radius, in all directions
 for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
   Panel:setter(paddingName)
-  Panel[Panel:getterFor(paddingName)] = function(self)
+  Panel[Object:getterFor(paddingName)] = function(self)
     local cornerRadius = self:getCornerRadius()
     if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
       self[paddingName] = cornerRadius
@@ -136,20 +92,46 @@ function Panel:getPadding()
   return self:getLeftPadding(), self:getRightPadding(), self:getTopPadding(), self:getBottomPadding()
 end
 
--- If you reset the corner Radius, and it is "bigger" than the padding, then adjust the padding.
--- FIXME: cornerRadius incrementing padding?
-function Panel:setCornerRadius(cornerRadius)
-  self.cornerRadius = cornerRadius
+--------------------------------------------------
+--     BOUNDING BOX AND INTERNAL BOX
+--------------------------------------------------
+
+-- returns x, y, width and height, with x and y being the top-left corner
+function Panel:getBoundingBox()
+  local x, y = self:getPosition()
+  return x, y, self:getWidth(), self:getHeight()
 end
 
-function Panel:getX()
-  local parent = self:getParent()
-  return self:getLocalX() + (parent == nil and 0 or (parent:getX() + parent:getLeftPadding()))
+-- returns the height of the 'Internal' box (the space inside the Panel, with the padding taken out)
+function Panel:getInternalHeight()
+  return (self:getHeight() - self:getTopPadding() - self:getBottomPadding())
 end
 
-function Panel:getY()
-  local parent = self:getParent()
-  return self:getLocalY() + (parent == nil and 0 or (parent:getY() + parent:getTopPadding()))
+-- returns the width of the 'Internal' box (the space inside the Panel, with the padding taken out)
+function Panel:getInternalWidth()
+  return (self:getWidth() - self:getLeftPadding() - self:getRightPadding())
+end
+
+-- returns the boundingbox minus the padding. It also returns x,y,InternalWidth,InternalHeight
+function Panel:getInternalBox()
+  local x, y = self:getPosition()
+  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getInternalWidth(), self:getInternalHeight()
+end
+
+
+--------------------------------------------------
+--     CAMERA & PARENT-RELATED METHODS
+--------------------------------------------------
+function Panel:setParent(parent)
+  self.parent = parent
+  if(parent~=nil) then
+    self:setCamera(parent:getInternalCamera())
+    self.internalCamera:setParent(parent:getInternalCamera())
+  end
+end
+
+function Panel:getCameras()
+  return {self:getCamera()}
 end
 
 function Panel:getAlpha()
@@ -159,29 +141,16 @@ function Panel:getAlpha()
   return 255
 end
 
-function Panel:getPosition()
-  local parent = self:getParent()
-  if(parent == nil) then
-    return self.x, self.y
-  else
-    return self:getX(), self:getY()
-  end
-end
-
-function Panel:getLocalX() return self.x or 0 end
-function Panel:getLocalY() return self.y or 0 end
-function Panel:getLocalPosition() return self.x, self.y end
-
 function Panel:getDrawOrder()
   if(self.drawOrder~=nil) then return self.drawOrder end
-  
   local parent = self:getParent()
-  if(parent~=nil) then
-    return parent:getDrawOrder() - 1
-  end
-  
+  if(parent~=nil) then return parent:getDrawOrder() - 1 end
   return 0
 end
+
+--------------------------------------------------
+--                DRAW METHOD
+--------------------------------------------------
 
 function Panel:draw()
   local x, y = self:getPosition()
@@ -221,6 +190,18 @@ function Panel:draw()
 
   end
 end
+
+--------------------------------------------------
+--             UPDATE METHOD
+--------------------------------------------------
+function Panel:update(dt)
+  local ix,iy,iw,ih = self:getInternalBox()
+  self.internalCamera:setPosition(self:getPosition())
+end
+
+--------------------------------------------------
+--                EFFECTS
+--------------------------------------------------
 
 function Panel:fadeIn(seconds, callback, ...)
   self:effect(seconds, {alpha=255}, 'linear', callback, ...)
