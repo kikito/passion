@@ -17,6 +17,10 @@ function Matrix:initialize()
   self:reset()
 end
 
+function Matrix:copy(other)
+  for k,v in pairs(other.elems) do self.elems[k] = v end
+end
+
 -- transform a matrix on the idendity matrix
 function Matrix:reset()
   self.elems = {1.0, 0.0, 0.0, 0.0, 1.0, 0.0}
@@ -82,24 +86,39 @@ local _cameras = _G.setmetatable({}, {__mode = "k"}) -- list of all available ca
 
 local _current = nil -- current camera being used
 
-local _recalculate = function(self)
+local _recalculate
+_recalculate = function(self)
 
-  if(self.dirty==false) then return end
-  self.matrix:reset()
+  if(self.parent ~= nil) then
+    self.dirty = self.dirty and _recalculate(self.parent)
+  end
+
+  if(self.dirty == false) then return false end
+
+  if(self.parent~=nil) then
+    self.matrix:copy(parent.matrix)
+    self.inverse:copy(parent.inverse)
+  else
+    self.matrix:reset()
+    self.inverse:reset()
+  end
+
   self.matrix:leftTranslate(self.x, self.y)
   self.matrix:leftRotate(self.angle)
   self.matrix:leftScale(self.sx, self.sy)
 
-  self.inverse:reset()
   self.inverse:leftTranslate(-self.x, -self.y)
   self.inverse:leftRotate(-self.angle)
   self.inverse:leftScale(1.0/self.sx, 1.0/self.sy)
 
   self.dirty = false
+  
+  return true
 end
 
-function Camera:initialize()
+function Camera:initialize(parent)
   super.initialize(self)
+  self.parent = parent
   self.matrix = Matrix:new()
   self.inverse = Matrix:new()
   self:reset()
@@ -116,19 +135,30 @@ function Camera:reset()
   self.dirty = true
 end
 
-function Camera:setPosition(x,y)
-  self.x, self.y = x,y
+function Camera:setParent(parent)
+  self.parent = parent
   self.dirty = true
+end
+
+function Camera:setPosition(x,y)
+  if(x ~= self.x or y ~= self.y) then
+    self.x, self.y = x,y
+    self.dirty = true
+  end
 end
 
 function Camera:setScale(sx,sy)
-  self.sx, self.sy = sx,sy
-  self.dirty = true
+  if(sx ~= self.sx or sy ~= self.sy) then
+    self.sx, self.sy = sx,sy
+    self.dirty = true
+  end
 end
 
 function Camera:setAngle(angle)
-  self.angle = angle
-  self.dirty = true
+  if(angle ~= self.angle) then
+    self.angle = angle
+    self.dirty = true
+  end
 end
 
 function Camera:getPosition()
@@ -141,6 +171,10 @@ end
 
 function Camera:getAngle()
   return self.angle
+end
+
+function Camera:getParent()
+  return self.parent
 end
 
 function Camera:translate(dx,dy)
@@ -158,20 +192,33 @@ end
 function Camera:set()
   if(_current==self) then return end
   
-  if(_current~=nil) then
-    _current:unset()
+  if(self.parent~=nil) then
+    self.parent:set()
+  elseif(_current~= nil and _current:unset(self)~=nil) then
+    return
   end
+  self:push()
+  _current = self
   _recalculate(self)
+end
+
+function Camera:push()
   _G.love.graphics.push()
   _G.love.graphics.translate(self.x, self.y)
   _G.love.graphics.rotate(self.angle)
   _G.love.graphics.scale(self.sx, self.sy)
-  _current = self
 end
 
-function Camera:unset()
-  _G.love.graphics.pop()
-  _current = nil
+function Camera:unset(target)
+  if(_current==nil) then return nil end
+  if(target==self) then
+    _current=target
+  else
+    _G.love.graphics.pop()
+    if(self.parent~=nil) then self.parent:unset(target) end
+    _current=nil
+  end
+  return _current
 end
 
 function Camera:draw(actor)
@@ -179,7 +226,6 @@ function Camera:draw(actor)
   actor:draw()
   self:unset()
 end
-
 
 function Camera:getMatrix()
   _recalculate(self)
