@@ -6,6 +6,8 @@ local setmetatable=setmetatable
 local math=math
 local assert=assert
 local pairs=pairs
+local print=print
+
 
 module('passion.physics')
 
@@ -26,13 +28,13 @@ local _addShape = function(self, shape)
 end
 
 -- calculates the maximum between two numbers. If the first is nil, just return the second
-local _max = function(a,b,c,d,e)
-  return math.max(a==nil and b or a, b,c,d,e)
+local _max = function(a,b, ...)
+  return math.max(a==nil and b or a, b, ...)
 end
 
 -- calculates the minimum between two numbers. If the first is nil, just return the second
-local _min = function(a,b,c,d,e)
-  return math.min(a==nil and b or a, b,c,d,e)
+local _min = function(a,b, ...)
+  return math.min(a==nil and b or a, b, ...)
 end
 
 -- Methods from body. They will be handled directly by the Actor
@@ -170,18 +172,27 @@ function Actor:getBoundingBox()
   local shapes = _private[self].shapes
 
   if(#shapes > 0) then
-    local x1,y1,x2,y2,x3,y3,x4,y4
     local maxX, maxY, minX, minY
-
     for _,shape in pairs(shapes) do
-      x1,y1,x2,y2,x3,y3,x4,y4 = shape:getBoundingBox()
-      maxX = _max(maxX, x1,x2,x3,x4)
-      maxY = _max(maxY, y1,y2,y3,y4)
-      minX = _min(minX, x1,x2,x3,x4)
-      minY = _min(minY, y1,y2,y3,y4)
+      local t = shape:getType()
+      if(t=='polygon') then
+        local points = { shape:getPoints() }
+        for i=1,#points,2 do
+          local x,y = points[i], points[i+1]
+          maxX, maxY = _max(maxX, x), _max(maxY, y)
+          minX, minY = _min(minX, x), _min(minY, y)
+        end
+      elseif(t=='circle') then
+        local cx,cy = shape:getWorldCenter()
+        local r = shape:getRadius()
+        maxX, maxY = _max(maxX, cx+r), _max(maxY, cy+r)
+        minX, minY = _min(minX, cx-r), _min(minX, cy-r)
+      else
+        error('Unknown shape type: ' .. t)
+      end
     end
     return minX, minY, maxX-minX, maxY-minY
-  else
+  else -- this body has no shapes. Return a box with position but no width or height
     local x, y = self:getPosition()
     return x, y, 0, 0
   end
