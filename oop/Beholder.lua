@@ -36,7 +36,11 @@ function Beholder:stopObserving(eventId, methodOrName)
   local eventsForSelf = event[self]
   if(eventsForSelf==nil) then return end
 
-  eventsForSelf[methodOrName] = nil
+  if(methodOrName~=nil) then
+    eventsForSelf[methodOrName] = nil
+  else
+    event[self] = setmetatable({}, {__mode = "k"})
+  end
 end
 
 
