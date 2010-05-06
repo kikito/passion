@@ -19,7 +19,7 @@ local VALID_OPTIONS = {
 
 function Panel:initialize(options)
   super.initialize(self)
-  self.internalCamera = passion.graphics.Camera:new()
+  self:setInternalCamera(passion.graphics.Camera:new())
   self:parseOptions(options, VALID_OPTIONS)
 end
 
@@ -43,6 +43,7 @@ Panel:getterSetter('cornerRadius', 0)
 Panel:getterSetter('width', 0)
 Panel:getterSetter('height', 0)
 Panel:setter('alpha')
+Panel:getterSetter('internalCamera')
 Panel:getterSetter('camera', passion.graphics.defaultCamera)
 
 --------------------------------------------------
@@ -112,10 +113,16 @@ function Panel:getInternalWidth()
   return (self:getWidth() - self:getLeftPadding() - self:getRightPadding())
 end
 
+-- returns the lower-left corner of the internal box
+function Panel:getInternalPosition()
+  local x, y = self:getPosition()
+  return x+self:getLeftPadding(), y+self:getTopPadding()
+end
+
 -- returns the boundingbox minus the padding. It also returns x,y,InternalWidth,InternalHeight
 function Panel:getInternalBox()
-  local x, y = self:getPosition()
-  return x+self:getLeftPadding(), y+self:getTopPadding(), self:getInternalWidth(), self:getInternalHeight()
+  local ix,iy = self:getInternalPosition()
+  return ix,iy, self:getInternalWidth(), self:getInternalHeight()
 end
 
 
@@ -195,8 +202,8 @@ end
 --             UPDATE METHOD
 --------------------------------------------------
 function Panel:update(dt)
-  local ix,iy,iw,ih = self:getInternalBox()
-  self.internalCamera:setPosition(self:getPosition())
+  local ix,iy = self:getInternalPosition()
+  self:getInternalCamera():setPosition(ix,iy)
 end
 
 --------------------------------------------------

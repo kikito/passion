@@ -60,6 +60,7 @@ function Button:onBlur() end
 
 
 function Button:checkPoint(mx, my)
+  mx,my = self:getCamera():invert(mx,my)
   local x, y = self:getPosition()
   local width = self:getWidth()
   local height = self:getHeight()
