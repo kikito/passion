@@ -103,7 +103,7 @@ function MouseOver:update(dt)
   passion.gui.Panel.update(self, dt)
   if((_focus == nil or _focus == self) and
       self:checkPoint(love.mouse.getPosition())==false) then
-    self:popState()
+    self:popState('MouseOver')
   elseif love.mouse.isDown('l') then
     self:pushState('Pressed')
   end
@@ -124,7 +124,7 @@ function Pressed:update(dt)
   if love.mouse.isDown('l')==false or
      (self:getFocus()==false and self:checkPoint(love.mouse.getPosition())==false) then
     self:onClick()
-    self:popState()
+    self:popState('Pressed')
   end
 end
 function Pressed:exitState()
