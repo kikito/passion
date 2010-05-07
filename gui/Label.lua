@@ -4,6 +4,7 @@ local class=class
 local assert=assert
 local unpack=unpack
 local math=math
+local print=print
 
 module('passion.gui')
 
@@ -67,12 +68,12 @@ function Label:draw()
     passion.graphics.setAlpha(self:getAlpha())
   end
 
+  --uncomment to debug the rectangle used for drawing the text
+  --love.graphics.rectangle('line', x, y, width, height)
+
   if(valign=='center') then y = (y + height/2.0 - fontSize/2.0)
   elseif(valign=='bottom') then y = y + height - fontSize
   end
-
-  --uncomment to debug the rectangle used for drawing the text
-  --love.graphics.rectangle('line', x, y, width, height)
 
   -- FIXME remove this when love starts printing fonts the top-leftly
   y = y + fontSize

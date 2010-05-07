@@ -57,7 +57,7 @@ for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottom
   Panel[Object:getterFor(paddingName)] = function(self)
     local cornerRadius = self:getCornerRadius()
     if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
-      self[paddingName] = cornerRadius
+      return cornerRadius
     end
     return self[paddingName] or 0
   end
@@ -172,13 +172,13 @@ function Panel:draw()
 
     local r, g, b, a = love.graphics.getColor()
 
-    if(backgroundColor~=nil) then
+    if(backgroundColor~=nil and backgroundColor~=false) then
       passion.graphics.setColor(backgroundColor)
       passion.graphics.setAlpha(alpha)
       passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
     end
 
-    if(borderColor~=nil) then
+    if(borderColor~=nil and borderColor~=false) then
       local prevLineWidth = love.graphics.getLineWidth()
       local prevLineStyle = love.graphics.getLineStyle()
 
