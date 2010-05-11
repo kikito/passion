@@ -2,7 +2,8 @@ passion.Actor = class('passion.Actor', StatefulObject)
 
 local Actor = passion.Actor
 
-Actor:includes(Beholder) --observer fields
+Actor:includes(Beholder) --observer methods
+Actor:includes(GetterSetter) -- getter/setter methods
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES

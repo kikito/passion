@@ -6,6 +6,7 @@ local assert=assert
 local type=type
 local unpack=unpack
 local Object=Object
+local GetterSetter=GetterSetter
 
 module('passion.gui')
 Panel = class('passion.gui.Panel', passion.Actor)
@@ -54,7 +55,7 @@ Panel:getterSetter('camera', passion.graphics.defaultCamera)
 -- paddings must be equal or greater than the corner radius, in all directions
 for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
   Panel:setter(paddingName)
-  Panel[Object:getterFor(paddingName)] = function(self)
+  Panel[GetterSetter:getterFor(paddingName)] = function(self)
     local cornerRadius = self:getCornerRadius()
     if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
       return cornerRadius

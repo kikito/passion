@@ -5,7 +5,7 @@ passion.timer.Effect = class('passion.timer.Effect', passion.timer.Timer)
 local Effect = passion.timer.Effect
 
 local _getValue = function(self, name)
-  local getter = self.object[Object:getterFor(name)]
+  local getter = self.object[GetterSetter:getterFor(name)]
   if(getter~=nil) then
     return getter(self.object)
   else
@@ -14,7 +14,7 @@ local _getValue = function(self, name)
 end
 
 local _setValue = function(self, name, value)
-  local setter = self.object[Object:setterFor(name)]
+  local setter = self.object[GetterSetter:setterFor(name)]
   if(setter~=nil) then
     setter(self.object, value)
   else

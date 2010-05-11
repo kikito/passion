@@ -84,23 +84,6 @@ setmetatable(Object, { __index = Object.__classDict, __newindex = Object.__class
   __call = Object.new
 })
 
--- Getter/Setter related methods
-function Object.getterFor(theClass, attr) return 'get' .. attr:gsub("^%l", string.upper) end
-function Object.setterFor(theClass, attr) return 'set' .. attr:gsub("^%l", string.upper) end
-function Object.getter(theClass, attributeName, defaultValue)
-  theClass[theClass:getterFor(attributeName)] = function(self) 
-    if(self[attributeName]~=nil) then return self[attributeName] end
-    return defaultValue
-  end
-end
-function Object.setter(theClass, attributeName)
-  theClass[theClass:setterFor(attributeName)] = function(self, value) self[attributeName] = value end
-end
-function Object.getterSetter(theClass, attributeName, defaultValue)
-  theClass:getter(attributeName, defaultValue)
-  theClass:setter(attributeName)
-end
-
 -- Returns true if aClass is a subclass of other, false otherwise
 function subclassOf(other, aClass)
   if aClass == nil or other==nil then return false end
