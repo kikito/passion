@@ -13,7 +13,7 @@ local _events = {}
 -- The Beholder module
 Beholder = {}
 
-function Beholder:observe(eventId, methodOrName)
+function Beholder:observe(eventId, methodOrName, ...)
 
   assert(self~=nil, "self is nil. invoke object:observe instead of object.observe")
 
@@ -26,7 +26,7 @@ function Beholder:observe(eventId, methodOrName)
   eventsForSelf[methodOrName] = eventsForSelf[methodOrName] or {}
   local actions = eventsForSelf[methodOrName]
 
-  table.insert(actions, methodOrName)
+  table.insert(actions, {method = methodOrName, params = {...} })
 end
 
 function Beholder:stopObserving(eventId, methodOrName)
@@ -58,16 +58,15 @@ function Beholder.trigger(eventId, ...)
   for object,eventsForObject in pairs(event) do
     for _,actions in pairs(eventsForObject) do
       for _,action in ipairs(actions) do
-          local method
-          if(type(action)=='string') then
-            method = object[action]
-            assert(type(method)=='function', 'method '.. action .. 'not found on object ' .. tostring(object))
-          elseif(type(action)=='function') then
-            method = action
-          else
-            error('Action must be a function or method name. Was ' .. tostring(action))
-          end
-        method(object, ...)
+        local method = action.method
+        if(type(method)=='string') then
+          method = object[method]
+        end
+        assert(type(method)=='function', 'Action must be a function or method name. Was ' .. tostring(method))
+        local params = {}
+        for k,v in ipairs(action.params) do params[k] = v end
+        for _,v in ipairs({...}) do table.insert(params, v) end
+        method(object, unpack(params))
       end
     end
   end
