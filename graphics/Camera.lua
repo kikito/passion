@@ -18,7 +18,7 @@ function Matrix:initialize()
 end
 
 function Matrix:copy(other)
-  for k,v in pairs(other.elems) do self.elems[k] = v end
+  for k,v in _G.pairs(other.elems) do self.elems[k] = v end
 end
 
 -- transform a matrix on the idendity matrix
@@ -96,23 +96,23 @@ _recalculate = function(self)
   if(self.dirty == false) then return false end
 
   if(self.parent~=nil) then
-    self.matrix:copy(parent.matrix)
-    self.inverse:copy(parent.inverse)
+    self.matrix:copy(self.parent.matrix)
+    self.inverse:copy(self.parent.inverse)
   else
     self.matrix:reset()
     self.inverse:reset()
   end
 
-  self.matrix:leftTranslate(self.x, self.y)
   self.matrix:leftRotate(self.angle)
   self.matrix:leftScale(self.sx, self.sy)
+  self.matrix:leftTranslate(self.x, self.y)
 
-  self.inverse:leftTranslate(-self.x, -self.y)
   self.inverse:leftRotate(-self.angle)
   self.inverse:leftScale(1.0/self.sx, 1.0/self.sy)
+  self.inverse:leftTranslate(-self.x, -self.y)
 
   self.dirty = false
-  
+
   return true
 end
 
@@ -136,29 +136,27 @@ function Camera:reset()
 end
 
 function Camera:setParent(parent)
+  if(parent == self.parent) then return end
   self.parent = parent
   self.dirty = true
 end
 
 function Camera:setPosition(x,y)
-  if(x ~= self.x or y ~= self.y) then
-    self.x, self.y = x,y
-    self.dirty = true
-  end
+  if(x == self.x and y == self.y) then return end
+  self.x, self.y = x,y
+  self.dirty = true
 end
 
 function Camera:setScale(sx,sy)
-  if(sx ~= self.sx or sy ~= self.sy) then
-    self.sx, self.sy = sx,sy
-    self.dirty = true
-  end
+  if(sx == self.sx and sy == self.sy) then return end
+  self.sx, self.sy = sx,sy
+  self.dirty = true
 end
 
 function Camera:setAngle(angle)
-  if(angle ~= self.angle) then
-    self.angle = angle
-    self.dirty = true
-  end
+  if(angle == self.angle) then return end
+  self.angle = angle
+  self.dirty = true
 end
 
 function Camera:getPosition()
@@ -204,9 +202,9 @@ end
 
 function Camera:push()
   _G.love.graphics.push()
-  _G.love.graphics.translate(self.x, self.y)
   _G.love.graphics.rotate(self.angle)
   _G.love.graphics.scale(self.sx, self.sy)
+  _G.love.graphics.translate(self.x, self.y)
 end
 
 function Camera:unset(target)
