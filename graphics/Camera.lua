@@ -75,6 +75,19 @@ function Matrix:leftRotate(ar)
     sn * e[1] + cs * e[4], sn * e[2] + cs * e[5], sn * e[3] + cs * e[6]
 end
 
+-- self:      other:
+-- e1 e2 e3   f1 f2 f3
+-- e4 e5 e6   f4 f5 f6
+--  0  0  1    0  0  1
+function Matrix:mult(other)
+  local e = self.elems
+  local e1,e2,e3,e4,e5,e6 = _G.unpack(self.elems)
+  local f1,f2,f3,f4,f5,f6 = _G.unpack(other.elems)
+  e[1], e[2], e[3], e[4], e[5], e[6] =
+    e1*f1 + e2*f4, e1*f2 + e2*f5, e1*f3+e2*f6+e3,
+    e4*f1 + e5*f4, e4*f2 + e5*f5, e4*f3+e5*f6+e6
+end
+
 ------------------------------------------
 --           CAMERA STUFF               --
 ------------------------------------------
@@ -90,26 +103,28 @@ local _recalculate
 _recalculate = function(self)
 
   if(self.parent ~= nil) then
-    self.dirty = self.dirty and _recalculate(self.parent)
+    self.dirty = self.dirty or _recalculate(self.parent)
   end
 
   if(self.dirty == false) then return false end
 
   if(self.parent~=nil) then
     self.matrix:copy(self.parent.matrix)
-    self.inverse:copy(self.parent.inverse)
   else
     self.matrix:reset()
-    self.inverse:reset()
   end
-
   self.matrix:leftRotate(self.angle)
   self.matrix:leftScale(self.sx, self.sy)
   self.matrix:leftTranslate(self.x, self.y)
 
+  self.inverse:reset()
   self.inverse:leftRotate(-self.angle)
   self.inverse:leftScale(1.0/self.sx, 1.0/self.sy)
   self.inverse:leftTranslate(-self.x, -self.y)
+
+  if(self.parent~=nil) then
+    self.inverse:mult(self.parent.inverse)
+  end
 
   self.dirty = false
 
