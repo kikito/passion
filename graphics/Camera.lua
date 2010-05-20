@@ -103,7 +103,7 @@ local _recalculate
 _recalculate = function(self)
 
   if(self.parent ~= nil) then
-    self.dirty = self.dirty or _recalculate(self.parent)
+    self.dirty = _recalculate(self.parent) or self.dirty
   end
 
   if(self.dirty == false) then return false end
