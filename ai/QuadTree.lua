@@ -34,7 +34,7 @@ end
 -- create child nodes
 local _createChildNodes = function(self)
   -- if the node is too small, stop dividing it
-  if(self.width * self.height < 10) then return end
+  if(self.width * self.height < 16) then return end
 
   local hw = self.width / 2.0
   local hh = self.height / 2.0
