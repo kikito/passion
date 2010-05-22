@@ -1,17 +1,7 @@
-local passion = passion
-local love = love
-local table = table
-local class = class
-local setmetatable=setmetatable
-local ipairs=ipairs
-local pairs=pairs
-local assert=assert
-local print=print
-
-
+local _G = _G
 module('passion.ai')
 
-QuadTree = class('passion.ai.QuadTree')
+QuadTree = _G.class('passion.ai.QuadTree')
 
 -- returns true if two boxes intersect
 local _intersect = function(ax1,ay1,aw,ah, bx1,by1,bw,bh)
@@ -39,10 +29,10 @@ local _createChildNodes = function(self)
   local hw = self.width / 2.0
   local hh = self.height / 2.0
 
-  table.insert(self.nodes, QuadTree:new(hw, hh, self.x,    self.y,    self.root, self))
-  table.insert(self.nodes, QuadTree:new(hw, hh, self.x,    self.y+hh, self.root, self))
-  table.insert(self.nodes, QuadTree:new(hw, hh, self.x+hw, self.y,    self.root, self))
-  table.insert(self.nodes, QuadTree:new(hw, hh, self.x+hw, self.y+hh, self.root, self))
+  self.nodes[1]= QuadTree:new(hw, hh, self.x,    self.y,    self.root, self)
+  self.nodes[2]= QuadTree:new(hw, hh, self.x,    self.y+hh, self.root, self)
+  self.nodes[3]= QuadTree:new(hw, hh, self.x+hw, self.y,    self.root, self)
+  self.nodes[4]= QuadTree:new(hw, hh, self.x+hw, self.y+hh, self.root, self)
 end
 
 -- removes a node's children if they are all empty
@@ -59,14 +49,14 @@ function QuadTree:initialize(width,height,x,y,root,parent)
   self.x, self.y, self.width, self.height = x or 0,y or 0,width,height
   self.parent = parent
 
-  self.items = setmetatable({}, {__mode = "k"})
+  self.items = _G.setmetatable({}, {__mode = "k"})
   self.itemsCount = 0
 
   self.nodes = {}
 
   if(root==nil) then
     self.root = self
-    self.assignments = setmetatable({}, {__mode = "k"})
+    self.assignments = _G.setmetatable({}, {__mode = "k"})
   else
     self.root = root
   end
@@ -80,7 +70,7 @@ end
 -- Counts the number of items on a QuadTree, including child nodes
 function QuadTree:getCount()
   local count = self.itemsCount
-  for _,node in ipairs(self.nodes) do
+  for _,node in _G.ipairs(self.nodes) do
     count = count + node:getCount()
   end
   return count
@@ -89,13 +79,13 @@ end
 -- Gets items of the quadtree, including child nodes
 function QuadTree:getAllItems()
   local results = {}
-  for _,node in ipairs(self.nodes) do
-    for _,item in ipairs(node:getAllItems()) do
-      table.insert(results, item)
+  for _,node in _G.ipairs(self.nodes) do
+    for _,item in _G.ipairs(node:getAllItems()) do
+      _G.table.insert(results, item)
     end
   end
-  for _,item in pairs(self.items) do
-    table.insert(results, item)
+  for _,item in _G.pairs(self.items) do
+    _G.table.insert(results, item)
   end
   return results
 end
@@ -105,35 +95,35 @@ function QuadTree:query(x,y,w,h)
   local results = {}
   local nx,ny,nw,nh
 
-  for _,item in pairs(self.items) do
+  for _,item in _G.pairs(self.items) do
     if(_intersect(x,y,w,h, item:getBoundingBox())) then
-      table.insert(results, item)
+      _G.table.insert(results, item)
     end
   end
 
-  for _,node in ipairs(self.nodes) do
+  for _,node in _G.ipairs(self.nodes) do
     nx,ny,nw,nh = node:getBoundingBox()
 
     -- case 1: area is contained on the node completely
     -- add the items that intersect and then break the loop
     if(_contained(x,y,w,h, nx,ny,nw,nh)) then
-      for _,item in ipairs(node:query(x,y,w,h)) do
-        table.insert(results, item)
+      for _,item in _G.ipairs(node:query(x,y,w,h)) do
+        _G.table.insert(results, item)
       end
       break
 
     -- case 2: node is completely contained on the area
     -- add all the items on the node and continue the loop
     elseif(_contained(nx,ny,nw,nh, x,y,w,h)) then
-      for _,item in ipairs(node:getAllItems()) do
-        table.insert(results, item)
+      for _,item in _G.ipairs(node:getAllItems()) do
+        _G.table.insert(results, item)
       end
 
     -- case 3: node and area are intersecting
     -- add the items contained on the node's children and continue the loop
     elseif(_intersect(x,y,w,h, nx,ny,nw,nh)) then
-      for _,item in ipairs(node:query(x,y,w,h)) do
-        table.insert(results, item)
+      for _,item in _G.ipairs(node:query(x,y,w,h)) do
+        _G.table.insert(results, item)
       end
     end
   end
@@ -148,11 +138,11 @@ function QuadTree:insert(item)
     -- Attempted to insert an item on a QuadTree that does not contain it; just return
     return nil
   end
-  assert(self.items[item] == nil, 'Attempted to insert the same item on the same node twice')
+  _G._G.assert(self.items[item] == nil, 'Attempted to insert the same item on the same node twice')
 
   if(#(self.nodes)==0) then _createChildNodes(self) end
 
-  for _,node in ipairs(self.nodes) do
+  for _,node in _G.ipairs(self.nodes) do
     if(node:insert(item) ~= nil) then return node end
   end
 
@@ -182,10 +172,10 @@ function QuadTree:update(item)
 end
 
 function QuadTree:draw()
-  for _,node in ipairs(self.nodes) do
+  for _,node in _G.ipairs(self.nodes) do
     node:draw()
   end
-  love.graphics.rectangle('line', self:getBoundingBox())
+  _G.love.graphics.rectangle('line', self:getBoundingBox())
 end
 
 
