@@ -1,6 +1,8 @@
-passion.timer.Timer = class('passion.timer.Timer', StatefulObject)
+local _G=_G
+module('passion.timer')
 
-local Timer = passion.timer.Timer
+Timer = _G.class('passion.timer.Timer', _G.StatefulObject)
+
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
@@ -26,7 +28,7 @@ function Timer:initialize(seconds, f, ...)
   self.arguments = {...}
   self.running = 0
 
-  table.insert(_timers, self)
+  _G.table.insert(_timers, self)
 
 end
 
@@ -38,7 +40,7 @@ function Timer:tic(dt)
   self.running = self.running + dt
 
   if(self.running >= self.seconds) then
-    self.callback(unpack(self.arguments))
+    self.callback(_G.unpack(self.arguments))
     self:destroy()
   end
 end
@@ -67,7 +69,7 @@ end
 
 -- Destroys the timer, removig it from the timers collection
 function Timer:destroy()
-  passion.remove(_timers, self)
+  _G.passion.remove(_timers, self)
 end
 
 ------------------------------------
@@ -76,7 +78,7 @@ end
 
 -- calls "tic" on all timers
 function Timer.update(theClass, dt)
-  passion.apply(_timers, 'tic', dt)
+  _G.passion.apply(_timers, 'tic', dt)
 end
 
 

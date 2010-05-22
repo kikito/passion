@@ -1,4 +1,5 @@
-passion.timer={}
+local _G=_G
+module('passion.timer')
 
 ------------------------------------
 -- PUBLIC FUNCTIONS
@@ -6,21 +7,21 @@ passion.timer={}
 
 -- These functions encapsulate the timer creation so it is transparent to the user.
 
-function passion.timer.after(seconds, f, ...)
-  return passion.timer.Timer:new(seconds, f, ...)
+function after(seconds, f, ...)
+  return _G.passion.timer.Timer:new(seconds, f, ...)
 end
 
-function passion.timer.every(seconds, f, ...)
-  return passion.timer.PeriodicTimer:new(seconds, f, ...)
+function every(seconds, f, ...)
+  return _G.passion.timer.PeriodicTimer:new(seconds, f, ...)
 end
 
-function passion.timer.effect(object, seconds, properties, easing, callback, ...)
-  return passion.timer.Effect:new(object, seconds, properties, easing, callback, ...)
+function effect(object, seconds, properties, easing, callback, ...)
+  return _G.passion.timer.Effect:new(object, seconds, properties, easing, callback, ...)
 end
 
 
-function passion.timer.update(dt)
-  passion.timer.Timer:update(dt)
+function update(dt)
+  _G.passion.timer.Timer:update(dt)
 end
 
 

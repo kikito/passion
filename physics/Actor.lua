@@ -1,40 +1,30 @@
-local passion=passion
-local love=love
-local class=class
-local table=table
-local setmetatable=setmetatable
-local math=math
-local assert=assert
-local pairs=pairs
-local print=print
-
-
+local _G=_G
 module('passion.physics')
 
-Actor = class('passion.physics.Actor', passion.Actor)
+Actor = _G.class('passion.physics.Actor', _G.passion.Actor)
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
 -- stores the shapes of each actor, and its pre-freezing properties
-local _private = setmetatable({}, {__mode = "k"})
+local _private = _G.setmetatable({}, {__mode = "k"})
 
 -- used for adding shapes to the collection of shapes of the body
 local _addShape = function(self, shape)
-  table.insert(_private[self].shapes, shape)
+  _G.table.insert(_private[self].shapes, shape)
   shape:setData(self)
   return shape
 end
 
 -- calculates the maximum between two numbers. If the first is nil, just return the second
 local _max = function(a,b, ...)
-  return math.max(a==nil and b or a, b, ...)
+  return _G.math.max(a==nil and b or a, b, ...)
 end
 
 -- calculates the minimum between two numbers. If the first is nil, just return the second
 local _min = function(a,b, ...)
-  return math.min(a==nil and b or a, b, ...)
+  return _G.math.min(a==nil and b or a, b, ...)
 end
 
 -- Methods from body. They will be handled directly by the Actor
@@ -52,7 +42,7 @@ local _delegatedMethods = {
 
 -- Draws a shape. Used internally by Actor.drawShapes
 local drawShape = function(shape, style)
-  passion.graphics.drawShape(style, shape)
+  _G.passion.graphics.drawShape(style, shape)
 end
 
 ------------------------------------
@@ -86,7 +76,7 @@ function Actor:setWorld(world)
 end
 
 function Actor:getWorld()
-  return self.world or passion.physics.getWorld()
+  return self.world or _G.passion.physics.getWorld()
 end
 
 --[[ Creates a new body for the current actor
@@ -95,11 +85,11 @@ end
 function Actor:newBody(x, y, mass)
   world = self:getWorld()
   if(x==nil or y==nil) then
-    self.body = love.physics.newBody(world)
+    self.body = _G.love.physics.newBody(world)
   elseif(mass==nil) then
-    self.body = love.physics.newBody(world, x, y)
+    self.body = _G.love.physics.newBody(world, x, y)
   else
-    self.body = love.physics.newBody(world, x, y, mass)
+    self.body = _G.love.physics.newBody(world, x, y, mass)
   end
   return self.body
 end
@@ -110,7 +100,7 @@ end
 function Actor:getBody(raiseError)
   raiseError = raiseError or false
   if raiseError then
-    assert(self.body ~= nil, "self.body is nil. You must invoke newBody or setBody on the Actor's constructor")
+    _G.assert(self.body ~= nil, "self.body is nil. You must invoke newBody or setBody on the Actor's constructor")
   end
   return self.body
 end
@@ -128,8 +118,8 @@ Creates a new CircleShape, or a CircleShape with an offset
 function Actor:newCircleShape(offsetX, offsetY, radius)
   local body = self:getBody()
   local shape
-  if(offsetY==nil or radius==nil) then shape= love.physics.newCircleShape(body, offsetX)
-  else shape = love.physics.newCircleShape(body, offsetX, offsetY, radius)
+  if(offsetY==nil or radius==nil) then shape= _G.love.physics.newCircleShape(body, offsetX)
+  else shape = _G.love.physics.newCircleShape(body, offsetX, offsetY, radius)
   end
   return _addShape(self, shape)
 end
@@ -150,9 +140,9 @@ Creates a new RectangleShape, or a RectangleShape with an offset
 function Actor:newRectangleShape(offsetX, offsetY, w, h, angle )
   local body = self:getBody()
   local shape
-  if(w==nil or h==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY)
-  elseif(angle==nil) then shape = love.physics.newRectangleShape(body, offsetX, offsetY, w, h)
-  else shape = love.physics.newRectangleShape(body, offsetX, offsetY, w, h, angle)
+  if(w==nil or h==nil) then shape = _G.love.physics.newRectangleShape(body, offsetX, offsetY)
+  elseif(angle==nil) then shape = _G.love.physics.newRectangleShape(body, offsetX, offsetY, w, h)
+  else shape = _G.love.physics.newRectangleShape(body, offsetX, offsetY, w, h, angle)
   end
   return _addShape(self, shape)
 end
@@ -160,7 +150,7 @@ end
 -- Creates a new PolygonShape, using the parameters as an array of points
 function Actor:newPolygonShape( ... )
   local body = self:getBody()
-  return _addShape(self, love.physics.newPolygonShape( body, ... ))
+  return _addShape(self, _G.love.physics.newPolygonShape( body, ... ))
 end
 
 --[[ Gets the body's bounding box.
@@ -173,7 +163,7 @@ function Actor:getBoundingBox()
 
   if(#shapes > 0) then
     local maxX, maxY, minX, minY
-    for _,shape in pairs(shapes) do
+    for _,shape in _G.pairs(shapes) do
       local t = shape:getType()
       if(t=='polygon') then
         local points = { shape:getPoints() }
@@ -200,13 +190,13 @@ end
 
 
 function Actor:applyToShapes(methodOrName, ...)
-  assert(self~=nil, 'Use actor:applyToShapes instead of actor.applyToShapes')
-  passion.apply(_private[self].shapes, methodOrName, ...)
+  _G.assert(self~=nil, 'Use actor:applyToShapes instead of actor.applyToShapes')
+  _G.passion.apply(_private[self].shapes, methodOrName, ...)
 end
 
 function Actor:applyToShapesSorted(sortFunc, methodOrName, ...)
-  assert(self~=nil, 'Use actor:applyToShapesSorted instead of actor.applyToShapesSorted')
-  passion.applySorted(_private[self].shapes, sortFunc, methodOrName, ... )
+  _G.assert(self~=nil, 'Use actor:applyToShapesSorted instead of actor.applyToShapesSorted')
+  _G.passion.applySorted(_private[self].shapes, sortFunc, methodOrName, ... )
 end
 
 -- Draws the shapes. Useful for debugging purposes
@@ -222,7 +212,7 @@ end
       end
   and the same goes for the rest of the functions
 ]]
-for _,method in pairs(_delegatedMethods) do
+for _,method in _G.pairs(_delegatedMethods) do
   Actor[method] = function(self, ...)
     local body = self:getBody()
     return body[method](body, ...)

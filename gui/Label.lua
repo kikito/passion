@@ -1,18 +1,12 @@
-local passion=passion
-local love=love
-local class=class
-local assert=assert
-local unpack=unpack
-local math=math
-local print=print
+local _G=_G
 
 module('passion.gui')
 
-Label = class('passion.gui.Label', passion.gui.Panel)
+Label = _G.class('passion.gui.Label', _G.passion.gui.Panel)
 
 --obtain the default font
-love.graphics.setFont(12)
-local defaultFont = love.graphics.getFont()
+_G.love.graphics.setFont(12)
+local defaultFont = _G.love.graphics.getFont()
 
 local VALID_OPTIONS = {'text', 'font', 'fontColor', 'align', 'valign'}
 
@@ -23,18 +17,18 @@ end
 
 Label:getterSetter('text',       '')
 Label:getterSetter('font',       defaultFont)
-Label:getterSetter('fontColor',  passion.colors.white)
+Label:getterSetter('fontColor',  _G.passion.colors.white)
 Label:getterSetter('align',      'left')   -- or right or center
 Label:getterSetter('valign',     'center') -- or top or bottom
 Label:getterSetter('borderColor', nil)
 
 function Label:getHeight()
-  return math.max(super.getHeight(self),
+  return _G.math.max(super.getHeight(self),
                   self:getTopPadding() + self:getBottomPadding() + self:getFontSize())
 end
 
 function Label:getWidth()
-  return math.max(super.getWidth(self),
+  return _G.math.max(super.getWidth(self),
                   self:getLeftPadding() + self:getRightPadding() + self:getTextWidth())
 end
 
@@ -56,16 +50,16 @@ function Label:draw()
   local fontSize = self:getFontSize()
   local text = self:getText()
   local x, y, width, height = self:getInternalBox()
-  local prevFont = love.graphics.getFont()
-  local pr,pg,pb,pa = love.graphics.getColor() -- previous font color
+  local prevFont = _G.love.graphics.getFont()
+  local pr,pg,pb,pa = _G.love.graphics.getColor() -- previous font color
 
   super.draw(self) -- draws background and borders using the Panel implementation
 
-  love.graphics.setFont(font)
+  _G.love.graphics.setFont(font)
 
   if(fontColor~=nil) then
-    passion.graphics.setColor(fontColor)
-    passion.graphics.setAlpha(self:getAlpha())
+    _G.passion.graphics.setColor(fontColor)
+    _G.passion.graphics.setAlpha(self:getAlpha())
   end
 
   --uncomment to debug the rectangle used for drawing the text
@@ -78,10 +72,10 @@ function Label:draw()
   -- FIXME remove this when love starts printing fonts the top-leftly
   y = y + fontSize
 
-  love.graphics.printf(text, x, y, width, align)
+  _G.love.graphics.printf(text, x, y, width, align)
 
   -- restore previous values of font & color
-  if(prevFont~=nil) then love.graphics.setFont(prevFont) end
-  love.graphics.setColor(pr, pg, pb, pa)
+  if(prevFont~=nil) then _G.love.graphics.setFont(prevFont) end
+  _G.love.graphics.setColor(pr, pg, pb, pa)
 
 end

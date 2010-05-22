@@ -1,9 +1,9 @@
-passion.Actor = class('passion.Actor', StatefulObject)
+local _G=_G
+module('passion')
 
-local Actor = passion.Actor
-
-Actor:includes(Beholder) --observer methods
-Actor:includes(GetterSetter) -- getter/setter methods
+Actor = _G.class('passion.Actor', _G.StatefulObject)
+Actor:includes(_G.Beholder) --observer methods
+Actor:includes(_G.GetterSetter) -- getter/setter methods
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -11,15 +11,15 @@ Actor:includes(GetterSetter) -- getter/setter methods
 
 -- The global list of actors
 _actors = {}
-_actors[Actor] = setmetatable({}, {__mode = "k"})
+_actors[Actor] = _G.setmetatable({}, {__mode = "k"})
 
 -- Each actor's children
-_children = setmetatable({}, {__mode = "k"})
+_children = _G.setmetatable({}, {__mode = "k"})
 
 -- Adds an actor to the "list of actors" of its class
 local _registerInstance -- we define the variable first so we can make the function recursive
 _registerInstance = function(theClass, actor)
-  table.insert(_actors[theClass], actor)
+  _G.table.insert(_actors[theClass], actor)
   if(theClass~=Actor) then _registerInstance(theClass.superclass,actor) end
 end
 
@@ -27,13 +27,13 @@ end
 local _unregisterInstance -- we define the variable first so we can make the function recursive
 _unregisterInstance = function(theClass, actor)
   if(theClass~=Actor) then _unregisterInstance(theClass.superclass,actor) end
-  passion.remove(_actors[theClass], actor)
+  _G.passion.remove(_actors[theClass], actor)
 end
 
 -- If methodOrname is a function, it returns it. If it is a name, it returns the method named.
 local _getMethod = function(actor, methodOrName)
-  local method = (type(methodOrName)=='string' and actor[methodOrName] or methodOrName)
-  assert(type(method)=='function', 'methodOrName(' .. tostring(methodOrName) .. ') must be either a function or a valid method name')
+  local method = (_G.type(methodOrName)=='string' and actor[methodOrName] or methodOrName)
+  _G.assert(_G.type(method)=='function', 'methodOrName(' .. _G.tostring(methodOrName) .. ') must be either a function or a valid method name')
   return method
 end
 
@@ -101,41 +101,41 @@ end
 -- Removes a child.
 -- if resetParent is set to 'true' (default) then the child parent will be set to nil
 function Actor:removeChild(child, resetParent)
-  passion.remove(_children[self], child)
+  _G.passion.remove(_children[self], child)
   if(resetParent~=false) then child:setParent(nil) end
 end
 
 -- Applies some method to all the children of an actor
 function Actor:applyToChildren(methodOrName, ... )
-  assert(self~=nil, 'Please call actor:applyToChildren instead of actor.applyToChildren')
-  passion.apply(_children[self], methodOrName, ... )
+  _G.assert(self~=nil, 'Please call actor:applyToChildren instead of actor.applyToChildren')
+  _G.passion.apply(_children[self], methodOrName, ... )
 end
 
 function Actor:applyToChildrenSorted(sortFunc, methodOrName, ... )
-  assert(self~=nil, 'Please call actor:applyToChildrenSorted instead of actor.applyToChildrenSorted')
-  passion.applySorted(_children[self], sortFunc, methodOrName, ... )
+  _G.assert(self~=nil, 'Please call actor:applyToChildrenSorted instead of actor.applyToChildrenSorted')
+  _G.passion.applySorted(_children[self], sortFunc, methodOrName, ... )
 end
 
 -- timer function. Executes one action after some seconds have passed
 function Actor:after(seconds, methodOrName, ...)
   local method = _getMethod(self, methodOrName)
-  return passion.timer.after(seconds, method, self, ...)
+  return _G.passion.timer.after(seconds, method, self, ...)
 end
 
 -- timer function. Executes an action periodically.
 function Actor:every(seconds, methodOrName, ...)
   local method = _getMethod(self, methodOrName)
-  return passion.timer.every(seconds, method, self, ...)
+  return _G.passion.timer.every(seconds, method, self, ...)
 end
 
 -- timer function. Changes the properties of the actor gradually over a period of time
 function Actor:effect(seconds, properties, easing, callback, ...)
-  return passion.timer.effect(self, seconds, properties, easing, callback, ...)
+  return _G.passion.timer.effect(self, seconds, properties, easing, callback, ...)
 end
 
 -- Override this to change which cameras are used to render an actor
 function Actor:getCameras()
-  return { passion.graphics.defaultCamera }
+  return { _G.passion.graphics.defaultCamera }
 end
 
 ------------------------------------
@@ -186,42 +186,42 @@ local _prevSubclass = Actor.subclass -- stores the "default" way of making subcl
      (creates the _actors array)
 ]]
 function Actor.subclass(theClass, name)
-  assert(theClass~=nil, 'Please invoke Class:subclass instead of Class.subclass')
+  _G.assert(theClass~=nil, 'Please invoke Class:subclass instead of Class.subclass')
   local theSubclass = _prevSubclass(theClass, name)
-  _actors[theSubclass] = setmetatable({}, {__mode = "k"})
+  _actors[theSubclass] = _G.setmetatable({}, {__mode = "k"})
   return theSubclass
 end
 
 -- Applies some method to all the actors of this class (not subclasses)
 function Actor.apply(theClass, methodOrName, ...)
-  assert(theClass~=nil, 'Please invoke Class:apply instead of Class.apply')
-  passion.apply(_actors[theClass], methodOrName, ...)
+  _G.assert(theClass~=nil, 'Please invoke Class:apply instead of Class.apply')
+  _G.passion.apply(_actors[theClass], methodOrName, ...)
 end
 
 -- Same as apply, but it allows for using a sorting function
 function Actor.applySorted(theClass, sortFunc, methodOrName, ...)
-  assert(theClass~=nil, 'Please invoke Class:applySorted instead of Class.applySorted')
-  passion.applySorted(_actors[theClass], sortFunc, methodOrName, ... )
+  _G.assert(theClass~=nil, 'Please invoke Class:applySorted instead of Class.applySorted')
+  _G.passion.applySorted(_actors[theClass], sortFunc, methodOrName, ... )
 end
 
 local resourceTypes = {
-  images = passion.graphics.getImage,
-  sources = passion.audio.getSource,
-  fonts = passion.fonts.getFont
+  images = _G.passion.graphics.getImage,
+  sources = _G.passion.audio.getSource,
+  fonts = _G.passion.fonts.getFont
 }
 -- Loads images, fonts, sounds & music onto the actor class itself
 function Actor.load(theClass, resourceTypesToLoad)
-  assert(theClass~=nil, 'Please invoke Class:load instead of Class.load')
+  _G.assert(theClass~=nil, 'Please invoke Class:load instead of Class.load')
   local resourceTypeToLoad
-  for resourceTypeName,loadingMethod in pairs(resourceTypes) do
+  for resourceTypeName,loadingMethod in _G.pairs(resourceTypes) do
     resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]
-    if(type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
+    if(_G.type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
       -- create theClass.fonts if it doesn't exist
       if(theClass[resourceTypeName]==nil) then theClass[resourceTypeName] = {} end
       -- parse all the resource names, invoking the right loadingMethod with the right parameters
-      for resourceName, params in pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
-        if(type(params) == 'table') then
-          theClass[resourceTypeName][resourceName] = loadingMethod(unpack(params))
+      for resourceName, params in _G.pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
+        if(_G.type(params) == 'table') then
+          theClass[resourceTypeName][resourceName] = loadingMethod(_G.unpack(params))
         else
           theClass[resourceTypeName][resourceName] = loadingMethod(params)
         end

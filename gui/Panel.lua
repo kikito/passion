@@ -1,15 +1,7 @@
-local passion=passion
-local love=love
-local class=class
-local pairs=pairs
-local assert=assert
-local type=type
-local unpack=unpack
-local Object=Object
-local GetterSetter=GetterSetter
+local _G=_G
 
 module('passion.gui')
-Panel = class('passion.gui.Panel', passion.Actor)
+Panel = _G.class('passion.gui.Panel', _G.passion.Actor)
 
 -- instance methods
 
@@ -20,24 +12,24 @@ local VALID_OPTIONS = {
 
 function Panel:initialize(options)
   super.initialize(self)
-  self:setInternalCamera(passion.graphics.Camera:new())
+  self:setInternalCamera(_G.passion.graphics.Camera:new())
   self:parseOptions(options, VALID_OPTIONS)
 end
 
 function Panel:parseOptions(options, validOptions)
   options = options or {}
-  for _,option in pairs(validOptions) do
+  for _,option in _G.pairs(validOptions) do
     if(options[option]~=nil) then
       local setterName = self.class:setterFor(option)
       local setter = self[setterName]
-      assert(setter~=nil, "Setter function " .. setterName .. " not found on class " .. self.class.name)
+      _G.assert(setter~=nil, "Setter function " .. setterName .. " not found on class " .. self.class.name)
       setter(self, options[option])
     end
   end
 end
 
 Panel:getterSetter('backgroundColor')
-Panel:getterSetter('borderColor', passion.colors.white)
+Panel:getterSetter('borderColor', _G.passion.colors.white)
 Panel:getterSetter('borderWidth', 1)
 Panel:getterSetter('borderStyle', 'smooth') -- it can also be 'rough'
 Panel:getterSetter('cornerRadius', 0)
@@ -45,7 +37,7 @@ Panel:getterSetter('width', 0)
 Panel:getterSetter('height', 0)
 Panel:setter('alpha')
 Panel:getterSetter('internalCamera')
-Panel:getterSetter('camera', passion.graphics.defaultCamera)
+Panel:getterSetter('camera', _G.passion.graphics.defaultCamera)
 
 --------------------------------------------------
 --            PADDING METHODS
@@ -53,9 +45,9 @@ Panel:getterSetter('camera', passion.graphics.defaultCamera)
 
 -- define getters & setters for paddings (i.e. setLeftPadding, getLeftPadding)
 -- paddings must be equal or greater than the corner radius, in all directions
-for _,paddingName in pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
+for _,paddingName in _G.pairs({'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'}) do 
   Panel:setter(paddingName)
-  Panel[GetterSetter:getterFor(paddingName)] = function(self)
+  Panel[_G.GetterSetter:getterFor(paddingName)] = function(self)
     local cornerRadius = self:getCornerRadius()
     if(self[paddingName]==nil or cornerRadius > self[paddingName]) then
       return cornerRadius
@@ -72,12 +64,12 @@ end
      For finer control, use setLeftPadding, setRightPadding, setTopPadding & setBottomPadding
 ]]
 function Panel:setPadding(left, right, top, bottom)
-  if(type(left) == 'table') then
+  if(_G.type(left) == 'table') then
     right = left[2]
     top = left[3]
     bottom = left[4]
     left = left[1]
-  elseif(type(left) == 'number' and right==nil and top==nil and bottom==nil) then
+  elseif(_G.type(left) == 'number' and right==nil and top==nil and bottom==nil) then
     right = left
     top = left
     bottom = left
@@ -171,30 +163,30 @@ function Panel:draw()
     local borderColor = self:getBorderColor()
     local alpha = self:getAlpha()
 
-    local r, g, b, a = love.graphics.getColor()
+    local r, g, b, a = _G.love.graphics.getColor()
 
     if(backgroundColor~=nil and backgroundColor~=false) then
-      passion.graphics.setColor(backgroundColor)
-      passion.graphics.setAlpha(alpha)
-      passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
+      _G.passion.graphics.setColor(backgroundColor)
+      _G.passion.graphics.setAlpha(alpha)
+      _G.passion.graphics.roundedRectangle('fill', x, y, width, height, self:getCornerRadius())
     end
 
     if(borderColor~=nil and borderColor~=false) then
-      local prevLineWidth = love.graphics.getLineWidth()
-      local prevLineStyle = love.graphics.getLineStyle()
+      local prevLineWidth = _G.love.graphics.getLineWidth()
+      local prevLineStyle = _G.love.graphics.getLineStyle()
 
-      passion.graphics.setColor(borderColor)
-      passion.graphics.setAlpha(alpha)
-      love.graphics.setLineStyle(self:getBorderStyle())
-      love.graphics.setLineWidth(self:getBorderWidth())
+      _G.passion.graphics.setColor(borderColor)
+      _G.passion.graphics.setAlpha(alpha)
+      _G.love.graphics.setLineStyle(self:getBorderStyle())
+      _G.love.graphics.setLineWidth(self:getBorderWidth())
 
-      passion.graphics.roundedRectangle('line', x, y, width, height, self:getCornerRadius())
+      _G.passion.graphics.roundedRectangle('line', x, y, width, height, self:getCornerRadius())
 
-      love.graphics.setLineWidth(prevLineWidth)
-      love.graphics.setLineStyle(prevLineStyle)
+      _G.love.graphics.setLineWidth(prevLineWidth)
+      _G.love.graphics.setLineStyle(prevLineStyle)
     end
 
-    love.graphics.setColor(r,g,b,a)
+    _G.love.graphics.setColor(r,g,b,a)
 
   end
 end

@@ -1,12 +1,7 @@
-local passion=passion
-local love=love
-local type=type
-local class=class
-local print=print
-
+local _G=_G
 module('passion.gui')
 
-Button = class('passion.gui.Button', passion.gui.Label)
+Button = _G.class('passion.gui.Button', _G.passion.gui.Label)
 
 local VALID_OPTIONS = {
   'onClick', 'onPress', 'onRelease', 'onMouseOver', 'onMouseOut', 'onFocus', 'onBlur', 'focus'
@@ -16,12 +11,12 @@ local _focus = nil
 
 local _setFocus= function(button)
   if(_focus ~= nil and _focus ~= button) then
-    if(type(_focus.onBlur)=='function') then _focus:onBlur() end
+    if(_G.type(_focus.onBlur)=='function') then _focus:onBlur() end
     _focus = nil
   end
   
   if(_focus ~= button) then
-    if(type(button.onFocus)=='function') then button:onFocus() end
+    if(_G.type(button.onFocus)=='function') then button:onFocus() end
     _focus = button
   end
 end
@@ -43,7 +38,7 @@ Button:getterSetter('onBlur')
 Button:getterSetter('focus', true) -- if set to false, buttons don't capture the mouse when clicked
 
 -- make button borders visible by default, with text centered, and some border
-Button:getter('borderColor', passion.colors.white)
+Button:getter('borderColor', _G.passion.colors.white)
 Button:getter('borderWidth', 2)
 Button:getter('cornerRadius', 5)
 Button:getter('padding', 5)
@@ -87,9 +82,9 @@ function MouseOut:continuedState()
   self:onMouseOut()
 end
 function MouseOut:update(dt)
-  passion.gui.Panel.update(self, dt)
+  _G.passion.gui.Panel.update(self, dt)
   if((_focus == nil or _focus == self) and
-      self:checkPoint(love.mouse.getPosition())==true) then
+      self:checkPoint(_G.love.mouse.getPosition())==true) then
     self:pushState('MouseOver')
   end
 end
@@ -100,11 +95,11 @@ end
 -- MouseOver State
 local MouseOver = Button:addState('MouseOver')
 function MouseOver:update(dt)
-  passion.gui.Panel.update(self, dt)
+  _G.passion.gui.Panel.update(self, dt)
   if((_focus == nil or _focus == self) and
-      self:checkPoint(love.mouse.getPosition())==false) then
+      self:checkPoint(_G.love.mouse.getPosition())==false) then
     self:popState('MouseOver')
-  elseif love.mouse.isDown('l') then
+  elseif _G.love.mouse.isDown('l') then
     self:pushState('Pressed')
   end
 end
@@ -120,9 +115,9 @@ function Pressed:enterState()
   self:onPress()
 end
 function Pressed:update(dt)
-  passion.gui.Panel.update(self, dt)
-  if love.mouse.isDown('l')==false or
-     (self:getFocus()==false and self:checkPoint(love.mouse.getPosition())==false) then
+  _G.passion.gui.Panel.update(self, dt)
+  if _G.love.mouse.isDown('l')==false or
+     (self:getFocus()==false and self:checkPoint(_G.love.mouse.getPosition())==false) then
     self:onClick()
     self:popState('Pressed')
   end

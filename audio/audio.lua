@@ -1,7 +1,4 @@
-local passion=passion
-local love=love
-local table=table
-local ipairs=ipairs
+local _G = _G
 
 module('passion.audio')
 
@@ -30,7 +27,7 @@ local _getFreeSource = function(source)
 
   local pool = _pools[source]
   if(pool==nil) then return nil end
-  for _,pooledSource in ipairs(pool) do
+  for _,pooledSource in _G.ipairs(pool) do
     if(pooledSource:isStopped()) then
       return pooledSource
     end
@@ -57,7 +54,7 @@ function getSource(pathOrFileOrData, sourceType, instances)
     sourceList = _sources[pathOrFileOrData]
   end
 
-  local source = passion._getResource(sourceList, love.audio.newSource, sourceType, pathOrFileOrData, sourceType)
+  local source = _G.passion._getResource(sourceList, _G.love.audio.newSource, sourceType, pathOrFileOrData, sourceType)
 
   -- This creates copies of the source if needed
   if(instances > 1) then
@@ -69,7 +66,7 @@ function getSource(pathOrFileOrData, sourceType, instances)
     if(#pool < instances) then
       local newInstances = instances-#pool-1
       for i = 1, newInstances, 1 do
-        table.insert(pool, love.audio.newSource(pathOrFileOrData, sourceType))
+        _G.table.insert(pool, _G.love.audio.newSource(pathOrFileOrData, sourceType))
       end
     end
   end
@@ -84,6 +81,6 @@ function play(source)
   local freeSource = _getFreeSource(source)
 
   if(freeSource~=nil) then
-    love.audio.play(freeSource)
+    _G.love.audio.play(freeSource)
   end
 end

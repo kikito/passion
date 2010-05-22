@@ -1,11 +1,12 @@
+local _G=_G
+module('passion.timer')
+
 -- a timer that gradually changes the values of the attributes of an object, in a given time.
 -- optionally, at the end, it can invoke a function.
-passion.timer.Effect = class('passion.timer.Effect', passion.timer.Timer)
-
-local Effect = passion.timer.Effect
+Effect = _G.class('passion.timer.Effect', _G.passion.timer.Timer)
 
 local _getValue = function(self, name)
-  local getter = self.object[GetterSetter:getterFor(name)]
+  local getter = self.object[_G.GetterSetter:getterFor(name)]
   if(getter~=nil) then
     return getter(self.object)
   else
@@ -14,7 +15,7 @@ local _getValue = function(self, name)
 end
 
 local _setValue = function(self, name, value)
-  local setter = self.object[GetterSetter:setterFor(name)]
+  local setter = self.object[_G.GetterSetter:setterFor(name)]
   if(setter~=nil) then
     setter(self.object, value)
   else
@@ -24,35 +25,35 @@ end
 
 local _getDifference
 _getDifference = function(name, objective, beginning)
-  local to,tb = type(objective), type(beginning)
+  local to,tb = _G.type(objective), _G.type(beginning)
   if(to=='number' or tb=='number') then
     return (objective or 0) - (beginning or 0)
   elseif(to=='table' or tb=='number') then
     local result = {}
     beginning = beginning or {}
-    for k,v in pairs(objective) do
+    for k,v in _G.pairs(objective) do
       result[k] = _getDifference(k, v, beginning[k])
     end
     return result
   else
-    error('The property ' .. name .. ' must be a number or table. Was ' .. to .. ', ' .. tb)
+    _G.error('The property ' .. name .. ' must be a number or table. Was ' .. to .. ', ' .. tb)
   end
 end
 
 local _easingWithTables
 _easingWithTables = function(name, easing, t, b, c, d)
-  local tb,tc = type(c)
+  local tb,tc = _G.type(c)
   if(tc=='number' or tb=='number') then
     return easing(t, b or 0, c, d)
   elseif(tc=='table' or tb=='table') then
     local result = {}
     b = b or {}
-    for k,v in pairs(c) do
+    for k,v in _G.pairs(c) do
       result[k] = _easingWithTables(k, easing, t, b[k], v, d)
     end
     return result
   else
-    error('The property ' .. name .. ' must be a number or table. Was ' .. tb .. ', ' .. tc)
+    _G.error('The property ' .. name .. ' must be a number or table. Was ' .. tb .. ', ' .. tc)
   end
 end
 
@@ -62,12 +63,12 @@ end
 function Effect:initialize(object, seconds, properties, easing, callback, ...)
 
   self.object = object
-  self.easing = type(easing)=='function' and easing or (Effect[easing] or Effect.linear)
+  self.easing = _G.type(easing)=='function' and easing or (Effect[easing] or Effect.linear)
   self.objective = properties
 
   self.beginning = {}
   self.change = {}
-  for name, objective in pairs(properties) do
+  for name, objective in _G.pairs(properties) do
     self.beginning[name] = _getValue(self, name)
     self.change[name] = _getDifference(name, objective, self.beginning[name])
   end
@@ -80,15 +81,15 @@ function Effect:tic(dt)
   self.running = self.running + dt
   
   if(self.running > self.seconds) then
-    for name, objective in pairs(self.objective) do
+    for name, objective in _G.pairs(self.objective) do
       _setValue(self, name, objective)
     end
-    if(type(self.callback)=="function") then
-      self.callback(unpack(self.arguments))
+    if(_G.type(self.callback)=="function") then
+      self.callback(_G.unpack(self.arguments))
     end
     self:destroy()
   else
-    for name, objective in pairs(self.objective) do
+    for name, objective in _G.pairs(self.objective) do
       local newValue = _easingWithTables(
         name, self.easing,
         self.running, self.beginning[name], self.change[name], self.seconds

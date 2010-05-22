@@ -1,7 +1,9 @@
--- a timer that executes its callback periodically, instead of just once.
-passion.timer.PeriodicTimer = class('passion.timer.PeriodicTimer', passion.timer.Timer)
+local _G=_G
+module('passion.timer')
 
-local PeriodicTimer = passion.timer.PeriodicTimer
+-- a timer that executes its callback periodically, instead of just once.
+PeriodicTimer = _G.class('passion.timer.PeriodicTimer', _G.passion.timer.Timer)
+
 ------------------------------------
 -- PUBLIC INSTANCE METHODS
 ------------------------------------

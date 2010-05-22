@@ -1,8 +1,4 @@
-local passion=passion
-local love=love
-local string=string
-local type=type
-
+local _G=_G
 module('passion.fonts')
 
 ------------------------------------
@@ -24,15 +20,15 @@ local _fonts = {}
   * If an image is provided, it tries to create an image font
 ]]
 function getFont(sizeOrPathOrImage, sizeOrGlyphs)
-  if(type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
+  if(_G.type(sizeOrPathOrImage)=='number') then --sizeOrPathOrImage is a size -> default font
 
     local size = sizeOrPathOrImage
-    return passion._getResource(_fonts, love.graphics.newFont, size, size)
+    return _G.passion._getResource(_fonts, _G.love.graphics.newFont, size, size)
 
-  elseif(type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
+  elseif(_G.type(sizeOrPathOrImage=='string')) then --sizeOrPathOrImage is a path -> ttf or imagefont
 
     local path = sizeOrPathOrImage
-    local extension = string.sub(path,-3)
+    local extension = _G.string.sub(path,-3)
 
     local fontList = _fonts[path]
     if(fontList == nil) then
@@ -40,20 +36,20 @@ function getFont(sizeOrPathOrImage, sizeOrGlyphs)
       fontList = _fonts[path]
     end
 
-    if('ttf' == string.lower(extension)) then -- it is a truetype font
+    if('ttf' == _G.string.lower(extension)) then -- it is a truetype font
       local size = sizeOrGlyphs
-      return passion._getResource(fontList, love.graphics.newFont, size, path, size)
+      return _G.passion._getResource(fontList, _G.love.graphics.newFont, size, path, size)
     else -- it is an image font, with a path
-      local image = passion.graphics.getImage(path)
+      local image = _G.passion.graphics.getImage(path)
       local glyphs = sizeOrGlyphs
-      return passion._getResource(fontList, love.graphics.newImageFont, path, image, glyphs)
+      return _G.passion._getResource(fontList, _G.love.graphics.newImageFont, path, image, glyphs)
     end
 
   else -- sizeOrPathOrImage is an image -> imagefont, with an image
 
     local image = sizeOrPathOrImage
     local glyphs = sizeOrGlyphs
-    return passion._getResource(_fonts, love.graphics.newImageFont, image, image, glyphs)
+    return _G.passion._getResource(_fonts, _G.love.graphics.newImageFont, image, image, glyphs)
 
   end
 

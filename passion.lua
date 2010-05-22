@@ -1,14 +1,4 @@
-local love = love
-local Beholder = Beholder
-local assert = assert
-local print = print
-local setmetatable = setmetatable
-local ipairs = ipairs
-local table=table
-local type=type
-local pairs=pairs
-local tostring=tostring
-local string=string
+local _G=_G
 
 -- This file contains the core methods of the passion lib
 module('passion')
@@ -20,10 +10,10 @@ module('passion')
 loveVersion = 62
 loveVersionString = '0.6.2'
 
-assert(loveVersion <= love._version, 'Your love version (' .. love._version_string .. ') is too old. PASSION requires love ' .. loveVersionString .. '.')
+_G.assert(loveVersion <= _G.love._version, 'Your love version (' .. _G.love._version_string .. ') is too old. PASSION requires love ' .. loveVersionString .. '.')
 
-if(loveVersion < love._version) then
-  print('Warning: Your love version (' .. love._version_string .. ') is newer than the one this PASSION lib was designed for(' .. loveVersionString .. ')')
+if(loveVersion < _G.love._version) then
+  _G.print('Warning: Your love version (' .. _G.love._version_string .. ') is newer than the one this PASSION lib was designed for(' .. loveVersionString .. ')')
 end
 
 ------------------------------------
@@ -32,7 +22,7 @@ end
 
 -- function used for drawing. Used in draw callback
 local _drawWithCameras = function(actor)
-  for _,camera in pairs(actor:getCameras()) do
+  for _,camera in _G.pairs(actor:getCameras()) do
     camera:set()
     actor:draw()
   end
@@ -51,7 +41,7 @@ end
 
 -- I did this small function because I never remember how to exit in LÖVE :)
 function exit()
-  love.event.push('q')
+  _G.love.event.push('q')
 end
 
 ------------------------------------
@@ -74,27 +64,27 @@ end
 
 -- guess
 function keypressed(key)
-  Beholder.trigger('keypressed_' .. key)
+  _G.Beholder.trigger('keypressed_' .. key)
 end
 
 function keyreleased(key)
-  Beholder.trigger('keyreleased_' .. key)
+  _G.Beholder.trigger('keyreleased_' .. key)
 end
 
 function mousepressed(x, y, button)
-  Beholder.trigger('mousepressed_' .. button, x, y)
+  _G.Beholder.trigger('mousepressed_' .. button, x, y)
 end
 
 function mousereleased(x, y, button)
-  Beholder.trigger('mousereleased_' .. button, x, y)
+  _G.Beholder.trigger('mousereleased_' .. button, x, y)
 end
 
 function joystickpressed(joystick, button)
-  Beholder.trigger('joystickpressed_' .. joystick .. '_' .. button)
+  _G.Beholder.trigger('joystickpressed_' .. joystick .. '_' .. button)
 end
 
 function joystickreleased(joystick, button)
-  Beholder.trigger('joystickreleased_' .. joystick .. '_' .. button)
+  _G.Beholder.trigger('joystickreleased_' .. joystick .. '_' .. button)
 end
 
 ------------------------------------
@@ -125,13 +115,13 @@ end
   
 ]]
 
-for _,f in ipairs({
+for _,f in _G.ipairs({
   'draw', 'update',
   'joystickpressed', 'joystickreleased',
   'keypressed', 'keyreleased',
   'mousepressed', 'mousereleased',
 }) do
-  love[f] = function(...)
+  _G.love[f] = function(...)
     _M[f](...)
   end
 end
@@ -152,9 +142,9 @@ This is useful for implementing things like passion.apply easily.
 ]]
 function invoke(object, methodOrName, ...)
   local method = methodOrName
-  if(type(methodOrName)=='string') then method = object[methodOrName] end
+  if(_G.type(methodOrName)=='string') then method = object[methodOrName] end
 
-  assert(type(method)=='function', tostring(methodOrName) .. ' must be a function or function name')
+  _G.assert(_G.type(method)=='function', _G.tostring(methodOrName) .. ' must be a function or function name')
 
   return method(object, ...)
 end
@@ -176,7 +166,7 @@ end
     c:update(dt)
 ]]
 function apply(collection, methodOrName, ... )
-  for _,object in pairs(collection) do
+  for _,object in _G.pairs(collection) do
     if(invoke(object, methodOrName, ...) == false) then return end
   end
 end
@@ -185,14 +175,14 @@ end
 function applySorted(collection, sortFunc, methodOrName, ... )
 
   -- If sortFunc exists, make a copy of collection and sort it
-  if(type(sortFunc)=='function') then
+  if(_G.type(sortFunc)=='function') then
     local collectionCopy = {}
     local i = 1
-    for _,object in pairs(collection) do
+    for _,object in _G.pairs(collection) do
       collectionCopy[i]=object
       i=i+1
     end
-    table.sort(collectionCopy, sortFunc)
+    _G.table.sort(collectionCopy, sortFunc)
     collection = collectionCopy
   end
 
@@ -206,13 +196,13 @@ end
 ]]
 function remove(collection, object)
   local index
-  for i, v in pairs(collection) do
+  for i, v in _G.pairs(collection) do
     if v == object then
       index = i
       break
     end
   end
-  if(index~=nil) then table.remove(collection, index) end
+  if(index~=nil) then _G.table.remove(collection, index) end
 end
 
 -- prints a table on the console, recursively. Useful for debugging.
@@ -222,12 +212,12 @@ function dumpTable(t, level, depth)
   
   if(level>=depth) then return end
 
-  print(string.rep("   ", level) .. tostring(t) .. ':')
+  _G.print(_G.string.rep("   ", level) .. _G.tostring(t) .. ':')
 
-  if(type(t)=='table') then
-    for k,object in pairs(t) do
-      print(string.rep("   ", level+1) .. tostring(k) .. ' => '.. tostring(object) )
-      if(type(object)=='table') then dumpTable(object, level + 1) end
+  if(_G.type(t)=='table') then
+    for k,object in _G.pairs(t) do
+      _G.print(_G.string.rep("   ", level+1) .. _G.tostring(k) .. ' => '.. _G.tostring(object) )
+      if(_G.type(object)=='table') then dumpTable(object, level + 1) end
     end
   end
 end

@@ -1,8 +1,4 @@
-local passion=passion
-local love=love
-local pairs=pairs
-local assert=assert
-
+local _G=_G
 module('passion.physics')
 
 ------------------------------------
@@ -35,20 +31,20 @@ local _delegatedWorldMethods = {
 
 -- creates a new world with a given with and height. It also initializes a "ground" body at 0,0
 function newWorld(w, h)
-  _world = love.physics.newWorld( w, h )
+  _world = _G.love.physics.newWorld( w, h )
   _ground = newBody(0, 0, 0)
   return _world
 end
 
 -- Returns the world. If inexistant, it fails
 function getWorld()
-  assert(_world ~= nil, "passion.physics.world is nil. You must invoke passion.newWorld")
+  _G.assert(_world ~= nil, "passion.physics.world is nil. You must invoke passion.newWorld")
   return _world
 end
 
 -- Returns the ground body. If inexistant, it fails
 function getGround()
-  assert(_ground ~= nil, "passion.physics.ground is nil. You must invoke passion.createWorld before using passion.getGround")
+  _G.assert(_ground ~= nil, "passion.physics.ground is nil. You must invoke passion.createWorld before using passion.getGround")
   return _ground
 end
 
@@ -60,11 +56,11 @@ end
 
 -- Creates a new body using the default world
 function newBody(x, y, m )
-  return love.physics.newBody( getWorld(), x, y, m )
+  return _G.love.physics.newBody( getWorld(), x, y, m )
 end
 
 -- Define world methods in passion.physics so it can be used "as a world"
-for _,method in pairs(_delegatedWorldMethods) do
+for _,method in _G.pairs(_delegatedWorldMethods) do
   _M[method] = function(...)
     local world = getWorld()
     return world[method](world, ...)
