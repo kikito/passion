@@ -113,14 +113,14 @@ _recalculate = function(self)
   else
     self.matrix:reset()
   end
-  self.matrix:leftRotate(self.angle)
-  self.matrix:leftScale(self.sx, self.sy)
-  self.matrix:leftTranslate(self.x, self.y)
+  self.matrix:leftRotate(-self.angle)
+  self.matrix:leftScale(1.0/self.sx, 1.0/self.sy)
+  self.matrix:leftTranslate(-self.x, -self.y)
 
   self.inverse:reset()
-  self.inverse:leftRotate(-self.angle)
-  self.inverse:leftScale(1.0/self.sx, 1.0/self.sy)
-  self.inverse:leftTranslate(-self.x, -self.y)
+  self.inverse:leftRotate(self.angle)
+  self.inverse:leftScale(self.sx, self.sy)
+  self.inverse:leftTranslate(self.x, self.y)
 
   if(self.parent~=nil) then
     self.inverse:mult(self.parent.inverse)
@@ -217,9 +217,9 @@ end
 
 function Camera:push()
   _G.love.graphics.push()
-  _G.love.graphics.rotate(self.angle)
-  _G.love.graphics.scale(self.sx, self.sy)
-  _G.love.graphics.translate(self.x, self.y)
+  _G.love.graphics.rotate(-self.angle)
+  _G.love.graphics.scale(1.0/self.sx, 1.0/self.sy)
+  _G.love.graphics.translate(-self.x, -self.y)
 end
 
 function Camera:unset(target)
