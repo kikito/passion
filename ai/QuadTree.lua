@@ -37,30 +37,39 @@ end
 
 -- removes a node's children if they are all empty
 local _emptyCheck
-_emptyCheck = function(node)
-  if(node==nil) then return end
+_emptyCheck = function(node, searchUp)
+  if(not node) then return end
   if(node:getCount() == 0) then
     node.children = {}
-    _emptyCheck(node.parent)
+    if(searchUp) then _emptyCheck(node.parent) end
   end
 end
 
 -- inserts an item on a node. Doesn't check whether it is the correct node
 local _doInsert = function(node, item)
-  if(node==nil) then return nil end
-  node.items[item]= item
-  node.root.previous[item] = node
-  node.itemsCount = node.itemsCount + 1
+  if(node) then
+    node.root.previous[item] = node
+    node.root.unassigned[item] = nil
+    node.items[item]= item
+    node.itemsCount = node.itemsCount + 1
+  end
   return node
 end
 
 -- removes an item from a node. It does not recursively traverse the node's children
-local _doRemove = function(node, item)
-  if(node==nil or node.items[item]==nil) then return end
-  node.root.previous[item]=nil
-  node.items[item] = nil
-  node.itemsCount = node.itemsCount - 1
-  _emptyCheck(node)
+-- if useNil is true, it completely removes the node from the quadtree
+-- (it will not be available for updates later on)
+-- if makeUnassigned is true, and the item isn't on the node, then the item 
+-- is "put on hold" on the unassigned table on the root node. Otherwise it's completely removed
+local _doRemove = function(node, item, makeUnassigned)
+  if(node and node.items[item]) then
+    node.root.previous[item]= nil
+    node.items[item] = nil
+    node.itemsCount = node.itemsCount - 1
+    if(makeUnassigned==true) then
+      node.root.unassigned[item]= item -- node might enter the quadtree again, via update
+    end
+  end
 end
 
 
@@ -72,10 +81,13 @@ function QuadTree:initialize(width,height,x,y,parent)
 
   self.children = {}
 
-  -- root node has a property called "previous". It stores node assignments between updates
+  -- root node has two special properties:
+  -- "previous" stores node assignments between updates
+  -- "unassigned" is a list of items that are outside of the root
   if(parent==nil) then
     self.root = self
     self.previous = _G.setmetatable({}, {__mode = "k"})
+    self.unassigned = _G.setmetatable({}, {__mode = "k"})
   else
     self.parent = parent
     self.root = parent.root
@@ -115,9 +127,12 @@ function QuadTree:insert(item)
   return _doInsert(self:findNode(item), item)
 end
 
--- Removes an item from the QuadTree, searching up and down to find it
+-- Removes an item from the QuadTree. The item will be completely removed from the quadtree
+-- update will not "see" it unless it is manually re-inserted
 function QuadTree:remove(item)
-  _doRemove(self.root.previous[item], item)
+  local node = self.root.previous[item]
+  _doRemove(node, item, false)
+  _emptyCheck(node, true)
 end
 
 -- Returns the items intersecting with a given area
@@ -173,11 +188,11 @@ function QuadTree:findNode(item, searchUp)
     _createChildNodes(self)
     for _,child in _G.ipairs(self.children) do
       local descendant = child:findNode(item, false)
-      if(descendant ~= nil) then return descendant end
+      if(descendant) then return descendant end
     end
     return self
   -- not contained on the node. Can we search up on the hierarchy?
-  elseif(searchUp == true and self.parent~=nil) then
+  elseif(searchUp == true and self.parent) then
     return self.parent:findNode(item, true)
   else
     return nil
@@ -187,20 +202,36 @@ end
 -- Updates all the quadtree items
 -- This method always updates the whole tree (starting from the root node)
 function QuadTree:update()
-  for item,previous in _G.pairs(self.root.previous) do
+
+  if(self.unassigned) then
+    for _,item in _G.pairs(self.unassigned) do
+      self.root:insert(item)
+    end
+  end
+
+  for _,item in _G.pairs(self.items) do
     local newNode = self:findNode(item, true)
-    if(newNode~=previous) then
-      _doRemove(previous, item)
+    if(self ~= newNode) then
+      _doRemove(self, item, true)
       _doInsert(newNode, item)
     end
   end
+
+  for _,child in _G.ipairs(self.children) do
+    child:update()
+  end
+
+  _emptyCheck(self, false)
+
 end
 
 function QuadTree:draw()
   for _,child in _G.ipairs(self.children) do
     child:draw()
   end
-  _G.love.graphics.rectangle('line', self:getBoundingBox())
+  local x,y,w,h = self:getBoundingBox()
+  _G.love.graphics.rectangle('line', x,y,w,h)
+  _G.love.graphics.print(self:getCount(), x + w/2, y+h/2)
 end
 
 
