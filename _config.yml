@@ -1,0 +1,12 @@
+title: PÄSSION
+url: http://kikito.github.com/passion
+repo_url: http://github.com/kikito/passion
+author: kikito
+author_url: http://github.com/kikito
+links:
+  LÖVE: http://www.love2d.org
+  PÄSSION github page: http://github.com/kikito/passion
+lsi: false
+pygments: true
+auto: true
+server: true

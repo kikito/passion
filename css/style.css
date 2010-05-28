@@ -1,0 +1,41 @@
+/* color pallete on http://es-es.colourlovers.com/palette/92095/Giant_Goldfish
+  light water:   #A7DBD8
+  strong water:  #69D2E7
+  gray-ish:      #E0E4CC
+  light orange:  #F38630
+  strong orange: #FA6900
+*/
+
+a { text-decoration: none; }
+
+a:hover { text-decoration: underline; }
+
+h1,h2,h3,h4,h5,h6,a {  color: #FA6900; }
+
+body { background-color: #A7DBD8; }
+
+
+/* general padding */
+.container, #header, #content{
+  padding: 5px;
+}
+
+.container {
+  border: 2px solid #69D2E7;
+  background-color: #E0E4CC;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#header {
+  background-color: #F38630;
+}
+
+#header h1 { color: #E0E4CC; }
+
+#header h1 a { color: white; }
+
+#content{
+  background-color: white;
+  padding: 5px;
+}
