@@ -1,0 +1,43 @@
+---
+layout: default
+title: Download
+permalink: download.html
+---
+
+The first thing you must do when creating a LÖVE project is prepare a folder for it. We'll assume that you will call your folder @C:\lovegame\@.
+
+*NOTE*: You will have to adapt these instructions if your folder is on some other place.
+
+The first thing you have to do is downloading PÄSSION. There are two main ways to do it:
+
+h3. Option 1 - Git clone (recommended)
+
+Using git is the recommended way of installing, but you need to have it installed in your machine. If you haven't yet, "give it a try":http://git-scm.com/download, it's quite good. If you don't want/can't install git, you can download the zip file directly from github - go to the next section.
+
+Open a terminal and execute the following commands:
+
+{% highlight bash %}
+git clone {{ site.repo_url }}
+{% endhighlight %}
+
+Git should then reach over the internet, download the files and create them for you.
+
+You can confirm that you have done everything ok by checking that now you have a file on  @C:\lovegame\passion\passion.lua@ (and other files and folders inside @C:\lovegame\passion\@).
+
+h3. Option 2 - Compressed file
+
+If you can't use git, you can download this project in either "zip":{{ site.repo_url }}/zipball/master or "tar":{{ site.repo_url }}/tarball/master formats:
+
+p=. "!http://github.com/images/modules/download/zip.png(zip)!":{{ site.repo_url }}/zipball/master "!http://github.com/images/modules/download/tar.png(tar)!":{{ site.repo_url }}/tarball/master
+
+
+Once you have downloaded it, open it with your favourite uncompressor. You will get a compressed file with a single folder inside it, called something like @kikito-passion-12345@ (with a different number at the end), with some files and folders inside it. Extract that folder on @C:\lovegame\@, and rename the folder to "passion". You should end up having the following folder structure: @C:\lovegame\passion\passion.lua@.
+
+Continue the installation process to configure the "callbacks":callbacks.html .
+
+
+
+
+
+
+
