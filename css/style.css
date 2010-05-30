@@ -1,41 +1,106 @@
-/* color pallete on http://es-es.colourlovers.com/palette/92095/Giant_Goldfish
-  light water:   #A7DBD8
-  strong water:  #69D2E7
-  gray-ish:      #E0E4CC
-  light orange:  #F38630
-  strong orange: #FA6900
+/* color pallete on http://es-es.colourlovers.com/palette/1194852/Passion_fruit_colors
+  dark red: 5C0000
+  red:      8F0000
+  pink:     F7EBEB
+  yellow:   EEBB00
+  brown:    BF9600
 */
 
 a { text-decoration: none; }
-
 a:hover { text-decoration: underline; }
 
-h1,h2,h3,h4,h5,h6,a {  color: #FA6900; }
+h1,h2,h3,h4,h5,h6,a,a:hover {  color: #8F0000; }
 
-body { background-color: #A7DBD8; }
-
-
-/* general padding */
-.container, #header, #content{
-  padding: 5px;
-}
+body { background-color: #EEBB00; }
 
 .container {
-  border: 2px solid #69D2E7;
-  background-color: #E0E4CC;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  border: 4px solid #5C0000;
+  background-color: #8F0000;
+  margin-top: 3em;
+  margin-bottom: 3em;
+  -moz-border-radius-topright: 25px;
 }
 
-#header {
-  background-color: #F38630;
+#sidebar div {
+  position: relative;
+  padding: 5px;
+  color: #EEBB00;
 }
 
-#header h1 { color: #E0E4CC; }
+#sidebar a { color: white; }
 
-#header h1 a { color: white; }
+#sidebar h1 { 
+  width: 4.5em;
+  margin: 0 auto;
+  color: #EEBB00;
+}
+
+#sidebar h1 a:hover { text-decoration: none; }
+
+#sidebar h1 span {
+  display: block;
+  margin-left: 2px;
+  font-size: 0.3em;
+}
+
+#sidebar h1 span a:hover{ text-decoration: underline; }
+
+#sidebar ul, #sidebar ul li{
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 0.5em;
+}
+
+#sidebar ul ul li {
+  list-style-type: disc;
+  margin: 0 0 0 2em;
+}
+
+#fork-me {
+  font-size: 0.7em;
+  font-weight: bold;
+  width: 5.5em;
+  height: 5.5em;
+  display: block;
+  border: 3px solid white;
+  -moz-border-radius: 4em;
+  -webkit-border-radius: 4em;
+  border-radius: 4em;
+  position: absolute;
+  right: 0;
+  top: 4.5em;
+}
+
+#fork-me:hover{
+  border-color: #5C0000;
+  background-color: #EEBB00;
+  color: #5C0000;
+  text-decoration: none;
+}
+
+#fork-me span{
+  width: 5em;
+  height: 3em;
+  display: block;
+  margin: 1.25em 0.25em 1.25em 0.25em;
+  text-align: center;
+}
 
 #content{
   background-color: white;
+  -moz-border-radius-topright: 22px;
+  border-radius-top-right: 22px;
+}
+
+#content div {
   padding: 5px;
+}
+
+pre { margin: 0; }
+
+.highlight {
+  margin: 0 0 1.5em 0;
+  background-color: #F7EBEB;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
 }

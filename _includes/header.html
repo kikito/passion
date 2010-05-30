@@ -11,19 +11,31 @@
 
     <link href="http://github.com/kikito/passion/commits/master.atom" rel="alternate" title="PÄSSION Commits" type="application/atom+xml" />
 
-    <link rel="stylesheet" href="css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="css/blueprint/print.css" type="text/css" media="print">
+    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
     <!--[if lt IE 8]><link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
-    <link rel="stylesheet" href="css/blueprint/plugins/fancy-type/screen.css" type="text/css" media="screen, projection">
 
-    <link rel="stylesheet" href="css/syntax.css">
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/style.css">
 
   </head>
 
   <body>
     <div id="container" class="container">
-      <div id="header">
-        <h1> <a href="{{ site.url }}">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
-        <a href="{{ site.repo_url }}" id="fork-me"> <span>Fork me on GitHub</span> </a>
+      <div id="sidebar" class="span-5">
+        <div>
+          <h1> <a href="{{ site.url }}">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
+          <a href="{{ site.repo_url }}" id="fork-me"><span>Fork me on GitHub</span></a>
+          <ul>
+          {% for category in site.categories %}
+            <li>{{ category[0] | title }}</li>
+            <ul>
+            {% for post in category[1] %}
+              <li><a href="{{ post.permalink }}">{{ post.title }}</a></li>
+            {% endfor %}
+            </ul>
+          {% endfor %}
+          </ul>
+        </div>
       </div>
+      
