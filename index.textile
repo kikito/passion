@@ -3,17 +3,17 @@ layout: default
 title: Home
 ---
 
-This is the home page of splendeo.
+This is the home page of PÄSSION documentation.
 
-We do:
-* "Ruby on Rails":http://www.rubyonrails.org.es/
-* "General web development":callbacks.html
+You might want to start <a href="/general/download.html">downloading</a> it.
 
-Here's some sample ruby code that we do:
+Then you might want to have a look at the <a href="/general/callbacks.html">callbacks</a> section.
 
-{% highlight ruby %}
-def hello
-  puts 'Hello world'
+Then you should have a look at the <a href="/passion.Actor/introduction.html">passion.Actor</a> class.
+
+{% highlight lua %}
+function hello
+  puts 'Hello PÄSSION'
 end
 {% endhighlight %}
 

@@ -15,9 +15,10 @@ body { background-color: #EEBB00; }
 
 .container {
   border: 4px solid #5C0000;
-  background-color: #8F0000;
+  background: white url(/images/background.png) repeat-y left;
   margin-top: 3em;
   margin-bottom: 3em;
+  border-radius-top-right: 25px;
   -moz-border-radius-topright: 25px;
 }
 
@@ -86,14 +87,8 @@ body { background-color: #EEBB00; }
   text-align: center;
 }
 
-#content{
-  background-color: white;
-  -moz-border-radius-topright: 22px;
-  border-radius-top-right: 22px;
-}
-
 #content div {
-  padding: 5px;
+  padding: 8px;
 }
 
 pre { margin: 0; }
