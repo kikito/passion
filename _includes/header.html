@@ -30,9 +30,7 @@
           {% for category in site.categories %}
             <li>{{ category[0] | title }}</li>
             <ul>
-            {% for p in category[1] %}
-              <li><a href="{{ post.permalink }}">{{ p.title }}</a></li>
-            {% endfor %}
+
             </ul>
           {% endfor %}
           </ul>
