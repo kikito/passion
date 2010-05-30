@@ -14,7 +14,10 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.47pre4 r22446"
-   sodipodi:docname="New document 1">
+   sodipodi:docname="passion-logo.svg"
+   inkscape:export-filename="/home/kikito/love-apps/pew-pew-boom/passion/assets/passion-logo.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -39,9 +42,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.49497475"
-     inkscape:cx="-89.437822"
-     inkscape:cy="546.60672"
+     inkscape:zoom="0.64"
+     inkscape:cx="925.03271"
+     inkscape:cy="521.66648"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -68,43 +71,40 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1">
-    <g
-       id="g3636"
-       transform="matrix(4.4052021,0,0,4.1643367,-409.04199,-1314.1735)">
-      <rect
-         y="367.48248"
-         x="119.76313"
-         height="114.80433"
-         width="112.25942"
-         id="rect2818"
-         style="color:#000000;fill:#0f60bf;fill-opacity:1;fill-rule:nonzero;stroke:#0f60bf;stroke-width:21.82629204;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-      <text
-         id="text2822"
-         y="482.21933"
-         x="131.42857"
-         style="font-size:140px;font-style:normal;font-weight:bold;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Liberation Sans Bold"
-         xml:space="preserve"><tspan
-           style="font-size:140px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;font-family:Liberation Sans;-inkscape-font-specification:Liberation Sans Bold"
-           y="482.21933"
-           x="131.42857"
-           id="tspan2824"
-           sodipodi:role="line">P</tspan></text>
-      <rect
-         ry="3.3928571"
-         y="361.46933"
-         x="141.07144"
-         height="17.142857"
-         width="17.142857"
-         id="rect2838"
-         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-      <rect
-         ry="3.3928571"
-         y="361.46933"
-         x="195.17857"
-         height="17.142857"
-         width="17.142857"
-         id="rect2838-8"
-         style="color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
-    </g>
+    <rect
+       style="color:#000000;fill:#8f0000;fill-opacity:1;fill-rule:nonzero;stroke:#8f0000;stroke-width:92.7387619;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2818"
+       width="490.58319"
+       height="490.58319"
+       x="118.16618"
+       y="215.77467" />
+    <text
+       xml:space="preserve"
+       style="font-size:599.6307373px;font-style:normal;font-weight:bold;fill:#eebb00;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Liberation Sans Bold"
+       x="165.21654"
+       y="721.96515"
+       id="text2822"
+       transform="scale(1.0285135,0.97227698)"><tspan
+         sodipodi:role="line"
+         id="tspan2824"
+         x="165.21654"
+         y="721.96515"
+         style="font-size:599.6307373px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#eebb00;fill-opacity:1;font-family:Liberation Sans;-inkscape-font-specification:Liberation Sans Bold">P</tspan></text>
+    <rect
+       style="color:#000000;fill:#eebb00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2838"
+       width="75.517746"
+       height="71.388626"
+       x="212.40622"
+       y="199.10649"
+       ry="14.129" />
+    <rect
+       style="color:#000000;fill:#eebb00;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.29999995;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       id="rect2838-8"
+       width="75.517746"
+       height="71.388626"
+       x="450.75906"
+       y="199.10649"
+       ry="14.129" />
   </g>
 </svg>
