@@ -11,12 +11,12 @@
 
     <link href="{{ site.github_url }}/commits/master.atom" rel="alternate" title="PÄSSION Commits" type="application/atom+xml" />
 
-    <link rel="stylesheet" href="{{ site.url }}/css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="{{ site.url }}/css/blueprint/print.css" type="text/css" media="print">
+    <link rel="stylesheet" href="{{ site.root_path }}/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="{{ site.root_path }}/css/blueprint/print.css" type="text/css" media="print">
     <!--[if lt IE 8]><link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 
-    <link rel="stylesheet" href="{{ site.url }}/css/syntax.css">
-    <link rel="stylesheet" href="{{ site.url }}/css/style.css">
+    <link rel="stylesheet" href="{{ site.root_path }}/css/syntax.css">
+    <link rel="stylesheet" href="{{ site.root_path }}/css/style.css">
 
   </head>
 
@@ -24,14 +24,18 @@
     <div id="container" class="container">
       <div id="sidebar" class="span-5">
         <div>
-          <h1> <a href="/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
+          <h1> <a href="{{ site.url }}">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
           <a href="{{ site.github_url }}" id="fork-me" title="Fork me on GitHub"><span>Fork me on GitHub</span></a>
           <ul>
           {% for category in site.categories %}
-            <li>{{ category[0] | title }}</li>
+            <li>{{ category[0] | capitalize }}</li>
             <ul>
-            {% for post in category[1] %}
-              <li><a href="{{ post.permalink }}">{{ post.title }}</a></li>
+            {% for p in category[1] %}
+              {% if p.url == page.url %}
+                <li class='current'><a href="{{ p.url }}">{{ p.title }}</a></li>
+              {% else %}
+                <li><a href="{{ p.url }}">{{ p.title }}</a></li>
+              {% endif %}
             {% endfor %}
             </ul>
           {% endfor %}
