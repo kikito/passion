@@ -25,7 +25,7 @@
       <div id="sidebar" class="span-5">
         <div>
           <h1> <a href="/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
-          <a href="{{ site.repo_url }}" id="fork-me"><span>Fork me on GitHub</span></a>
+          <a href="{{ site.repo_url }}" id="fork-me" title="Fork me on GitHub"><span>Fork me on GitHub</span></a>
           <ul>
           {% for category in site.categories %}
             <li>{{ category[0] | title }}</li>
