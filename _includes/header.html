@@ -9,14 +9,14 @@
     <link rel="icon" type="image/x-icon" href="/images/p.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="/images/p.ico" />
 
-    <link href="http://github.com/kikito/passion/commits/master.atom" rel="alternate" title="PÄSSION Commits" type="application/atom+xml" />
+    <link href="{{ site.github_url }}/commits/master.atom" rel="alternate" title="PÄSSION Commits" type="application/atom+xml" />
 
-    <link rel="stylesheet" href="/css/blueprint/screen.css" type="text/css" media="screen, projection">
-    <link rel="stylesheet" href="/css/blueprint/print.css" type="text/css" media="print">
+    <link rel="stylesheet" href="{{ site.url }}/css/blueprint/screen.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="{{ site.url }}/css/blueprint/print.css" type="text/css" media="print">
     <!--[if lt IE 8]><link rel="stylesheet" href="/css/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
 
-    <link rel="stylesheet" href="/css/syntax.css">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/syntax.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/style.css">
 
   </head>
 
@@ -25,8 +25,16 @@
       <div id="sidebar" class="span-5">
         <div>
           <h1> <a href="/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author_url }}">{{ site.author }}</a></span></h1>
-          <a href="{{ site.repo_url }}" id="fork-me" title="Fork me on GitHub"><span>Fork me on GitHub</span></a>
+          <a href="{{ site.github_url }}" id="fork-me" title="Fork me on GitHub"><span>Fork me on GitHub</span></a>
           <ul>
+          {% for category in site.categories %}
+            <li>{{ category[0] | title }}</li>
+            <ul>
+            {% for post in category[1] %}
+              <li><a href="{{ post.permalink }}">{{ post.title }}</a></li>
+            {% endfor %}
+            </ul>
+          {% endfor %}
           </ul>
         </div>
       </div>
