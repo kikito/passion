@@ -1,5 +1,0 @@
----
-layout: default
-title: Introduction
-permalink: /passion.Actor/Introduction.html
----
