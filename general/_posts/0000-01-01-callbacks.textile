@@ -44,7 +44,7 @@ This is how PÄSSION redefines @love.draw@:
 {% highlight lua %}
 function love.draw()
   passion.draw()
-end</code></pre>
+end
 {% endhighlight %}
 
 That's it. Other callbacks that accept parameters are defined in a similar fashion - here are @love.update@ and @love.mousepressed@:
