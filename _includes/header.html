@@ -34,7 +34,7 @@
               {% if p.url == page.url %}
                 <li class='current'><a href="{{ p.url }}">{{ p.title }}</a></li>
               {% else %}
-                <li><a href="{{ p.url }}">{{ p.title }}</a></li>
+                <li><a href="{{ site.root_path }}{{ p.url }}">{{ p.title }}</a></li>
               {% endif %}
             {% endfor %}
             </ul>
