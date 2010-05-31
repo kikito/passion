@@ -93,7 +93,7 @@ end
   setParent should be put to false in those rare cases in which a children can have several parents
 ]]
 function Actor:addChild(child, setParent)
-  table.insert(_children[self], child)
+  _G.table.insert(_children[self], child)
   if(setParent~=false) then child:setParent(self) end
   return child
 end
