@@ -66,6 +66,7 @@ Actor:getterSetter('centerY') -- getCenterY, setCenterY
 Actor:getterSetter('scaleX', 1) -- getScaleX, setScaleX, with 1 as default value
 Actor:getterSetter('scaleY', 1) --getScaleY, setScaleY, with 1 as defalult value
 Actor:getterSetter('drawOrder', 0)
+Actor:getterSetter('camera', _G.passion.graphics.defaultCamera)
 
 function Actor:getPosition()
   return self.x, self.y
@@ -133,9 +134,9 @@ function Actor:effect(seconds, properties, easing, callback, ...)
   return _G.passion.timer.effect(self, seconds, properties, easing, callback, ...)
 end
 
--- Override this to change which cameras are used to render an actor
+-- Override this to change which cameras are used to render an actor (you can also override getCamera)
 function Actor:getCameras()
-  return { _G.passion.graphics.defaultCamera }
+  return {self:getCamera()}
 end
 
 ------------------------------------

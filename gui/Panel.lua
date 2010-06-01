@@ -37,7 +37,6 @@ Panel:getterSetter('width', 0)
 Panel:getterSetter('height', 0)
 Panel:setter('alpha')
 Panel:getterSetter('internalCamera')
-Panel:getterSetter('camera', _G.passion.graphics.defaultCamera)
 
 --------------------------------------------------
 --            PADDING METHODS
@@ -128,10 +127,6 @@ function Panel:setParent(parent)
     self:setCamera(parent:getInternalCamera())
     self.internalCamera:setParent(parent:getInternalCamera())
   end
-end
-
-function Panel:getCameras()
-  return {self:getCamera()}
 end
 
 function Panel:getAlpha()
