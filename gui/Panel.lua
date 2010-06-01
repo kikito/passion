@@ -196,7 +196,7 @@ end
 --------------------------------------------------
 function Panel:update(dt)
   local ix,iy = self:getInternalPosition()
-  self:getInternalCamera():setPosition(ix,iy)
+  self:getInternalCamera():setPosition(-ix,-iy)
 end
 
 --------------------------------------------------
