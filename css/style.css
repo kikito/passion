@@ -19,8 +19,9 @@ body { background-color: #EEBB00; }
   background: white url(../images/background.png) repeat-y left;
   margin-top: 3em;
   margin-bottom: 3em;
-  border-radius-top-right: 25px;
+  border-top-right-radius: 25px;
   -moz-border-radius-topright: 25px;
+  -webkit-border-top-right-radius: 25px;
 }
 
 #sidebar div {
