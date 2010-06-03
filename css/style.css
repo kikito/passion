@@ -112,3 +112,7 @@ pre { margin: 0; }
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
+
+.highlight .lineno {
+  color: #999988;
+}
