@@ -1,7 +1,7 @@
 title: PÄSSION
 url: http://kikito.github.com/passion
 github_url: http://github.com/kikito/passion
-root_path:
+root_path: /passion
 category_names: [ General, passion.Actor, passion.graphics, passion.audio, passion.fonts, passion.timers, passion.physics, passion.gui, passion.ai ]
 author: kikito
 author_url: http://github.com/kikito
