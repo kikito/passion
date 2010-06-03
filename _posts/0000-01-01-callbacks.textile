@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Callbacks
+category: General
 permalink: /general/callbacks.html
 ---
 

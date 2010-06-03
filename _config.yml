@@ -1,13 +1,12 @@
 title: PÄSSION
 url: http://kikito.github.com/passion
 github_url: http://github.com/kikito/passion
-root_path: /passion
+root_path:
+category_names: [ General, passion.Actor, passion.graphics, passion.audio, passion.fonts, passion.timers, passion.physics, passion.gui, passion.ai ]
 author: kikito
 author_url: http://github.com/kikito
-links:
-  LÖVE: http://www.love2d.org
-  PÄSSION github page: http://github.com/kikito/passion
+
 lsi: false
-pygments: true
+pygments: true 
 auto: true
 server: true
