@@ -18,11 +18,11 @@
                     {% assign link_id = link %}
                   {% endif %}
 
-                  {% capture link_url %}/{{ menu_entry[0] }}/{{ link_id }}{% endcapture %}
-                  {% if link_url == page.permalink %}
-                    <li class="current"><a href="{{ site.root_path }}{{ link_url }}">{{ link_text }}</a></li>
+                  {% capture link_url %}{{ site.root_path }}/{{ menu_entry[0] }}/{{ link_id }}{% endcapture %}
+                  {% if link_id == page.permalink %}
+                    <li class="current"><a href="{{ link_url }}">{{ link_text }}</a></li>
                   {% else %}
-                    <li><a href="{{ site.root_path }}{{ link_url }}">{{ link_text }}</a></li>
+                    <li><a href="{{ link_url }}">{{ link_text }}</a></li>
                   {% endif %}
 
                 {% endfor %}

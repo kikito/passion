@@ -29,6 +29,7 @@ sitemap:
 author:
   name: kikito
   url: http://github.com/kikito
+exclude: assets
 
 lsi: false
 pygments: true 
