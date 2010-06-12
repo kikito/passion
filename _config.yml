@@ -2,7 +2,7 @@ title: PÄSSION
 urls:
   page: http://kikito.github.com/passion
   github: http://github.com/kikito/passion
-#root_path: /passion
+root_path: /passion
 sitemap:
 - general:
   - callbacks
