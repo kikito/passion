@@ -1,0 +1,76 @@
+---
+layout: default
+title: Callbacks
+permalink: callbacks
+---
+
+PÄSSION needs to be "connected" with LÖVE in order to work correctly. This connection is done by redefining LÖVE's callbacks.
+
+h3. Require PÄSSION
+
+After you have downloaded the @passion@ folder inside your game folder, you must require it. The usual place to do this is the main.lua file.
+
+Create or open the file @C:\lovegame\main.lua@ with your favourite text editor, and add the following line on the top:
+
+{% highlight lua %}
+require('passion/init.lua')
+{% endhighlight %}
+
+By doing this, you are doing the following:
+* Making all the passion.* functions available through your game, as well as all the passion sub-packages (such as [[passion.graphics]])
+* Install a check that makes sure that the LÖVE version is compatible with the installed PÄSSION version
+* Define all the important LÖVE callbacks so they use PÄSSION. Here's the list of callbacks redefined
+** "love.update":http://love2d.org/wiki/love.update
+** "love.draw":http://love2d.org/wiki/love.draw
+** "love.keypressed":http://love2d.org/wiki/love.keypressed
+** "love.keyreleased":http://love2d.org/wiki/love.keyreleased
+** "love.mousepressed":http://love2d.org/wiki/love.mousepressed
+** "love.mousereleased":http://love2d.org/wiki/love.mousereleased
+** "love.joystickpressed":http://love2d.org/wiki/love.joystickpressed
+** "love.joystickreleased":http://love2d.org/wiki/love.joystickreleased
+
+Normally requiring PÄSSION is all you need to do if you are going to use it. However, in some cases you may want to customize the callbacks so they do more things. Read on in order to see how.
+
+h3. Customizing callbacks
+
+PÄSSION is thought so you don't have to worry about its internals.
+
+Most of the time you will not have to deal with callbacks, since the default case will suit most people.
+
+However, if for some reason you need more precision, you can redefine those callbacks, you can do so.
+
+This is how PÄSSION redefines @love.draw@:
+
+{% highlight lua %}
+function love.draw()
+  passion.draw()
+end
+{% endhighlight %}
+
+That's it. Other callbacks that accept parameters are defined in a similar fashion - here are @love.update@ and @love.mousepressed@:
+
+{% highlight lua %}
+function love.update(dt)
+  passion.update(dt)
+end
+function love.mousepressed(button, x, y)
+  passion.mousepressed(button, x, y)
+end
+{% endhighlight %}
+
+So, for every LÖVE callback there's one equivalent PÄSSION callback. This is done in order to allow you to further add more functionality if you feel like it. The only requirement is that you still call the PÄSSION callback at some point on the LÖVE callback function, with the appropriate parameters.
+
+For example, let's say that you have some calculations that need to be done after PÄSSION has finished updating the actors. You can execute the code that draws your additional stuff like this:
+
+{% highlight lua %}
+-- file: main.lua
+require('passion/init.lua')
+
+function love.update(dt)
+  passion.update(dt)
+  makeMyOwnCalculations(dt)
+end  
+{% endhighlight %}
+
+This however should be the exception, not the rule; normally you should be using subclasses of <a href="/passion.Actor/introduction.html">passion.Actor</a>, which will be automatically updated by passion.update.
+

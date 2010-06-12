@@ -2,7 +2,7 @@
   dark red: 5C0000
   red:      8F0000
   pink:     F7EBEB
-  yellow:   EEBB00
+  yellow:   DDBB00
   brown:    BF9600
 */
 
@@ -11,7 +11,7 @@ a:hover { text-decoration: underline; }
 
 h1,h2,h3,h4,h5,h6,a,a:hover {  color: #8F0000; }
 
-body { background-color: #EEBB00; }
+body { background-color: #DDBB00; }
 
 .container {
   border: 4px solid #5C0000;
@@ -27,7 +27,7 @@ body { background-color: #EEBB00; }
 #sidebar div {
   position: relative;
   padding: 5px;
-  color: #EEBB00;
+  color: #DDBB00;
 }
 
 #sidebar a { color: white; }
@@ -35,7 +35,7 @@ body { background-color: #EEBB00; }
 #sidebar h1 { 
   width: 4.5em;
   margin: 0 auto;
-  color: #EEBB00;
+  color: #DDBB00;
 }
 
 #sidebar h1 a:hover { text-decoration: none; }

@@ -1,15 +1,16 @@
 ---
 layout: default
 title: Home
+permalink: /index.html
 ---
 
 This is the home page of PÄSSION documentation.
 
-You might want to start <a href="/general/download.html">downloading</a> it.
+You might want to start "downloading":{{ site.root_path }}/general/download it.
 
-Then you might want to have a look at the <a href="/general/callbacks.html">callbacks</a> section.
+Then you might want to have a look at the "callbacks":{{ site.root_path }}/general/callbacks section.
 
-Then you should have a look at the <a href="/passion.Actor/introduction.html">passion.Actor</a> class.
+Then you should have a look at the "passion.Actor":{{ site.root_path }}/passion.Actor/intro class.
 
 {% highlight lua %}
 function hello

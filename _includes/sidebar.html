@@ -1,0 +1,35 @@
+      <div id="sidebar" class="span-5">
+        <div>
+          <h1> <a href="{{ site.root_path }}/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author.url }}">{{ site.author.name }}</a></span></h1>
+          <ul>
+          {% for menu in site.sitemap %}
+            {% for menu_entry in menu %}
+            <li>{{ menu_entry[0] }}</li>
+              <ul>
+                {% for link in menu_entry[1] %}
+                  {% capture link_size %}{{ link | size }}{% endcapture %}
+                  {% if link_size == "1" %}
+                    {% for hash in link %}
+                      {% assign link_text = hash[0] %}
+                      {% assign link_id = hash[1] %}
+                    {% endfor %}
+                  {% else %}
+                    {% assign link_text = link %}
+                    {% assign link_id = link %}
+                  {% endif %}
+
+                  {% capture link_url %}/{{ menu_entry[0] }}/{{ link_id }}{% endcapture %}
+                  {% if link_url == page.permalink %}
+                    <li class="current"><a href="{{ site.root_path }}{{ link_url }}">{{ link_text }}</a></li>
+                  {% else %}
+                    <li><a href="{{ site.root_path }}{{ link_url }}">{{ link_text }}</a></li>
+                  {% endif %}
+
+                {% endfor %}
+              </ul>
+            </li>
+            {% endfor %}
+          {% endfor %}
+          </ul>
+        </div>
+      </div>

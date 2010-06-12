@@ -1,10 +1,34 @@
 title: PÄSSION
-url: http://kikito.github.com/passion
-github_url: http://github.com/kikito/passion
-root_path: /passion
-category_names: [ General, passion.Actor, passion.graphics, passion.audio, passion.fonts, passion.timers, passion.physics, passion.gui, passion.ai ]
-author: kikito
-author_url: http://github.com/kikito
+urls:
+  page: http://kikito.github.com/passion
+  github: http://github.com/kikito/passion
+#root_path: /passion
+sitemap:
+- general:
+  - callbacks
+  - download
+- passion.Actor:
+  - intro: intro
+  - "update & draw": update-and-draw
+- passion.graphics:
+  -
+- passion.audio:
+  -
+- passion.fonts:
+  -
+- passion.timers:
+  -
+- passion.physics:
+  -
+- passion.gui:
+  -
+- passion.ai:
+  -
+- oop:
+  -
+author:
+  name: kikito
+  url: http://github.com/kikito
 
 lsi: false
 pygments: true 
