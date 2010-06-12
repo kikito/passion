@@ -17,7 +17,7 @@ Using git is the recommended way of installing, but you need to have it installe
 Open a terminal and execute the following commands:
 
 {% highlight bash %}
-git clone {{ site.repo_url }}
+git clone git://github.com/kikito/passion.git
 {% endhighlight %}
 
 Git should then reach over the internet, download the files and create them for you.

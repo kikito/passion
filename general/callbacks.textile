@@ -72,5 +72,5 @@ function love.update(dt)
 end  
 {% endhighlight %}
 
-This however should be the exception, not the rule; normally you should be using subclasses of <a href="/passion.Actor/introduction.html">passion.Actor</a>, which will be automatically updated by passion.update.
+This however should be the exception, not the rule; normally you should be using subclasses of "passion.Actor":{{ site.root_path }}/passion.Actor/intro , which will be automatically updated by passion.update.
 
