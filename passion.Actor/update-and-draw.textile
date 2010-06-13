@@ -31,6 +31,8 @@ end
 function Parrot:draw()
   love.graphics.draw(self.image, self:getPosition())
 end
+
+parrot = Parrot:new()
 {% endhighlight %}
 
 Let me comment out the code.
@@ -41,6 +43,7 @@ Let me comment out the code.
 * Lines 11-15 define the class constructor. Note that the parrot will initially be positioned on 100,100. The setPosition method is provided by passion.Actor.
 * Lines 17-20 define how the parrot changes over time. On this case, x simply never stops increasing. This function will be automatically called by PÄSSION each time the love.update function is invoked.
 * Lines 22-24 simply show the image on the actor's position. It should be clear enough for LÖVE practitioners.
+* The last line created a parrot.
 
 What? You don't have a parrot image? Here you go:
 

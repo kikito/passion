@@ -10,6 +10,7 @@ sitemap:
 - passion.Actor:
   - intro: intro
   - "update & draw": update-and-draw
+  - "processing input": processing-input
 - passion.graphics:
   -
 - passion.audio:

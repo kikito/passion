@@ -1,0 +1,59 @@
+---
+layout: default
+title: Input handling with passion.Actor
+permalink: processing-input
+---
+
+We're going to continue with our parrot. This time we'll make it move depending on the user's input.
+
+{% highlight lua linenos %}
+-- file main.lua
+-- draws a parrot and moves it using the keyboard
+
+require('passion/init.lua')
+
+-- assumes there's an image/parrot.png file
+local image = passion.graphics.getImage('images/parrot.png')
+
+Parrot = class('Parrot', passion.Actor)
+
+function Parrot:initialize(image)
+  super.initialize(self)
+  self:setPosition(100,100)
+  self.image = image
+ 
+  for _,direction in ipairs({'left', 'right', 'up', 'down'}) do
+    self:observe('keypressed_' .. direction, function(self) self['_' .. direction] = true end)
+    self:observe('keyreleased_' .. direction, function(self) self['_' .. direction] = false end)
+  end
+
+end
+
+function Parrot:update(dt)
+  local x,y = self:getPosition()
+  if(self._right) then x = x + dt 
+  elseif(self._left) then x = x - dt
+  end
+  if(self._up) then y = y - dt 
+  elseif(self._down) then y = y + dt
+  end
+
+  self:setPosition(x,y)
+end
+
+function Parrot:draw()
+  love.graphics.draw(self.image, self:getPosition())
+end
+
+parrot = Parrot:new()
+{% endhighlight %}
+
+The first interesting bit happens on the loop taking place between lines 16 and 18.
+
+The program iterates over an array (@{'left','right','up','down'}@) and it makes the parrot "observe" some key presses and releases. This way, when the 'up' key is pressed, a member variable (@self._up@) is set to true. And it is set to false when the key is released.
+
+Once the @_left@, @_right@, @_up@ and @_down@ member variables are correctly set up, the @update@ method on line 23 just has to check them and move the bird accordingly.
+
+Similarly to keypresses and keyreleases, PÄSSION provides functions for handling mouse and joystick input.
+
+

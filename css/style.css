@@ -106,9 +106,12 @@ body { background-color: #DDBB00; }
 
 pre { margin: 0; }
 
+.highlight, code {
+  background-color: #F7EBEB;
+}
+
 .highlight {
   margin: 0 0 1.5em 0;
-  background-color: #F7EBEB;
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
