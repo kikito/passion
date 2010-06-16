@@ -2,6 +2,7 @@
 layout: default
 title: Update and draw methods
 permalink: update-and-draw
+dir: passion.Actor
 ---
 
 Here's how you customize the update and draw methods of an Actor:

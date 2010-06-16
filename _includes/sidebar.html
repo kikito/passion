@@ -4,30 +4,29 @@
           <ul>
           {% for menu in site.sitemap %}
             {% for menu_entry in menu %}
-            <li>{{ menu_entry[0] }}</li>
-              <ul>
-                {% for link in menu_entry[1] %}
-                  {% capture link_size %}{{ link | size }}{% endcapture %}
-                  {% if link_size == "1" %}
-                    {% for hash in link %}
-                      {% assign link_text = hash[0] %}
-                      {% assign link_id = hash[1] %}
+              {% assign menu_class = nil %}
+              {% assign show_submenu = false %}
+              {% if page.dir == menu_entry[0] %}
+                {% assign show_submenu = true %}
+                {% unless page.permalink %} {% assign menu_class = "current" %} {% endunless %}
+              {% endif %}
+
+              <li class="{{ menu_class }}">
+                <a href="{{ site.root_path }}/{{ menu_entry[0] }}">{{ menu_entry[0] }}</a>
+                {% if show_submenu %}
+                  <ul>
+                    {% for link in menu_entry[1] %}
+                      {% capture link_text %}{{ link | first | first }}{% endcapture %}
+                      {% capture link_id %}{{ link | first | last }}{% endcapture %}
+                      {% assign item_class = nil %}
+                      {% if link_id == page.permalink %}{% assign item_class = "current" %}{% endif %}
+                      <li class="{{ item_class }}">
+                        <a href="{{ site.root_path }}/{{ menu_entry[0] }}/{{ link_id }}">{{ link_text }}</a>
+                      </li>
                     {% endfor %}
-                  {% else %}
-                    {% assign link_text = link %}
-                    {% assign link_id = link %}
-                  {% endif %}
-
-                  {% capture link_url %}{{ site.root_path }}/{{ menu_entry[0] }}/{{ link_id }}{% endcapture %}
-                  {% if link_id == page.permalink %}
-                    <li class="current"><a href="{{ link_url }}">{{ link_text }}</a></li>
-                  {% else %}
-                    <li><a href="{{ link_url }}">{{ link_text }}</a></li>
-                  {% endif %}
-
-                {% endfor %}
-              </ul>
-            </li>
+                  </ul>
+                {% endif %}
+              </li>
             {% endfor %}
           {% endfor %}
           </ul>

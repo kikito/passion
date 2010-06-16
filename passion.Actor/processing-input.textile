@@ -2,6 +2,7 @@
 layout: default
 title: Input handling with passion.Actor
 permalink: processing-input
+dir: passion.Actor
 ---
 
 We're going to continue with our parrot. This time we'll make it move depending on the user's input.

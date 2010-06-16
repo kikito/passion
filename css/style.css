@@ -48,23 +48,31 @@ body { background-color: #DDBB00; }
 
 #sidebar h1 span a:hover{ text-decoration: underline; }
 
-#sidebar ul, #sidebar ul li{
-  list-style: none;
+#sidebar ul{
+  list-style: none outside none;
   margin: 0;
-  padding: 0 0 0 0.5em;
+  padding: 0 0 0 2em;
 }
 
-#sidebar ul ul li {
-  list-style-image: url(../images/bullet.png);
-  margin: 0 0 0 2em;
+#sidebar ul li{
+  margin: 3px 0;
 }
 
-#sidebar li.current {
+#sidebar ul li.current {
   list-style-image: url(../images/current-bullet.png)
 }
 
-#sidebar li.current a {
+#sidebar ul li.current a {
   font-weight: bold;
+}
+
+#sidebar ul li ul li {
+  list-style-image: url(../images/bullet.png);
+  margin: 0;
+}
+
+#sidebar ul li.current ul a {
+  font-weight: normal;
 }
 
 #fork-me {

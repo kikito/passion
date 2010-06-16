@@ -4,11 +4,9 @@ urls:
   github: http://github.com/kikito/passion
 root_path: /passion
 sitemap:
-- general:
-  - callbacks
-  - download
+- install:
+  - callbacks: callbacks
 - passion.Actor:
-  - intro: intro
   - "update & draw": update-and-draw
   - "processing input": processing-input
 - passion.graphics:
