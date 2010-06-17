@@ -36,6 +36,7 @@ But some other methods don't quite work on a single goblin; they are more like "
 Sure, you can do a @goblin:pauseAll()@ instance method, and choose a random goblin to execute it from. But that would be quite inelegant. There's a better way: class methods.
 
 Class methods are called directly on the class, as opposed to one of its instances:
+
 {% highlight lua %}
 Goblin:pauseAll()
 Goblin:unpauseAll()
