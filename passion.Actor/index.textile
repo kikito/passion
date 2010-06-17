@@ -24,10 +24,10 @@ end
 
 Here are passion.Actor's main characteristics:
 
-* update() and draw() methods. These methods are empty by default. Modifying them is the easiest way to alter how an Actor behaves / looks like. These functions can be redefined depending on the actor's state.
-* input signal handling
+* "update and draw":{{ site.root_path }}/passion.Actor/update-and-draw methods. These methods are empty by default. Modifying them is the easiest way to alter how an Actor behaves / looks like. These functions can be redefined depending on the actor's state.
+* "input handling":{{ site.root_path }}/passion.Actor/processing-input
 * states. So it is possible to generate an Enemy with a "Thinking state" and a "fighting state". This is implemented via MiddleClass.
-* several class methods for managing multiple entitnes
+* two class methods("apply and applySorted":{{ site.root_path }}/passion.Actor/apply) for managing groups of actors
 * built-in camera system
 * built-in parenting (but they don't use it)
 * freezing and invisibility

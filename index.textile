@@ -1,16 +1,15 @@
 ---
 layout: default
 title: Home
-permalink: /index.html
 ---
 
 This is the home page of PÄSSION documentation.
 
-You might want to start "downloading":{{ site.root_path }}/general/download it.
+You might want to start "installing":{{ site.root_path }}/install it.
 
-Then you might want to have a look at the "callbacks":{{ site.root_path }}/general/callbacks section.
+Then you might want to read about the "callbacks":{{ site.root_path }}/install/callbacks.
 
-Then you should have a look at the "passion.Actor":{{ site.root_path }}/passion.Actor/intro class.
+Then you should start creating your own actors. See "passion.Actor":{{ site.root_path }}/passion.Actor for details.
 
 {% highlight lua %}
 function hello

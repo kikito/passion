@@ -9,6 +9,7 @@ sitemap:
 - passion.Actor:
   - "update & draw": update-and-draw
   - "processing input": processing-input
+  - "apply & applySorted": apply
 - passion.graphics:
   -
 - passion.audio:
