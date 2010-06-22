@@ -1,34 +1,59 @@
       <div id="sidebar" class="span-5">
         <div>
           <h1> <a href="{{ site.root_path }}/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author.url }}">{{ site.author.name }}</a></span></h1>
+          <h2>Tutorials</h2>
           <ul>
-          {% for menu in site.sitemap %}
-            {% for menu_entry in menu %}
-              {% assign menu_class = nil %}
-              {% assign show_submenu = false %}
-              {% if page.dir == menu_entry[0] %}
-                {% assign show_submenu = true %}
-                {% unless page.permalink %} {% assign menu_class = "current" %} {% endunless %}
+          {% for tutorial in site.tutorials %}
+            
+            {% assign css_class = nil %}
+            {% if page.tutorial == tutorial.permalink %}
+              {% unless page.permalink %}
+                {% assign css_class = 'current' %}
+              {% endunless %}
+            {% endif %}
+            
+            <li class="{{css_class}}">
+              <h3><a href="{{ site.root_path }}/tutorials/{{ tutorial.permalink }}">
+                {{ tutorial.title }}
+              </a></h3>
+              {% if page.tutorial == tutorial.permalink %}
+                <ul>
+                {% for section in tutorial.sections %}
+                  {% capture section_title %}{{ section | first | first }}{% endcapture %}
+                  {% capture section_permalink %}{{ section | first | last }}{% endcapture %}
+                  {% assign css_class = nil %}
+                  {% if page.permalink == section_permalink %}
+                    {% assign css_class = 'current' %}
+                  {% endif %}
+                  <li class="{{css_class}}">
+                    <a href="{{ site.root_path }}/tutorials/{{ tutorial.permalink }}/{{ section_permalink }}">
+                      {{ section_title }}
+                    </a>
+                  </li>
+                {% endfor %}
+                </ul>
               {% endif %}
-
-              <li class="{{ menu_class }}">
-                <a href="{{ site.root_path }}/{{ menu_entry[0] }}">{{ menu_entry[0] }}</a>
-                {% if show_submenu %}
-                  <ul>
-                    {% for link in menu_entry[1] %}
-                      {% capture link_text %}{{ link | first | first }}{% endcapture %}
-                      {% capture link_id %}{{ link | first | last }}{% endcapture %}
-                      {% assign item_class = nil %}
-                      {% if link_id == page.permalink %}{% assign item_class = "current" %}{% endif %}
-                      <li class="{{ item_class }}">
-                        <a href="{{ site.root_path }}/{{ menu_entry[0] }}/{{ link_id }}">{{ link_text }}</a>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              </li>
-            {% endfor %}
+            </li>
           {% endfor %}
           </ul>
+          
+          <h2>API</h2>
+          <ul>
+          {% for package in site.packages %}
+            {% assign css_class = nil %}
+            {% if page.package == package.name %}
+              {% unless page.permalink %}
+                {% assign css_class = 'current' %}
+              {% endunless %}
+            {% endif %}
+          
+            <li class="{{css_class}}">
+              <h3><a href="{{ site.root_path }}/api/{{ package.name }}">
+                {{ package.name }}
+              </a></h3>
+            <li>
+          {% endfor %}
+          </ul>
+          
         </div>
       </div>

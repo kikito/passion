@@ -32,11 +32,21 @@ body { background-color: #DDBB00; }
 
 #sidebar a { color: white; }
 
-#sidebar h1 { 
-  width: 4.5em;
-  margin: 0 auto;
-  color: #DDBB00;
+#sidebar h1, #sidebar h2, #sidebar h3 { color: #DDBB00; }
+
+#sidebar h1 { margin: 0 auto; }
+
+#sidebar h2 {
+  font-size: 1.5em;
+  margin: 0 8px;
 }
+
+#sidebar h3{
+  font-size: 1.1em;
+  margin: 5px 0;
+}
+
+#sidebar h1 { width: 4.5em; }
 
 #sidebar h1 a:hover { text-decoration: none; }
 

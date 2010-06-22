@@ -1,0 +1,6 @@
+---
+layout: tutorial_index
+tutorial: setup
+---
+
+On this tutorial you will learn how to install and configure PÄSSION on a new project.

@@ -3,34 +3,34 @@ urls:
   page: http://kikito.github.com/passion
   github: http://github.com/kikito/passion
 root_path: /passion
-sitemap:
-- install:
-  - callbacks: callbacks
-- passion.Actor:
-  - "update & draw": update-and-draw
-  - "processing input": processing-input
-  - "apply & applySorted": apply
-- passion.graphics:
-  -
-- passion.audio:
-  -
-- passion.fonts:
-  -
-- passion.timers:
-  -
-- passion.physics:
-  -
-- passion.gui:
-  -
-- passion.ai:
-  -
-- oop:
-  -
+tutorials:
+- title: Setup
+  permalink: setup
+  sections:
+  - Installing: installing
+  - Callbacks: callbacks
+- title: Using passion.Actor
+  permalink: using-passion-actor
+  sections:
+  - "Introduction": intro
+  - "Update & Draw": update-and-draw
+  - "Processing Input": processing-input
+  - "Apply & ApplySorted": apply
+packages:
+- name: passion
+- name: passion.graphics
+- name: passion.audio
+- name: passion.fonts
+- name: passion.timers
+- name: passion.physics
+- name: passion.gui
+- name: passion.ai
+- name: oop
 author:
   name: kikito
   url: http://github.com/kikito
-exclude: assets
 
+exclude: assets
 lsi: false
 pygments: true 
 auto: true
