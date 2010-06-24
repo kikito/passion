@@ -1,0 +1,118 @@
+---
+layout: default
+title: @MiddleClass@
+tutorial: oop-and-you
+permalink: middleclass
+---
+
+h3. A tale from grandpa ( %(small)I promise to keep it short% )
+
+You may probably have noticed that there's a lot of repetition in videogames. The first example that comes to my mind are the enemies of any shoot-them up; at the end of any of those, you can have obliterated 10000 individual ships, but in reality you have only faced 10 or 20 different ship designs.
+
+Even classical games have this: the Goombas and Koopa Troopas were all really the same enemy.
+
+This repetition is actually quite common on the computer software in general; administrative software has to deal with repetitive "structures" such as "clients" or "sales".
+
+But we're not here to speak about boring clients or sales, but about repetition.
+
+One of the key aspects of computing is learning how to deal efficiently with repetitive structures.
+
+Object-oriented programming acknowledges that repetition, and provides standarized ways to organize data around it.
+
+Lua doesn't have built-in object orientation, but it provides several mechanisms to build it.
+
+MiddleClass is my personal attempt at building an Object-oriented system on top of Lua.
+
+h3. Building clones
+
+Consider the following code:
+
+{% highlight lua linenos %}
+require 'MiddleClass.lua'
+
+Person = class('Person')
+function Person:initialize(name, strength, victoryMessage, defeatMessage)
+  self.name = name
+  self.strength = strength
+  self.victoryMessage = victoryMessage
+  self.defeatMessage = defeatMessage
+end
+function Person:speak(message)
+  print(self.name .. ': ' .. message)
+end
+function Person:attack(other)
+  print('(' .. self.name .. ' attacks ' .. other.name .. ')')
+  if(self.strength > other.strength) then
+    print(self.victoryMessage)
+    print(other.defeatMessage)
+  else
+    print(self.defeatMessage)
+    print(other.victoryMessage)
+  end
+end
+
+local yoda = Person:new('Yoda', 1000, 'Force in you strong is not', 'This impossible is!')
+local luke = Person:new('Luke', 20,   'Ziiauouwm!', 'Ouch!')
+
+yoda:speak('Your training now begins. Attack me you must.')
+luke:attack(yoda)
+yoda:attack(luke)
+{% endhighlight %}
+
+This program outputs the following lines on the console (you might have to activate it, if you are on windows):
+
+{% highlight text %}
+Yoda: Your training now begins. Attack me you must.
+(Luke attacks Yoda)
+Luke: Ouch!
+Yoda: Force in you strong is not
+(Yoda attacks Luke)
+Yoda: Force in you strong is not
+Luke: Ouch!
+{% endhighlight %}
+
+
+Look at this! I've managed to print *6 lines* using only 30 lines of code! And _3 of them were even blank_.
+
+Wait! Come back! I was joking. There's a *reason* for all this.
+
+I know that you could have done a program that just printed 6 lines of code.
+
+But now, consider what you would do if instead of creating just one yoda and luke, you needed to create an _Army of Clones_.
+
+{% highlight lua linenos %}
+require 'MiddleClass.lua'
+
+Person = class('Person')
+function Person:initialize(name, strength, victoryMessage, defeatMessage)
+
+-- ... same code as before ...
+
+end
+
+local numberOfClones = 100
+local numberOfAttacks = 10
+
+-- create the clones
+local clones = {}
+for i=0, numberOfClones do
+  clones[i] = Person:new('Clone ' .. tostring(i), math.random(100), 'Pew!', 'Aargh!')
+end
+
+-- make them fight - chose two randomly, one attacks the other
+for i=0, numberOfAttacks do
+  local clone1 = clones[math.random(numberOfClones)]
+  local clone2 = clones[math.random(numberOfClones)]
+  clone1:attack(clone2)
+end
+{% endhighlight %}
+
+I hope you are starting to see where I want to go with all this.
+
+
+
+
+
+
+
+

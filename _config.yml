@@ -9,6 +9,10 @@ tutorials:
   sections:
   - Installing: installing
   - Callbacks: callbacks
+- title: OOP & You
+  permalink: oop-and-you
+  sections:
+  - "MiddleClass": middleclass
 - title: Using passion.Actor
   permalink: using-passion-actor
   sections:
