@@ -1,8 +1,6 @@
 ---
 layout: default
 title: Update and draw methods
-permalink: update-and-draw
-tutorial: using-passion-actor
 ---
 
 Here's how you customize the update and draw methods of an Actor:

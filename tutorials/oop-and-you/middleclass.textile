@@ -1,8 +1,6 @@
 ---
 layout: default
 title: @MiddleClass@
-tutorial: oop-and-you
-permalink: middleclass
 ---
 
 h3. A tale from grandpa ( %(small)I promise to keep it short% )
@@ -23,7 +21,9 @@ Lua doesn't have built-in object orientation, but it provides several mechanisms
 
 MiddleClass is my personal attempt at building an Object-oriented system on top of Lua.
 
-h3. Building clones
+In other words; It's my attempt at helping you make lots of clones, easily and elegantly.
+
+h3. Attack of the clones
 
 Consider the following code:
 
@@ -31,30 +31,22 @@ Consider the following code:
 require 'MiddleClass.lua'
 
 Person = class('Person')
-function Person:initialize(name, strength, victoryMessage, defeatMessage)
+function Person:initialize(name, strength)
   self.name = name
   self.strength = strength
-  self.victoryMessage = victoryMessage
-  self.defeatMessage = defeatMessage
-end
-function Person:speak(message)
-  print(self.name .. ': ' .. message)
 end
 function Person:attack(other)
-  print('(' .. self.name .. ' attacks ' .. other.name .. ')')
+  print(self.name .. ' attacks ' .. other.name)
   if(self.strength > other.strength) then
-    print(self.victoryMessage)
-    print(other.defeatMessage)
+    print('Attack succeeded!')
   else
-    print(self.defeatMessage)
-    print(other.victoryMessage)
+    print(self.name .. ' blocked the attack!')
   end
 end
 
-local yoda = Person:new('Yoda', 1000, 'Force in you strong is not', 'This impossible is!')
-local luke = Person:new('Luke', 20,   'Ziiauouwm!', 'Ouch!')
+local yoda = Person:new('Yoda', 1000)
+local luke = Person:new('Luke', 20)
 
-yoda:speak('Your training now begins. Attack me you must.')
 luke:attack(yoda)
 yoda:attack(luke)
 {% endhighlight %}
@@ -62,32 +54,38 @@ yoda:attack(luke)
 This program outputs the following lines on the console (you might have to activate it, if you are on windows):
 
 {% highlight text %}
-Yoda: Your training now begins. Attack me you must.
 (Luke attacks Yoda)
-Luke: Ouch!
-Yoda: Force in you strong is not
+Yoda blocked the attack!
 (Yoda attacks Luke)
-Yoda: Force in you strong is not
-Luke: Ouch!
+Attack succeeded!
 {% endhighlight %}
 
 
-Look at this! I've managed to print *6 lines* using only 30 lines of code! And _3 of them were even blank_.
+Ha! I've managed to print *4 lines* using only 22 lines of code! And _3 of them were even blank_.
 
-Wait! Come back! I was joking. There's a *reason* for all this.
+Wait! Come back! There's a *reason* for all this!
 
-I know that you could have done a program that just printed 6 lines of code.
+Consider what you would do if instead of creating just one yoda and luke, you needed to create an _Army of Clones_.
 
-But now, consider what you would do if instead of creating just one yoda and luke, you needed to create an _Army of Clones_.
+_And make them fight each other_.
+
+Let's do it!:
 
 {% highlight lua linenos %}
 require 'MiddleClass.lua'
 
 Person = class('Person')
-function Person:initialize(name, strength, victoryMessage, defeatMessage)
-
--- ... same code as before ...
-
+function Person:initialize(name, strength)
+  self.name = name
+  self.strength = strength
+end
+function Person:attack(other)
+  print(self.name .. ' attacks ' .. other.name)
+  if(self.strength > other.strength) then
+    print('Attack succeeded!')
+  else
+    print(self.name .. ' blocked the attack!')
+  end
 end
 
 local numberOfClones = 100
@@ -96,7 +94,7 @@ local numberOfAttacks = 10
 -- create the clones
 local clones = {}
 for i=0, numberOfClones do
-  clones[i] = Person:new('Clone ' .. tostring(i), math.random(100), 'Pew!', 'Aargh!')
+  clones[i] = Person:new('Clone ' .. tostring(i), math.random(100))
 end
 
 -- make them fight - chose two randomly, one attacks the other
@@ -107,7 +105,23 @@ for i=0, numberOfAttacks do
 end
 {% endhighlight %}
 
-I hope you are starting to see where I want to go with all this.
+Output (will vary, it is random):
+
+{% highlight text %}
+(Clone 13 attacks Clone 4)
+Clone 4 blocked the attack!
+(Clone 29 attacks Clone 50)
+Attack succeeded!
+(Clone 75 attacks Clone 15)
+Attack succeeded!
+(Clone 28 attacks Clone 16)
+Attack succeeded!
+(Clone 13 attacks Clone 4)
+Clone 4 blocked the attack!
+...
+{% endhighlight %}
+
+I hope you are starting to see where all this goes!
 
 
 

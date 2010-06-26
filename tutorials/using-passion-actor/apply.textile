@@ -1,8 +1,6 @@
 ---
 layout: default
 title: passion.Actor's @apply@ and @applySorted@
-permalink: apply
-tutorial: using-passion-actor
 ---
 
 h3. Instance methods vs class methods

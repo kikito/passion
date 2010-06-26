@@ -6,27 +6,27 @@
           {% for tutorial in site.tutorials %}
             
             {% assign css_class = nil %}
-            {% if page.tutorial == tutorial.permalink %}
-              {% unless page.permalink %}
+            {% if page.last_dir == tutorial.dir %}
+              {% if page.index? %}
                 {% assign css_class = 'current' %}
-              {% endunless %}
+              {% endif %}
             {% endif %}
             
             <li class="{{css_class}}">
-              <h3><a href="{{ site.root_path }}/tutorials/{{ tutorial.permalink }}">
+              <h3><a href="{{ site.root_path }}/tutorials/{{ tutorial.dir }}">
                 {{ tutorial.title }}
               </a></h3>
-              {% if page.tutorial == tutorial.permalink %}
+              {% if page.last_dir == tutorial.dir %}
                 <ul>
                 {% for section in tutorial.sections %}
                   {% capture section_title %}{{ section | first | first }}{% endcapture %}
                   {% capture section_permalink %}{{ section | first | last }}{% endcapture %}
                   {% assign css_class = nil %}
-                  {% if page.permalink == section_permalink %}
+                  {% if page.basename == section_permalink %}
                     {% assign css_class = 'current' %}
                   {% endif %}
                   <li class="{{css_class}}">
-                    <a href="{{ site.root_path }}/tutorials/{{ tutorial.permalink }}/{{ section_permalink }}">
+                    <a href="{{ site.root_path }}/tutorials/{{ tutorial.dir }}/{{ section_permalink }}.html">
                       {{ section_title }}
                     </a>
                   </li>
@@ -42,9 +42,9 @@
           {% for package in site.packages %}
             {% assign css_class = nil %}
             {% if page.package == package.name %}
-              {% unless page.permalink %}
+              {% if page.index? %}
                 {% assign css_class = 'current' %}
-              {% endunless %}
+              {% endif %}
             {% endif %}
           
             <li class="{{css_class}}">

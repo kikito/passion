@@ -5,16 +5,16 @@ urls:
 root_path: /passion
 tutorials:
 - title: Setup
-  permalink: setup
+  dir: setup
   sections:
   - Installing: installing
   - Callbacks: callbacks
 - title: OOP & You
-  permalink: oop-and-you
+  dir: oop-and-you
   sections:
   - "MiddleClass": middleclass
 - title: Using passion.Actor
-  permalink: using-passion-actor
+  dir: using-passion-actor
   sections:
   - "Introduction": intro
   - "Update & Draw": update-and-draw

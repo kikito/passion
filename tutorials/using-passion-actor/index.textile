@@ -1,6 +1,5 @@
 ---
 layout: tutorial_index
-tutorial: using-passion-actor
 ---
 
 On this tutorial you will learn how to install and configure PÄSSION on a new project.

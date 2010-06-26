@@ -5,11 +5,9 @@ title: Home
 
 This is the home page of PÄSSION documentation.
 
-You might want to start "installing":{{ site.root_path }}/install it.
+PÄSSION is an object-oriented game framework built on top of {% link_to LÖVE , http://love2d.org %}.
 
-Then you might want to read about the "callbacks":{{ site.root_path }}/install/callbacks.
-
-Then you should start creating your own actors. See "passion.Actor":{{ site.root_path }}/passion.Actor for details.
+You might want to start with some of the tutorials on the left. The API doc is still WIP.
 
 {% highlight lua %}
 function hello

@@ -1,8 +1,6 @@
 ---
 layout: default
 title: Input handling with passion.Actor
-permalink: processing-input
-tutorial: using-passion-actor
 ---
 
 We're going to continue with our parrot. This time we'll make it move depending on the user's input.

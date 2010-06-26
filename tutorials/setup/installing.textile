@@ -1,8 +1,6 @@
 ---
 layout: default
 title: Installing
-tutorial: setup
-permalink: installing
 ---
 
 The first thing you must do when creating a LÖVE project is prepare a folder for it. We'll assume that you will call your folder @C:\lovegame\@.
