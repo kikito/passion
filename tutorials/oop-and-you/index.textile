@@ -1,5 +1,6 @@
 ---
 layout: tutorial_index
+title: OOP & You
 ---
 
 On this tutorial you will learn about "Object-oriented Programming":http://en.wikipedia.org/wiki/Object-oriented_programming ; particularly @MiddleClass@ and @MindState@.

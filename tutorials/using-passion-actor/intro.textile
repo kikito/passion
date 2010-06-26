@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Introduction to passion.Actor
+title: Introduction to @passion.Actor@
 ---
 
 Actors are the essential building blocks for games done with PÄSSION.
