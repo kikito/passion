@@ -5,7 +5,7 @@ title: Home
 
 This is the home page of PÄSSION documentation.
 
-PÄSSION is an object-oriented game framework built on top of {% link_to LÖVE , http://love2d.org %}.
+PÄSSION is an object-oriented game framework built on top of "LÖVE":http://love2d.org .
 
 You might want to start with some of the tutorials on the left. The API doc is still WIP.
 
