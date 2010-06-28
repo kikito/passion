@@ -1,6 +1,8 @@
 module Jekyll
   class LinkToTag < Liquid::Tag
     safe true
+    priority :low
+
 
     StringOrWord = /"[^"]*"|'[^']*'|\S+/
     Syntax = /(#{StringOrWord})\s*#{Liquid::ArgumentSeparator}\s*(#{StringOrWord})/
