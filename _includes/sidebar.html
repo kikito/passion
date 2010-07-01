@@ -7,16 +7,16 @@
             
             {% assign css_class = nil %}
             {% if page.tutorial == tutorial.name %}
-              {% unless page.permalink %}
+              {% unless page.basename %}
                 {% assign css_class = 'current' %}
               {% endunless %}
             {% endif %}
             
             <li class="{{css_class}}">
-              <h3><a href="{{ site.root_path }}/tutorials/{{ tutorial.dir }}">
+              <h3><a href="{{ site.root_path }}/tutorials/{{ tutorial.name }}">
                 {{ tutorial.title }}
               </a></h3>
-              {% if page.last_dir == tutorial.dir %}
+              {% if page.tutorial == tutorial.name %}
                 <ul>
                 {% for section in tutorial.sections %}
                   {% capture section_title %}{{ section | first | first }}{% endcapture %}
