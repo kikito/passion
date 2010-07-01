@@ -1,0 +1,11 @@
+{% include header.html %}
+{% include sidebar.html %}
+
+  <div id="content" class="span-19 last">
+    <div>
+      <h2> {{ page.title | textilize }} </h2>
+      {{ content }}
+    </div>
+  </div>
+
+{% include footer.html %}

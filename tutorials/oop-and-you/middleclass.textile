@@ -1,6 +1,8 @@
 ---
-layout: default
+layout: tutorial
+tutorial: oop-and-you
 title: @MiddleClass@
+basename: middleclass
 ---
 
 h3. A tale from grandpa ( %(small)I promise to keep it short% )

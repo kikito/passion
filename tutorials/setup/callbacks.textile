@@ -1,6 +1,8 @@
 ---
-layout: default
+layout: tutorial
+tutorial: setup
 title: Callbacks
+basename: callbacks
 ---
 
 PÄSSION needs to be "connected" with LÖVE in order to work correctly. This connection is done by redefining LÖVE's callbacks.

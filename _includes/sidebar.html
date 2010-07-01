@@ -6,10 +6,10 @@
           {% for tutorial in site.tutorials %}
             
             {% assign css_class = nil %}
-            {% if page.last_dir == tutorial.dir %}
-              {% if page.index? %}
+            {% if page.tutorial == tutorial.name %}
+              {% unless page.permalink %}
                 {% assign css_class = 'current' %}
-              {% endif %}
+              {% endunless %}
             {% endif %}
             
             <li class="{{css_class}}">
@@ -26,7 +26,7 @@
                     {% assign css_class = 'current' %}
                   {% endif %}
                   <li class="{{css_class}}">
-                    <a href="{{ site.root_path }}/tutorials/{{ tutorial.dir }}/{{ section_permalink }}.html">
+                    <a href="{{ site.root_path }}/tutorials/{{ tutorial.name }}/{{ section_permalink }}">
                       {{ section_title }}
                     </a>
                   </li>

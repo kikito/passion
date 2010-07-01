@@ -1,5 +1,6 @@
 ---
 layout: tutorial_index
+tutorial: using-passion-actor
 title: Using @passion.Actor@
 ---
 

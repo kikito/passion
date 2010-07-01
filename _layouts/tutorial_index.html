@@ -5,7 +5,7 @@
     <div>
       {% assign current_tutorial = nil %}
       {% for tutorial in site.tutorials %}
-        {% if tutorial.dir == page.last_dir %}
+        {% if tutorial.name == page.tutorial %}
           {% assign current_tutorial = tutorial %}
         {% endif %}
       {% endfor %}

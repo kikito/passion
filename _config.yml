@@ -5,16 +5,16 @@ urls:
 root_path: /passion
 tutorials:
 - title: Setup
-  dir: setup
+  name: setup
   sections:
   - Installing: installing
   - Callbacks: callbacks
 - title: OOP & You
-  dir: oop-and-you
+  name: oop-and-you
   sections:
   - "MiddleClass": middleclass
 - title: Using passion.Actor
-  dir: using-passion-actor
+  name: using-passion-actor
   sections:
   - "Introduction": intro
   - "Update & Draw": update-and-draw
@@ -34,9 +34,9 @@ author:
   name: kikito
   url: http://github.com/kikito
 
+permalink: pretty
 exclude: assets
 lsi: false
 pygments: true 
 auto: true
 server: true
-safe: false

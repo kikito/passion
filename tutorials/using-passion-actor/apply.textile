@@ -1,6 +1,8 @@
 ---
-layout: default
+layout: tutorial
+tutorial: using-passion-actor
 title: passion.Actor's @apply@ and @applySorted@
+basename: apply
 ---
 
 h3. Instance methods vs class methods
