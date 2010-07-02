@@ -12,7 +12,8 @@ tutorials:
 - title: OOP & You
   name: oop-and-you
   sections:
-  - "MiddleClass": middleclass
+  - "Introduction": intro
+  - "Attack of the clones": attack-of-the-clones
 - title: Using passion.Actor
   name: using-passion-actor
   sections:

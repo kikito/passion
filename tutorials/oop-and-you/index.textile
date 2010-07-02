@@ -6,5 +6,7 @@ title: OOP & You
 
 On this tutorial you will learn about "Object-oriented Programming":http://en.wikipedia.org/wiki/Object-oriented_programming ; particularly @MiddleClass@ and @MindState@.
 
-I'll try to make it as friendly as possible, but beware: some theory is ahead. If you feel bored, please feel free to continue with the other tutorials and come back later.
+This tutorial explains basic concepts such as classes, instances and inheritance. If you are familiar with them, you might want to consider going faster over this tutorial, or maybe even skipping it entirely.
+
+There is a little part at the end that deals with mixins, which might not be as familiar as the rest.
 

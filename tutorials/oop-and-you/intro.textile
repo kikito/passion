@@ -1,0 +1,77 @@
+---
+layout: tutorial
+tutorial: oop-and-you
+title: Introduction: classes and instances
+basename: intro
+---
+
+h3. A tale from grandpa ( %(small)I promise to keep it short% )
+
+You may probably have noticed that there's a lot of repetition in videogames. The first example that comes to my mind are the enemies of any shoot-them up; at the end of any of those, you can have obliterated 10000 individual ships, but in reality you have only faced 10 or 20 different ship designs. Even classical games have this: the Goombas and Koopa Troopas were all really the same enemy.
+
+One of the key aspects of computing is learning how to deal efficiently with repetitive structures. Object-oriented programming acknowledges that repetition, and provides standarized ways to organize data around it. Lua doesn't have built-in object orientation, but it provides several mechanisms to build it.
+
+MiddleClass is my personal attempt at building an Object-oriented system on top of Lua.
+
+h3. Classes and instances.
+
+@MiddleClass@ allows you to create two types of special tables called _classes_ and _instances_.
+
+You can think of classes as "types of objects"; they are tables that define how other tables work.
+
+On the other hand, instances are the "objects" themselves; their class affects the way they work.
+
+A class defines how its instances work by providing them with _methods_: methods are functions defined on the class but available to all the instances (via some concrete syntax). Examples of methods can be @Dragon:fly(height)@, @Gun:shoot(projectile, direction)@ or @Politician:steal()@. 
+
+Instances normally have _attributes_ which tend to be values. Examples of attributes can be @strength@, @name@, @x@, or @y@.
+
+h3. @initialize@ and @new@
+
+There are a "special" methods called @initialize@ and @new@.
+
+* @initialize@ accepts 0 or more parameters. These parameters will be used to "prepare" (initialize) the instance, which will be treated with an special variable[1] called @self@.
+* @new@ is a method you use to create a new instance. You call it over the class, with the parameters that initialize will take.
+
+It's easier to see with an example:
+
+{% highlight lua linenos %}
+require 'MiddleClass.lua'
+
+Instrument = class('Instrument')
+function Instrument:initialize(name, sound)
+  super.initialize(self) -- we'll leave this here for now
+  self.name = name
+  self.sound = sound
+end
+function Instrument:play(volume)
+  print(self.name .. ': ' .. self.sound .. '! (' .. volume .. ')')
+end
+
+local trumpet = Instrument:new('trumpet', 'toot')
+local guitar = Instrument:new('guitar', 'jang')
+
+trumpet:play('high')
+guitar:play('low')
+{% endhighlight %}
+
+This outputs the following:
+
+{% highlight text %}
+trumpet: toot! (high)
+guitar: jang! (low)
+{% endhighlight %}
+
+* Line 1 is loads @MiddleClass@
+* On Line 3 the class is defined, and stored on the variable @Instrument@.
+* The special method @initialize@ is defined on lines 4-8. Notice that it takes two parameters, and assigns it to the newly created instances via the @self@ special variable.
+* Let's leave line 4 alone for now
+* On lines 9-10 a method called @play@ is defined. This method, prits a custom message depending on the instrument name and sound (which are attributes of each instance) and volume, which is a parameter.
+* Lines 11 and 12 define two instances and assign them to two variables, @trumpet@ and @guitar@.
+* The last two lines invoke the @play@ method on both instances, with different volumes.
+
+
+
+
+
+fn1. Technically, @self@ is not a variable, but an implicit parameter.
+
