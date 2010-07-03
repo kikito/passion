@@ -1,8 +1,8 @@
 ---
 layout: tutorial
 tutorial: oop-and-you
-title: Introduction: classes and instances
-basename: intro
+title: Classes and instances
+basename: classes-and-instances
 ---
 
 h3. A tale from grandpa ( %(small)I promise to keep it short% )
