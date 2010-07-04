@@ -12,7 +12,7 @@ tutorials:
 - title: OOP & You
   name: oop-and-you
   sections:
-  - "Classes and Instances": classes-and-instances
+  - "Classes & Instances": classes-and-instances
   - "Attack of the clones": attack-of-the-clones
 - title: Using passion.Actor
   name: using-passion-actor

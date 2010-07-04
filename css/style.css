@@ -68,12 +68,22 @@ body { background-color: #DDBB00; }
   margin: 3px 0;
 }
 
+#sidebar ul li a{
+  padding: 2px;
+}
+
 #sidebar ul li.current {
   list-style-image: url(../images/current-bullet.png)
 }
 
-#sidebar ul li.current a {
+#sidebar ul li.current a, #sidebar ul li a:hover {
   font-weight: bold;
+  color: #8F0000;
+  background-color: white;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  text-decoration: none;
 }
 
 #sidebar ul li ul li {
@@ -83,6 +93,8 @@ body { background-color: #DDBB00; }
 
 #sidebar ul li.current ul a {
   font-weight: normal;
+  color: white;
+  background-color: transparent;
 }
 
 #fork-me {
