@@ -1,0 +1,51 @@
+
+{% unless current_section %}
+
+  {% assign previous_section = nil %}
+  {% assign next_section = nil %}
+  {% assign previous = nil %}
+
+  {% for section in current_tutorial.sections %}
+    
+    {% unless next_section %}
+      {% if current_section %}
+        {% assign next_section = section %}
+      {% endif %}
+    {% endunless %}
+    
+    {% capture section_permalink %}{{ section | first | last }}{% endcapture %}
+    {% if page.basename == section_permalink %}
+      {% assign current_section = section %}
+      {% assign previous_section = previous %}
+    {% endif %}
+    {% assign previous = section %}
+  {% endfor %}
+
+{% endunless %}
+
+<div class="tutorial_links">
+
+  <div class="span-9 previous_section">
+  {% if previous_section %}
+    <a 
+      href="{{ site.root_path }}/tutorials/{{ current_tutorial.name }}/{{ previous_section | first | last }}"
+    >&lt; {{ previous_section | first | first }}
+    </a>
+  {% else %}
+    &nbsp;
+  {% endif %}
+  </div>
+
+  <div class="span-9 prepend-1 last next_section">
+  {% if next_section %}
+    <a
+      href="{{ site.root_path }}/tutorials/{{ current_tutorial.name }}/{{ next_section | first | last }}"
+    >{{ next_section | first | first }} &gt;</a>
+  {% else %}
+    &nbsp;
+  {% endif %}
+  </div>
+  
+  <div class="clear"></div>
+
+</div>

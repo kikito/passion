@@ -3,10 +3,13 @@
           <h1> <a href="{{ site.root_path }}/">{{ site.title }}</a> <span class='small'> by <a href="{{ site.author.url }}">{{ site.author.name }}</a></span></h1>
           <h2>Tutorials</h2>
           <ul>
+          {% assign current_tutorial = nil %}
+
           {% for tutorial in site.tutorials %}
-            
+
             {% assign css_class = nil %}
             {% if page.tutorial == tutorial.name %}
+              {% assign current_tutorial = tutorial %}
               {% unless page.basename %}
                 {% assign css_class = 'current' %}
               {% endunless %}

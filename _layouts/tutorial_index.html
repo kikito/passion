@@ -1,27 +1,19 @@
 {% include header.html %}
 {% include sidebar.html %}
 
-  <div id="content" class="span-19 last">
-    <div>
-      {% assign current_tutorial = nil %}
-      {% for tutorial in site.tutorials %}
-        {% if tutorial.name == page.tutorial %}
-          {% assign current_tutorial = tutorial %}
-        {% endif %}
+  <div id="main" class="span-19 last">
+
+    <h2> {{ current_tutorial.title }} </h2>
+    
+    <div id="content">
+      {{ content }}
+      
+      <h3>Index</h3>
+      <ul>
+      {% for section in current_tutorial.sections %}
+        <li><a href="{{ section | first | last }}">{{ section | first | first }}</li>
       {% endfor %}
-      
-      {% if current_tutorial %}
-        <h2> {{ current_tutorial.title }} </h2>
-        {{ content }}
-        
-        <h3>Index</h3>
-        <ul>
-        {% for section in current_tutorial.sections %}
-          <li><a href="{{ section | first | last }}">{{ section | first | first }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-      
+      </ul>
     </div>
   </div>
 

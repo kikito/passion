@@ -86,21 +86,25 @@ body { background-color: #DDBB00; }
 }
 
 #fork-me {
-  font-size: 0.7em;
+  font-size: 8.5px;
   font-weight: bold;
-  width: 5.5em;
-  height: 5.5em;
+  width: 56px;
+  height: 56px;
   display: block;
-  border: 3px solid #5C0000;
-  -moz-border-radius: 4em;
-  -webkit-border-radius: 4em;
-  border-radius: 4em;
+  -moz-border-radius: 28px;
+  -webkit-border-radius: 28px;
+  border-radius: 28px;
   position: absolute;
-  right: 0.5em;
-  top: 0.5em;
+  right: 5px;
+  top: 5px;
+  background-color: #8F0000;
+  color: white;
 }
 
 #fork-me:hover{
+  width: 50px;
+  height: 50px;
+  border: 3px solid #5C0000;
   border-color: #8F0000;
   background-color: #F7EBEB;
   color: #8F0000;
@@ -108,17 +112,20 @@ body { background-color: #DDBB00; }
 }
 
 #fork-me span{
-  width: 5em;
-  height: 3em;
+  font-weight: bold;
   display: block;
-  margin: 1.25em 0.25em 1.25em 0.25em;
+  margin: 14px 6px;
   text-align: center;
+  transform: rotate(25deg);
   -moz-transform: rotate(25deg);
   -webkit-transform: rotate(25deg);
-
 }
 
-#content div {
+#fork-me:hover span{
+  margin: 12px 3px;
+}
+
+#main h2, #content {
   padding: 8px;
 }
 
@@ -131,9 +138,37 @@ pre { margin: 0; }
 .highlight {
   margin: 0 0 1.5em 0;
   -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   border-radius: 5px;
 }
 
 .highlight .lineno {
   color: #999988;
 }
+
+.tutorial_links {
+  margin: 20px 0;
+}
+
+.tutorial_links a{
+  font-size: 0.8em;
+  background-color: #8F0000;
+  padding: 7px;
+  color: white;
+  font-weight: bold;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.tutorial_links a:hover{
+  text-decoration: none;
+  padding: 5px;
+  border: 2px solid #8F0000;
+  background-color: #F7EBEB;
+  color: #8F0000;
+}
+
+.previous_section { text-align: left; }
+.next_section { text-align: right; }

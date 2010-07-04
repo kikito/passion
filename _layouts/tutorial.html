@@ -1,11 +1,18 @@
 {% include header.html %}
 {% include sidebar.html %}
 
-  <div id="content" class="span-19 last">
-    <div>
-      <h2> {{ page.title | textilize }} </h2>
+  <div id="main" class="span-19 last">
+
+    <h2> {{ page.title | textilize }} </h2>
+
+    {% include tutorial_links.html %}
+
+    <div id="content">
       {{ content }}
     </div>
-  </div>
+
+    {% include tutorial_links.html %}
+  
+  <div>
 
 {% include footer.html %}
