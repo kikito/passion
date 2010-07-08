@@ -1,0 +1,54 @@
+---
+layout: tutorial
+tutorial: oop-and-you
+title: Mixins
+basename: mixins
+---
+
+Mixins are regular lua tables with nothing but functions on them.
+
+@Object@ has a class method called @include(mixin)@ which basically goes over each function on @mixin@, and copies the functions defined there on the class, as if they were methods.
+
+One exception to this rule is the @included@ method. That is a special "hook" method that will be called every time the mixin is included in one class.
+
+For example:
+
+{% highlight lua %}
+  
+  -- CanFly mixin
+  -- You can define functions like this (inside the {})
+  local CanFly = {
+    included = function(theClass)
+      print('included on class ' .. theClass.name)
+    end
+  }
+  -- but also like this (outside the {})
+  function CanFly:fly()
+    print('flap flap')
+  end
+
+  Bird = class('Bird')
+  Bird:include(CanFly) -- prints "included on class Bird"
+
+  Mammal = class('Mammal')
+  Bat = class('Bat', Mammal)
+  Bat:include(CanFly) -- prints "included on class Bat"
+  
+  local robin = Bird:new()
+  local dog = Mammal:new()
+  local bat = Bat:new()
+  
+  robin:fly() -- prints "flap flap"
+  bat:fly()   -- prints "flap flap"
+  dog:fly()   -- gives an error: fly is undefined for dog
+  
+{% endhighlight %}
+
+
+h3. "Should I use mixins or subclasses?"
+
+In some cases is difficult to decide whether using subclasses or mixins. It depends a lot on the circumstances of each case, and I'm not sure there's a silver bullet method of deciding every one. And it's usually a subjective thing.
+
+I'll tell you how I decide: for me, subclasses should define "stronger" relations - if A @is a@ B, then probably the class of A should be a subclass of B. A and B tend to be names - like Enemy, Bullet, or Score.
+
+On the other hand, if A "can" or "has" B, then probably A is an instance of a class that includes the mixin B. On this case, A usually is a name, and B is a property or action, such as HasWings or CanRun.

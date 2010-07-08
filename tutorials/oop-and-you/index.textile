@@ -4,7 +4,7 @@ tutorial: oop-and-you
 title: OOP & You
 ---
 
-On this tutorial you will learn about "Object-oriented Programming":http://en.wikipedia.org/wiki/Object-oriented_programming ; particularly @MiddleClass@ and @MindState@.
+On this tutorial you will learn about "Object-oriented Programming":http://en.wikipedia.org/wiki/Object-oriented_programming ; particularly @MiddleClass@.
 
 This tutorial explains basic concepts such as classes, instances and inheritance. If you are familiar with them, you might want to consider going faster over this tutorial, or maybe even skipping it entirely.
 

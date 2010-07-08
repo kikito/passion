@@ -1,0 +1,78 @@
+---
+layout: tutorial
+tutorial: oop-and-you
+title: Built-in stuff
+basename: built-in-stuff
+---
+
+h3. Built-in methods
+
+Classes come with some built-in default behavior and methods:
+
+* @MyClass.superclass@ returns the superclass of @MyClass@.
+* @MyClass:subclass('MySubclassName')@ is the same as @class('MySubclassName', MyClass)@
+* @MyClass(params)@ is the same as @MyClass:new(params)@
+* @MyClass.name@ returns the name of the class (a @String@)
+
+Instances also have some built-in behavior:
+
+* @instance.class@ returns a reference to the class of the instance.
+
+h3. The @Object@ class
+
+All of the above, and several other things, are provided by a "root" class called @Object@.
+
+Any class that you create will be a subclass of @Object@. In other words, this:
+
+{% highlight lua %}
+  Instrument = class('Instrument')
+{% endhighlight %}
+
+Is exactly the same as this:
+
+{% highlight lua %}
+  Instrument = class('Instrument', Object)
+{% endhighlight %}
+
+This means that if you want to add a function to all your instances, you can add a method to @Object@:
+
+{% highlight lua %}
+  function Object:description()
+    "I am an instance of " .. self.class.name
+  end
+
+  Foo = class('Foo')
+  foo = Foo:new()
+  print(foo:description) -- prints "I am an instance of Foo"
+{% endhighlight %}
+
+This is neither discouraged nor encouraged; I'm just telling you so you know it is possible. Modifying @Object@ is a somewhat risky operation, but in some cases the results can be very satisfying.
+
+h3. @instanceOf@ and @subclassOf@
+
+These two functions are defined so you can do type testing.
+
+{% highlight lua %}
+  if instanceOf(Instrument, anObject) then
+    anObject:play()
+  end
+  
+  if subclassOf(Instrument, Guitar) then
+    return Guitar:new()
+  end
+{% endhighlight %}
+
+In my experience however these are not very useful. If you are using a lot of @instanceOf@ in your code, for example, it will probably improve by replacing the @ifs@ and @instanceOf@s with subclasses.
+
+h3. Metamethods
+
+If you don't know what metamethods are, you probably don't need this.
+
+If need metamethods on your objects, you might have already guessed that every class table is also the metatable of its instances[1].
+
+So if you define a method called @__print@ on your class, then you will be able to do @tostring(instance)@ on the instances of that class.
+
+It is important to notice that for now, the @__index@ metamethod is reserved for internal stuff. If you redefine it, the class' behaviour is undefined.
+
+fn1. Well in reality is a bit more complicated than that. Every class has a property called @__classdict@ and that table is used as metatable for its instances. But for practical effects, the class can be considered the metatable.
+

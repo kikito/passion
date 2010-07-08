@@ -1,0 +1,206 @@
+---
+layout: tutorial
+tutorial: oop-and-you
+title: Inheritance
+basename: inheritance
+---
+
+h3. The clone wars
+
+Now let's create an army of soldiers and make them fight each other randomly.
+
+{% highlight lua linenos %}
+require 'MiddleClass.lua'
+
+-- table that holds the list of soldiers
+local soldiers = {}
+
+Soldier = class('Soldier')
+function Soldier:initialize(name, dexterity)
+  super.initialize(self) -- ignore this for now
+  self.name = name
+  self.dexterity = dexterity
+  self.energy = 5
+  table.insert(soldiers, self)
+end
+function Soldier:attack(other)
+  print(self.name .. ' attacks ' .. other.name)
+  if(self.dexterity > other.dexterity) then
+    print('Attack succeeded!')
+    self:hit(other)
+  else
+    print(self.name .. ' blocked the attack!')
+  end
+end
+function Soldier:hit(other)
+  other.energy = other.energy-1
+  if(other.energy==0) then other:destroy()
+end
+function Soldier:destroy()
+  local index
+  for i, v in _G.pairs(soldiers) do
+    if v == self then
+      index = i
+      break
+    end
+  end
+  table.remove(soldiers, self)
+  print(self.name .. ' died!')
+  super.destroy(self)
+end
+
+local numberOfSoldiers = 100
+local numberOfAttacks = 100
+
+-- create the soldiers
+for i=0, numberOfSoldiers do
+  Soldier:new('Soldier ' .. tostring(i), math.random(100))
+end
+
+-- make them fight - chose two randomly, one attacks the other
+for i=0, numberOfAttacks do
+  local soldier1 = soldiers[math.random(#soldiers)]
+  local soldier2 = soldiers[math.random(#soldiers)]
+  soldier1:attack(soldier2)
+end
+{% endhighlight %}
+
+Output (will vary, it is random):
+
+{% highlight text %}
+(Soldier 13 attacks Soldier 4)
+Soldier 4 blocked the attack!
+(Soldier 29 attacks Soldier 50)
+Attack succeeded!
+(Soldier 75 attacks Soldier 15)
+Attack succeeded!
+(Soldier 28 attacks Soldier 16)
+Attack succeeded!
+Soldier 16 died!
+(Soldier 13 attacks Soldier 4)
+Soldier 4 blocked the attack!
+...
+{% endhighlight %}
+
+I hope you are starting to see where all this goes!
+
+But our war needs more variety.
+
+h3. Specialization
+
+We can spice up things by making different types of soldiers.
+
+In order to do this, we'll create _subclasses_ of the Soldier class.
+
+For example, a Jedi will kill any soldier with one hit. They are also more agile, so they have 30 more points of dexterity by default. Appart from that, Jedis are just like regular soldiers (this is just an example, I know that jedis are much more cool)
+
+This is how we can do the Jedi class:
+
+{% highlight lua %}
+require 'MiddleClass.lua'
+
+local soldiers={}
+
+Soldier = class('Soldier')
+
+-- (Same code as above, until the Soldier:destroy method) --
+
+Jedi = class('Jedi', Soldier)
+function Jedi:initialize(name, dexterity)
+  super.initialize(self, name, dexterity) -- continue ignoring this
+  self.dexterity = self.dexterity + 30
+end
+function Jedi:hit(other)
+  other:destroy()
+end
+
+local numberOfSoldiers = {
+  Soldier = 100,
+  Jedi = 10
+}
+local numberOfAttacks = 100
+
+-- create the soldiers/jedis
+for c,n in pairs(numberOfSoldiers) do
+  for i=0, n do
+    c:new(c.name .. ' ' .. tostring(i), math.random(100))
+  end
+end
+
+-- make them fight - chose two randomly, one attacks the other
+for i=0, numberOfAttacks do
+  local soldier1 = soldiers[math.random(#soldiers)]
+  local soldier2 = soldiers[math.random(#soldiers)]
+  soldier1:attack(soldier2)
+end
+
+{% endhighlight %}
+
+As you can see, the Jedi class is really small. This is because it relies on the @Soldier@ class for most of the stuff. Only the "specialized" methods need to be redefined.
+
+Jedis will be as deathly as expected:
+
+{% highlight text %}
+(Soldier 65 attacks Soldier 54)
+Soldier 54 blocked the attack!
+(Jedi 2 attacks Soldier 45)
+Attack succeeded!
+Soldier 45 died!
+...
+{% endhighlight %}
+
+We could make more Soldier subclasses (e.g. Grenadiers, Captains) or even Jedi subclasses (padawans, masters) using the same principle.
+
+Which reminds me of the next important thing: @super@.
+
+h3. This is where I explain the @super@ thing
+
+@initialize@ is the most important method of most classes, since without it instances can't be created correctly.
+
+The funny thing is: the @initialize@ method of a subclass, in general, needs to "build on top" of the superclass' implementation.
+
+We could have copied the code of @Soldier:initialize@ inside @Jedi:initialize@ .. but instead we simply _called_ @Soldier:initialize@. That is what this line is doing:
+
+{% highlight lua %}
+  super.initialize(self, name, dexterity)
+{% endhighlight %}
+
+It would have also worked if we did this:
+
+{% highlight lua %}
+  Soldier.initialize(self, name, dexterity)
+{% endhighlight %}
+
+@super@ is a convenience variable defined for you by @Middleclass@. It's faster and more convenient than doing @self.class.superclass@. You can use it on any method to reference the methods of the superclass.
+
+h3. @super@ and @initialize@
+
+It is so common that subclasses need to invoke their superclasses' @initialize@ method that in general, every time I create an @initialize@ method, I usually start by writing @super@:
+
+{% highlight lua %}
+  MyClass = class('MyClass')
+  function MyClass:initialize()
+    super.initialize(self)
+    -- and then I write more stuff here
+  end
+{% endhighlight %}
+
+In general you should follow this convention: the first line of any @initialize@ must be a call to @super@.
+
+There's one exception to this rule: in some (rare) cases you'll need to make some preparations before calling @super.initialize@ - for example, making some operations on the parameters, for example.
+
+The price of this flexibility is that @MiddleClass@ will allow you to shoot yourself in the foot; it doesn't throw any error if you forget to invoke @super.initialize@. But BAD THINGS WILL HAPPEN. I promise you that.
+
+As a side note, it is generally a good idea to call the superclass' @destroy@ method at the end of your classes' @destroy@ method:
+
+{% highlight lua %}
+  function MyClass:destroy()
+    -- do some cleanup for MyClass
+    super.destroy(self) -- make sure that the superclass also does cleanup, if needed
+  end
+{% endhighlight %}
+
+What goes for @initialize@ also goes for @destroy@: @MiddleClass@ will not complain if you don't call @super@ somewhere on it. But it is nice.
+
+
+

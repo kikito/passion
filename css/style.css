@@ -76,16 +76,6 @@ body { background-color: #DDBB00; }
   list-style-image: url(../images/current-bullet.png)
 }
 
-#sidebar ul li.current a, #sidebar ul li a:hover {
-  font-weight: bold;
-  color: #8F0000;
-  background-color: white;
-  -moz-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  text-decoration: none;
-}
-
 #sidebar ul li ul li {
   list-style-image: url(../images/bullet.png);
   margin: 0;
@@ -95,6 +85,16 @@ body { background-color: #DDBB00; }
   font-weight: normal;
   color: white;
   background-color: transparent;
+}
+
+#sidebar ul li.current a, #sidebar ul li a:hover, #sidebar ul li.current a:hover {
+  font-weight: bold;
+  color: #8F0000;
+  background-color: white;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  text-decoration: none;
 }
 
 #fork-me {
