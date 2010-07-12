@@ -5,7 +5,7 @@
 -- Small framework for event observers
 -----------------------------------------------------------------------------------
 
-assert(Object~=nil and class~=nil, 'MiddleClass not detected. Please require it before using MindState')
+assert(Object~=nil and class~=nil, 'MiddleClass not detected. Please require it before using Beholder')
 
 -- Private variable storing the list of event callbacks that can be used
 local _events = {}
