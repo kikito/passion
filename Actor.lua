@@ -52,6 +52,7 @@ function Actor:destroy()
   self:applyToChildren('destroy')
   _children[self] = nil
   _unregisterInstance(self.class, self)
+  super.destroy(self)
 end
 
 function Actor:update(dt) end

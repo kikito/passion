@@ -39,7 +39,7 @@ local _ignoredMethods = {
   states=1, initialize=1,
   gotoState=1, pushState=1, popState=1, popAllStates=1, getCurrentState=1, isInState=1,
   enterState=1, exitState=1, pushedState=1, poppedState=1, pausedState=1, continuedState=1,
-  addState=1, subclass=1, includes=1
+  addState=1, subclass=1, includes=1, destroy=1
 }
 
 local _prevSubclass = StatefulObject.subclass -- previous way of creating subclasses (used to redefine subclass itself)
@@ -65,7 +65,6 @@ function State.subclass(theClass, name, theStatefulClass)
 
   return theSubClass
 end
-
 
 ------------------------------------
 -- INSTANCE METHODS

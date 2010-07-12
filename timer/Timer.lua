@@ -70,6 +70,7 @@ end
 -- Destroys the timer, removig it from the timers collection
 function Timer:destroy()
   _G.passion.remove(_timers, self)
+  super.destroy(self)
 end
 
 ------------------------------------
