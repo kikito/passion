@@ -42,9 +42,6 @@ local _ignoredMethods = {
   addState=1, subclass=1, includes=1, destroy=1
 }
 
-local _prevSubclass = StatefulObject.subclass -- previous way of creating subclasses (used to redefine subclass itself)
-
-
 -- The State class; is the father of all State objects
 local State = class('State', Object)
 
@@ -240,16 +237,12 @@ function StatefulObject.addState(theClass, stateName, superState)
   return state
 end
 
---[[ Redefinition of Object:subclass
+--[[ subclass hook function; adds additional stuff to subclasses of StatefulObject
   Subclasses inherit all the states of their superclases, in a special way:
   If class A has a state called Sleeping and B = A.subClass('B'), then B.states.Sleeping is a subclass of A.states.Sleeping
   returns the newly created stateful class
 ]]
-function StatefulObject.subclass(theClass, name)
-  assert(theClass==StatefulObject or subclassOf(StatefulObject, theClass), "Use class:subclass instead of class.subclass")
-
-  local theSubClass = _prevSubclass(theClass, name) --for now, theClass is just a regular subclass
-
+function StatefulObject.subclassed(theClass, theSubClass)
   --the states of the subclass are subclasses of the superclass' states
   theSubClass.states = {}
   for stateName,state in pairs(theClass.states) do 
