@@ -15,11 +15,11 @@
     structure:
 
     { Actor = {
-        beforeUpdate = { methods = {'m1', m2, 'm3' } }, -- m1 and m3 are strings, m2 is a function
-        afterUpdate = { methods = { 'm4' } },
-        update = {
-          before = { 'beforeUpdate' },
-          after = { 'afterUpdate' }
+        'beforeUpdate' = { methods = {m1, m2, m3 } }, -- m1, m2, m3 & m4 can be method names or functions
+        'afterUpdate' = { methods = { 'm4' } },
+        'update' = {
+          'before' = { 'beforeUpdate' },
+          'after' = { 'afterUpdate' }
         }
       }
     }
@@ -30,6 +30,7 @@ local _callbacks = {}
 
 -- private class methods
 
+-- creates one of the "level 2" entries on callbacks, like beforeUpdate, afterupdate or update, above
 local function _getOrCreateCallback(theClass, callbackName)
   if(not theClass or not callbackName) then return {} end
   _callbacks[theClass] = _callbacks[theClass] or {}
@@ -38,6 +39,7 @@ local function _getOrCreateCallback(theClass, callbackName)
   return classCallbacks[callbackName]
 end
 
+-- returns all the methods that should be called when a callback is invoked, including superclasses
 local function _getCallbackChainMethods(theClass, callbackName)
   local methods = _getOrCreateCallback(theClass, callbackName).methods
   local superMethods = _getCallbackChainMethods(theClass.superclass, callbackName)
@@ -49,6 +51,9 @@ local function _getCallbackChainMethods(theClass, callbackName)
   return result
 end
 
+-- defines a callback method. These methods are used to add "methods" to the callback.
+-- for example, after calling _defineCallbackMethod(Actor, 'afterUpdate') you can then do
+-- Actor:afterUpdate('removeFromList', 'dance', function(actor) actor:doSomething() end)
 local function _defineCallbackMethod(theClass, callbackName)
   if(callbackName == nil) then return nil end
   
@@ -68,6 +73,7 @@ end
 
 -- private instance methods
 
+-- given a callback name (e.g. beforeUpdate), obtain all the methods that must be called and execute them
 local function _runCallbackChain(object, callbackName)
   local methods = _getCallbackChainMethods(object.class, callbackName)
   for _,method in ipairs(methods) do
@@ -99,7 +105,7 @@ function Callbacks.included(theClass)
   mt.__newindex = function(_, methodName, method)
     -- start by setting the method the "regular way", so it gets the "super" variable
     prevNewIndex(_, methodName, method)
-    if(type(method)=="function")
+    if(type(method)=="function") then
       -- prevMethod is the regular method with "super" added
       local prevMethod = rawget(theClass.__classDict, methodName)
 
@@ -127,6 +133,7 @@ function Callbacks.included(theClass)
   theClass.__CALLBACKS_INCLUDED = true
 end
 
+-- usage: Actor:attachCallbacks('update', 'beforeUpdate', 'afterUpdate')
 function Callbacks.attachCallbacks(theClass, methodName, beforeName, afterName)
 
   assert(type(methodName)=='string', 'methodName must be a string')

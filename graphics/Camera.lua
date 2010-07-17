@@ -93,7 +93,7 @@ end
 ------------------------------------------
 
 Camera = _G.class('passion.graphics.Camera', _G.StatefulObject)
-Camera:includes(_G.Beholder)
+Camera:include(_G.Beholder)
 
 local _cameras = _G.setmetatable({}, {__mode = "k"}) -- list of all available cameras (used for updating)
 

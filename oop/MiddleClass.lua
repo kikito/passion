@@ -4,12 +4,12 @@
 -- Based on YaciCode, from Julien Patte and LuaObject, from Sébastien Rocca-Serra
 -----------------------------------------------------------------------------------
 
-local _classes = setmetatable({}, {__mode = "k"})   -- weak table storing references to all declared _classes
+local _classes = setmetatable({}, {__mode = "k"})   -- weak table storing references to all declared _classes and their included modules
 
 -- The 'Object' class
 Object = { name = "Object" }
 
-_classes[Object]=Object -- adds Object to the list of _classes
+_classes[Object] = { modules={} } -- adds Object to the list of _classes
 
   -- creates a new instance
 Object.new = function(theClass, ...)
@@ -56,7 +56,7 @@ Object.subclass = function(theClass, name)
   -- instance methods go after the setmetatable, so we can use "super"
   theSubclass.initialize = function(instance,...) super.initialize(instance) end
 
-  _classes[theSubclass]=theSubclass --registers the new class on the list of _classes
+  _classes[theSubclass]={ modules={} } --registers the new class on the list of _classes
 
   theClass:subclassed(theSubclass) -- hook method. By default it does nothing
 
@@ -66,7 +66,7 @@ end
 -- Mixin extension function - simulates very basically ruby's include(module)
 -- module is a lua table of functions. The functions will be copied to the class
 -- if present in the module, the included() method will be called
-Object.includes = function(theClass, module, ... )
+Object.include = function(theClass, module, ... )
   assert(_classes[theClass]~=nil, "Use class:includes instead of class.includes")
   for methodName,method in pairs(module) do
     if methodName ~="included" then theClass[methodName] = method end
@@ -100,6 +100,13 @@ function instanceOf(aClass, obj)
   if obj==nil or _classes[aClass]==nil or _classes[obj.class]==nil then return false end
   if obj.class==aClass then return true end
   return subclassOf(aClass, obj.class)
+end
+
+-- Returns true if the a module has already been included on a class (or a superclass of that class)
+function included(module, aClass)
+  if aClass==nil or _classes[aClass]==nil or _classes[aClass].modules==nil then return false end
+  if _classes[aClass].modules[module] then return true end
+  return included(module, aClass.superclass)
 end
 
 -- Creates a new class named 'name'. It uses baseClass as the parent (Object if none specified)

@@ -2,8 +2,8 @@ local _G=_G
 module('passion')
 
 Actor = _G.class('passion.Actor', _G.StatefulObject)
-Actor:includes(_G.Beholder) --observer methods
-Actor:includes(_G.GetterSetter) -- getter/setter methods
+Actor:include(_G.Beholder) --observer methods
+Actor:include(_G.GetterSetter) -- getter/setter methods
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
