@@ -95,9 +95,9 @@ end
 
 Callbacks = {}
 
-function Callbacks.included(theClass)
+function Callbacks:included(theClass)
 
-  if(theClass.__CALLBACKS_INCLUDED) then return end
+  if included(Callbacks, theClass) then return end
   
   local mt = getmetatable(theClass)
   local prevNewIndex = mt.__newindex
@@ -129,8 +129,6 @@ function Callbacks.included(theClass)
       rawset(theClass.__classDict, methodName, method)
     end
   end
-
-  theClass.__CALLBACKS_INCLUDED = true
 end
 
 -- usage: Actor:attachCallbacks('update', 'beforeUpdate', 'afterUpdate')

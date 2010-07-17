@@ -72,6 +72,7 @@ Object.include = function(theClass, module, ... )
     if methodName ~="included" then theClass[methodName] = method end
   end
   if type(module.included)=="function" then module:included(theClass, ... ) end
+  _classes[theClass].modules[module] = true
 end
 
 -- built-in methods
