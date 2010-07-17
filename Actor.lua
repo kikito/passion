@@ -205,29 +205,3 @@ function Actor.applySorted(theClass, sortFunc, methodOrName, ...)
   _G.assert(theClass~=nil, 'Please invoke Class:applySorted instead of Class.applySorted')
   _G.passion.applySorted(_actors[theClass], sortFunc, methodOrName, ... )
 end
-
-local resourceTypes = {
-  images = _G.passion.graphics.getImage,
-  sources = _G.passion.audio.getSource,
-  fonts = _G.passion.fonts.getFont
-}
--- Loads images, fonts, sounds & music onto the actor class itself
-function Actor.load(theClass, resourceTypesToLoad)
-  _G.assert(theClass~=nil, 'Please invoke Class:load instead of Class.load')
-  local resourceTypeToLoad
-  for resourceTypeName,loadingMethod in _G.pairs(resourceTypes) do
-    resourceTypeToLoad = resourceTypesToLoad[resourceTypeName]
-    if(_G.type(resourceTypeToLoad)=='table') then -- if the parameter table has something called 'images', 'fonts', etc then
-      -- create theClass.fonts if it doesn't exist
-      if(theClass[resourceTypeName]==nil) then theClass[resourceTypeName] = {} end
-      -- parse all the resource names, invoking the right loadingMethod with the right parameters
-      for resourceName, params in _G.pairs(resourceTypeToLoad) do -- load all those and replace their "params" with loaded objects
-        if(_G.type(params) == 'table') then
-          theClass[resourceTypeName][resourceName] = loadingMethod(_G.unpack(params))
-        else
-          theClass[resourceTypeName][resourceName] = loadingMethod(params)
-        end
-      end
-    end
-  end
-end
