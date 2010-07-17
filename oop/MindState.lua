@@ -281,19 +281,21 @@ end
      then each member of that module.states is included on the StatefulObject class.
      If module.states has a state that doesn't exist on StatefulObject, a new state will be created.
 ]]
-function StatefulObject.includes(theClass, module, ...)
-  assert(subclassOf(StatefulObject, theClass), "Use class:includes instead of class.includes")
-  for methodName,method in pairs(module) do
-    if methodName ~="included" and methodName ~= "states" then
-      theClass[methodName] = method
-    end
-  end
-  if type(module.included)=="function" then module.included(theClass, ...) end
+function StatefulObject.include(theClass, module, ...)
   if type(module.states)=="table" then
-    for stateName,moduleState in pairs(module.states) do 
+    local states = module.states
+    module.states = nil
+
+    Object.include(theClass, module, ...)
+
+    for stateName,moduleState in pairs(states) do 
       local state = theClass.states[stateName]
       if(state==nil) then state = theClass:addState(stateName) end
-      state:includes(moduleState, ...)
+      state:include(moduleState, ...)
     end
+    
+    module.states = states
+  else
+    Object.include(theClass, module, ...)
   end
 end
