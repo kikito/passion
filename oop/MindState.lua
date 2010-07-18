@@ -21,11 +21,11 @@ StatefulObject.states = {} -- the root state list
 ------------------------------------
 local _private = setmetatable({}, {__mode = "k"})   -- weak table storing private references
 
--- helper function used to call state callbacks (enterState, exitState, etc)
-local _invokeCallback = function(self, state, callbackName, ... )
+-- helper function used to call state hook methods (enterState, exitState, etc)
+local _invokeHook = function(self, state, hookName, ... )
   if state==nil then return end
-  local callback = state[callbackName]
-  if(type(callback)=='function') then callback(self, ...) end
+  local hook = state[hookName]
+  if(type(hook)=='function') then hook(self, ...) end
 end
 
 local _getStack=function(self)
@@ -109,11 +109,11 @@ function StatefulObject:gotoState(newStateName, keepStack)
     assert(nextState~=nil, "State '" .. newStateName .. "' not found")
   end
 
-  -- Either empty completely the stack, or just call the exitstate callback on current state
+  -- Either empty completely the stack, or just call the exitstate hook on current state
   if(keepStack~=true) then 
     self:popAllStates()
   else
-    _invokeCallback(self, prevState, 'exitState', newStateName )
+    _invokeHook(self, prevState, 'exitState', newStateName )
   end
 
   -- replace the top of the stack with the new state
@@ -121,7 +121,7 @@ function StatefulObject:gotoState(newStateName, keepStack)
   stack[math.max(#stack,1)] = nextState
 
   -- Invoke enterState on the new state. 2nd parameter is the name of the previous state, or nil
-  _invokeCallback(self, nextState, 'enterState', prevState~=nil and prevState.name or nil)
+  _invokeHook(self, nextState, 'enterState', prevState~=nil and prevState.name or nil)
 
 end
 
@@ -145,14 +145,14 @@ function StatefulObject:pushState(newStateName)
   end
 
   -- Invoke pausedState on the previous state
-  _invokeCallback(self, self:getCurrentState(), 'pausedState')
+  _invokeHook(self, self:getCurrentState(), 'pausedState')
 
   -- Do the push
   table.insert(stack, nextState)
 
   -- Invoke pushedState & enterState on the next state
-  _invokeCallback(self, nextState, 'pushedState')
-  _invokeCallback(self, nextState, 'enterState')
+  _invokeHook(self, nextState, 'pushedState')
+  _invokeHook(self, nextState, 'enterState')
 
   return nextState
 end
@@ -160,15 +160,15 @@ end
 --[[ Removes a state from the state stack
    If a state name is given, it will attempt to remove it from the stack. If not found on the stack it will do nothing.
    If no state name is give, this pops the top state from the stack, if any. Otherwise it does nothing.
-   Callbacks will be called when needed.
+   Hooks will be called when needed.
 ]]
 function StatefulObject:popState(stateName)
   assert(_private[self].states~=nil, "Attribute 'states' not detected. check that you called instance:popState and not instance.popState, and that you invoked super.initialize(self) in the constructor.")
 
   -- Invoke exitstate & poppedState on the state being popped out
   local prevState = self:getCurrentState()
-  _invokeCallback(self, prevState, 'exitState')
-  _invokeCallback(self, prevState, 'poppedState')
+  _invokeHook(self, prevState, 'exitState')
+  _invokeHook(self, prevState, 'poppedState')
 
   -- Do the pop
   local stack = _getStack(self)
@@ -176,13 +176,13 @@ function StatefulObject:popState(stateName)
 
   -- Invoke continuedState on the new state
   local newState = self:getCurrentState()
-  _invokeCallback(self, newState, 'continuedState')
+  _invokeHook(self, newState, 'continuedState')
 
   return newState
 end
 
 --[[ Empties the state stack
-   This function will invoke all the popState, exitState callbacks on all the states as they pop out.
+   This function will invoke all the popState, exitState hooks on all the states as they pop out.
 ]]
 function StatefulObject:popAllStates()
   local state = self:popState()

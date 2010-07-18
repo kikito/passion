@@ -2,7 +2,14 @@ local _G=_G
 module('passion')
 
 Actor = _G.class('passion.Actor', _G.StatefulObject)
-Actor:include(_G.Beholder) --observer methods
+
+Actor:include(_G.Callbacks) -- this allows definition of beforeUpdate, afterUpdate, etc
+Actor:defineCallbacks('initialize', nil, 'afterInitialize')
+Actor:defineCallbacks('update', 'beforeUpdate', 'afterUpdate')
+Actor:defineCallbacks('draw', 'beforeDraw', 'afterDraw')
+Actor:defineCallbacks('destroy', 'beforeDestroy', nil)
+
+Actor:include(_G.Beholder) -- defines observe and stopObserving
 Actor:include(_G.GetterSetter) -- getter/setter methods
 
 ------------------------------------

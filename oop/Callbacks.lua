@@ -30,17 +30,23 @@ local _callbacks = {}
 
 -- private class methods
 
+local function _getCallback(theClass, callbackName)
+  if(theClass==nil or callbackName==nil or _callbacks[theClass]==nil) then return nil end
+  return _callbacks[theClass][callbackName]
+end
+
 -- creates one of the "level 2" entries on callbacks, like beforeUpdate, afterupdate or update, above
 local function _getOrCreateCallback(theClass, callbackName)
   if(not theClass or not callbackName) then return {} end
   _callbacks[theClass] = _callbacks[theClass] or {}
   local classCallbacks = _callbacks[theClass]
-  classCallbacks[callbackName] = classCallbacks.methods[callbackName] or {methods={}, before={}, after={}}
+  classCallbacks[callbackName] = classCallbacks[callbackName] or {methods={}, before={}, after={}}
   return classCallbacks[callbackName]
 end
 
 -- returns all the methods that should be called when a callback is invoked, including superclasses
 local function _getCallbackChainMethods(theClass, callbackName)
+  if(theClass==nil) then return {} end
   local methods = _getOrCreateCallback(theClass, callbackName).methods
   local superMethods = _getCallbackChainMethods(theClass.superclass, callbackName)
 
@@ -75,13 +81,16 @@ end
 
 -- given a callback name (e.g. beforeUpdate), obtain all the methods that must be called and execute them
 local function _runCallbackChain(object, callbackName)
+  if(callbackName==nil) then return true end
   local methods = _getCallbackChainMethods(object.class, callbackName)
   for _,method in ipairs(methods) do
     if(type(method) == 'string') then
-      method = object[method]
+      local methodName = method
+      method = object[methodName]
+      assert(type(method) == 'function', methodName .. ' is not the name of an existing method of ' .. object.class.name)
     end
 
-    assert(type(method) == 'function', 'method must be a function or the name of an existing method')
+    assert(type(method) == 'function', "callbacks can only be functions or valid method names")
 
     if(method(object) == false) then return false end
   end
@@ -98,7 +107,7 @@ Callbacks = {}
 function Callbacks:included(theClass)
 
   if included(Callbacks, theClass) then return end
-  
+
   local mt = getmetatable(theClass)
   local prevNewIndex = mt.__newindex
 
@@ -112,27 +121,29 @@ function Callbacks:included(theClass)
       -- newMethod surrounds prevMethod by before and after callbacks
       -- notice that the execution is cancelled if any callback returns false
       local newMethod = function(self, ...)
-        local callback = _getOrCreateCallback(theClass, methodName)
+        local callback = _getCallback(theClass, methodName)
+
+        if(callback==nil) then return prevMethod(self, ...) end
 
         for _,before in ipairs(callback.before) do
-          if(_runcallbackChain(self, before) == false) then return false end
+          if(_runCallbackChain(self, before) == false) then return false end
         end
 
         local result = prevMethod(self, ...)
 
         for _,after in ipairs(callback.after) do
-          if(_runcallbackChain(self, after) == false) then return false end
+          if(_runCallbackChain(self, after) == false) then return false end
         end
 
         return result
       end
-      rawset(theClass.__classDict, methodName, method)
+      rawset(theClass.__classDict, methodName, newMethod)
     end
   end
 end
 
 -- usage: Actor:attachCallbacks('update', 'beforeUpdate', 'afterUpdate')
-function Callbacks.attachCallbacks(theClass, methodName, beforeName, afterName)
+function Callbacks.defineCallbacks(theClass, methodName, beforeName, afterName)
 
   assert(type(methodName)=='string', 'methodName must be a string')
   assert(type(beforeName)=='string' or type(afterName)=='string', 'at least one of beforeName or afterName must be a string')

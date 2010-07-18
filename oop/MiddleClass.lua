@@ -6,8 +6,7 @@
 
 local _classes = setmetatable({}, {__mode = "k"})   -- weak table storing references to all declared _classes and their included modules
 
--- The 'Object' class
-Object = { name = "Object" }
+Object = { name = "Object" } -- The 'Object' class
 
 _classes[Object] = { modules={} } -- adds Object to the list of _classes
 
@@ -55,6 +54,7 @@ Object.subclass = function(theClass, name)
   })
   -- instance methods go after the setmetatable, so we can use "super"
   theSubclass.initialize = function(instance,...) super.initialize(instance) end
+  theSubclass.__tostring = theClass.__tostring
 
   _classes[theSubclass]={ modules={} } --registers the new class on the list of _classes
 
