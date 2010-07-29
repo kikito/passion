@@ -2,7 +2,7 @@ local _G=_G
 module('passion.timer')
 
 -- a timer that executes its callback periodically, instead of just once.
-PeriodicTimer = _G.class('passion.timer.PeriodicTimer', _G.passion.timer.Timer)
+PeriodicTimer = _G.class('passion.timer.PeriodicTimer', _G.passion.timer.SimpleTimer)
 
 ------------------------------------
 -- PUBLIC INSTANCE METHODS
