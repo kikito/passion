@@ -11,31 +11,14 @@ Actor:defineCallbacks('destroy', 'beforeDestroy', nil)
 
 Actor:include(_G.Beholder) -- defines observe and stopObserving
 Actor:include(_G.GetterSetter) -- getter/setter methods
+Actor:include(_G.Apply) -- defines apply and applySorted
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
 ------------------------------------
 
--- The global list of actors
-_actors = {}
-_actors[Actor] = _G.setmetatable({}, {__mode = "k"})
-
 -- Each actor's children
 _children = _G.setmetatable({}, {__mode = "k"})
-
--- Adds an actor to the "list of actors" of its class
-local _registerInstance -- we define the variable first so we can make the function recursive
-_registerInstance = function(theClass, actor)
-  _G.table.insert(_actors[theClass], actor)
-  if(theClass~=Actor) then _registerInstance(theClass.superclass,actor) end
-end
-
--- Removes an actor from the "list of actors" of its class
-local _unregisterInstance -- we define the variable first so we can make the function recursive
-_unregisterInstance = function(theClass, actor)
-  if(theClass~=Actor) then _unregisterInstance(theClass.superclass,actor) end
-  _G.passion.remove(_actors[theClass], actor)
-end
 
 -- If methodOrname is a function, it returns it. If it is a name, it returns the method named.
 local _getMethod = function(actor, methodOrName)
@@ -50,7 +33,6 @@ end
 
 function Actor:initialize(options) -- options will normally be nil
   super.initialize(self, options)
-  _registerInstance(self.class, self) -- add the actor to the list of actors of its class and superclasses
   _children[self] = {}
 end
 
@@ -58,7 +40,6 @@ function Actor:destroy()
   self:gotoState(nil)
   self:applyToChildren('destroy')
   _children[self] = nil
-  _unregisterInstance(self.class, self)
   super.destroy(self)
 end
 
@@ -184,31 +165,4 @@ function Actor:setVisible(vis)
   else
     self:popState('Invisible')
   end
-end
-
-------------------------------------
--- CLASS METHODS
-------------------------------------
-
-local _prevSubclass = Actor.subclass -- stores the "default" way of making subclasses
---[[ redefine the subclass function, adding more functionality
-     (creates the _actors array)
-]]
-function Actor.subclass(theClass, name)
-  _G.assert(theClass~=nil, 'Please invoke Class:subclass instead of Class.subclass')
-  local theSubclass = _prevSubclass(theClass, name)
-  _actors[theSubclass] = _G.setmetatable({}, {__mode = "k"})
-  return theSubclass
-end
-
--- Applies some method to all the actors of this class (not subclasses)
-function Actor.apply(theClass, methodOrName, ...)
-  _G.assert(theClass~=nil, 'Please invoke Class:apply instead of Class.apply')
-  _G.passion.apply(_actors[theClass], methodOrName, ...)
-end
-
--- Same as apply, but it allows for using a sorting function
-function Actor.applySorted(theClass, sortFunc, methodOrName, ...)
-  _G.assert(theClass~=nil, 'Please invoke Class:applySorted instead of Class.applySorted')
-  _G.passion.applySorted(_actors[theClass], sortFunc, methodOrName, ... )
 end

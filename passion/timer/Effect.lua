@@ -3,7 +3,7 @@ module('passion.timer')
 
 -- a timer that gradually changes the values of the attributes of an object, in a given time.
 -- optionally, at the end, it can invoke a function.
-Effect = _G.class('passion.timer.Effect', _G.passion.timer.SimpleTimer)
+Effect = _G.class('passion.timer.Effect', _G.passion.timer.Timer)
 
 local _getValue = function(self, name)
   local getter = self.object[_G.GetterSetter:getterFor(name)]
@@ -76,7 +76,7 @@ function Effect:initialize(object, seconds, properties, easing, callback, ...)
   super.initialize(self, seconds, callback, ...)
 end
 
-function Effect:tic(dt)
+function Effect:update(dt)
 
   self.running = self.running + dt
   

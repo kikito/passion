@@ -2,7 +2,7 @@ local _G=_G
 module('passion.timer')
 
 -- a timer that executes its callback periodically, instead of just once.
-PeriodicTimer = _G.class('passion.timer.PeriodicTimer', _G.passion.timer.SimpleTimer)
+PeriodicTimer = _G.class('passion.timer.PeriodicTimer', _G.passion.timer.Timer)
 
 ------------------------------------
 -- PUBLIC INSTANCE METHODS
@@ -14,7 +14,7 @@ function PeriodicTimer:initialize(seconds, f, ...)
 
 end
 
-function PeriodicTimer:tic(dt)
+function PeriodicTimer:update(dt)
 
   self.running = self.running + dt
 

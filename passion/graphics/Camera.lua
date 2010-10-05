@@ -94,8 +94,7 @@ end
 
 Camera = _G.class('passion.graphics.Camera', _G.StatefulObject)
 Camera:include(_G.Beholder)
-
-local _cameras = _G.setmetatable({}, {__mode = "k"}) -- list of all available cameras (used for updating)
+Camera:include(_G.Apply)
 
 local _current = nil -- current camera being used
 
@@ -137,7 +136,6 @@ function Camera:initialize(parent)
   self.matrix = Matrix:new()
   self.inverse = Matrix:new()
   self:reset()
-  _cameras[self]=self
 end
 
 function Camera:update(dt)
@@ -258,11 +256,6 @@ function Camera:transform(x,y)
   return self:getMatrix():multVector(x,y)
 end
 
-function Camera:destroy()
-  _cameras[self]=nil
-  super.destroy(self)
-end
-
 ------------------------------------------
 --  DEFAULT CAMERA (does nothing)       --
 ------------------------------------------
@@ -275,10 +268,6 @@ defaultCamera = Camera:new()
 ------------------------------------------
 function Camera.getCurrent(theClass)
   return _current
-end
-
-function Camera.apply(theClass, methodName, ...)
-  _G.passion.apply(_cameras, methodName, ...)
 end
 
 function Camera.clear(theClass)

@@ -53,6 +53,7 @@ function update(dt)
   physics.update(dt)
   timer.update(dt)
   Actor:apply('update', dt)
+
   graphics.Camera:apply('update', dt)
 end
 
@@ -190,23 +191,8 @@ function applySorted(collection, sortFunc, methodOrName, ... )
 end
 
 
---[[ Removes an object from a table.
-  Only works reliably with 'array-type' collections (collections indexed with integers)
-  Removes only the first appearance of object
-]]
-function remove(collection, object)
-  local index
-  for i, v in _G.pairs(collection) do
-    if v == object then
-      index = i
-      break
-    end
-  end
-  if(index~=nil) then _G.table.remove(collection, index) end
-end
-
 -- prints a table on the console, recursively. Useful for debugging.
-function dumpTable(t, level, depth)
+function dump(t, level, depth)
   level = level or 1
   depth = depth or 4
   
@@ -217,7 +203,7 @@ function dumpTable(t, level, depth)
   if(_G.type(t)=='table') then
     for k,object in _G.pairs(t) do
       _G.print(_G.string.rep("   ", level+1) .. _G.tostring(k) .. ' => '.. _G.tostring(object) )
-      if(_G.type(object)=='table') then dumpTable(object, level + 1) end
+      if(_G.type(object)=='table') then dump(object, level + 1) end
     end
   end
 end

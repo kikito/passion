@@ -1,0 +1,6 @@
+require 'passion/oop/middleclass/MiddleClass'
+require 'passion/oop/middleclass/MindState'
+require 'passion/oop/mixins/Sender'
+require 'passion/oop/mixins/GetterSetter'
+require 'passion/oop/mixins/Callbacks'
+require 'passion/oop/mixins/Beholder'

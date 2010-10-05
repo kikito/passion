@@ -8,7 +8,7 @@ module('passion.timer')
 -- These functions encapsulate the timer creation so it is transparent to the user.
 
 function after(seconds, f, ...)
-  return _G.passion.timer.SimpleTimer:new(seconds, f, ...)
+  return _G.passion.timer.Timer:new(seconds, f, ...)
 end
 
 function every(seconds, f, ...)
@@ -21,7 +21,7 @@ end
 
 
 function update(dt)
-  _G.passion.timer.SimpleTimer:update(dt)
+  _G.passion.timer.Timer:apply('update', dt)
 end
 
 

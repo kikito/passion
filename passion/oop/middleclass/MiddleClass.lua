@@ -14,33 +14,40 @@ _classes[Object] = { modules={} } -- adds Object to the list of _classes
 Object.new = function(theClass, ...)
   assert(_classes[theClass]~=nil, "Use class:new instead of class.new")
 
-  local instance = setmetatable({ class = theClass }, theClass.__classDict) -- the class dictionary is the instance's metatable
+  local instance = setmetatable({ class = theClass }, theClass.__classDict)
   instance:initialize(...)
   return instance
 end
 
+local _metamethods = { '__add', '__sub', '__mul', '__div', '__mod', '__pow', '__unm', 
+                       '__eq', '__lt', '__le', '__call', '__gc', '__tostring', '__concat' }
+
 -- creates a subclass
 Object.subclass = function(theClass, name)
   assert(_classes[theClass]~=nil, "Use class:subclass instead of class.subclass")
-  if type(name)~="string" then name = "Unnamed" end
+  assert( type(name)=="string", "You must provide a name(string) for your class")
 
   local theSubclass = { name = name, superclass = theClass, __classDict = {} }
   local classDict = theSubclass.__classDict
 
-  -- This one is weird. Since:
-  -- a) the class dict is the instances' metatable (so it must have an __index for looking up the methods) and
-  -- b) The instance methods are in the class dict itself, then ...
+  -- classDict is the instances' metatable. It "points to himself" so they start looking for methods there.
   classDict.__index = classDict
-  -- if a method isn't found on the class dict, look on its super class
-  setmetatable(classDict, {__index = theClass.__classDict} )
 
-  setmetatable(theSubclass, {   -- theSubclass' metamethods
+  -- metamethods & methods are "looked up" through implementation and __index
+  for _,m in ipairs(_metamethods) do
+    classDict[m]= function(...)
+      assert( type(theClass.__classDict[m])=='function', "Class " .. theSubclass.name .. " does not implement the " .. m .. " metamethod")
+      return theClass.__classDict[m](...)
+    end
+  end
+  setmetatable(classDict, {__index = theClass.__classDict})
+
+  -- control how the new methods are inserted on the subclass, and how they are looked up
+  setmetatable(theSubclass, {
     __index = function(_,methodName)
-        local localMethod = classDict[methodName] -- this allows using classDic as a class method AND instance method dict
-        if localMethod ~= nil then return localMethod end
-        return theClass[methodName]
+        -- search first on the subclass's classdict, then on the superclass
+        return classDict[methodName]~= nil and classDict[methodName] or theClass[methodName]
       end,
-    -- FIXME add support for __index method here
     __newindex = function(_, methodName, method) -- when adding new methods, include a "super" function
         if type(method) == 'function' then
           local fenv = getfenv(method)
@@ -54,7 +61,6 @@ Object.subclass = function(theClass, name)
   })
   -- instance methods go after the setmetatable, so we can use "super"
   theSubclass.initialize = function(instance,...) super.initialize(instance) end
-  theSubclass.__tostring = theClass.__tostring
 
   _classes[theSubclass]={ modules={} } --registers the new class on the list of _classes
 
@@ -82,6 +88,7 @@ Object.__classDict = {
   __tostring = function(instance) return ("instance of ".. instance.class.name) end,
   subclassed = function(theClass, other) end -- empty method
 }
+Object.__classDict.__index = Object.__classDict -- instances of Object need this
 
 -- This allows doing tostring(obj) and Object() instead of Object:new()
 setmetatable(Object, { __index = Object.__classDict, __newindex = Object.__classDict,
@@ -91,27 +98,27 @@ setmetatable(Object, { __index = Object.__classDict, __newindex = Object.__class
 
 -- Returns true if aClass is a subclass of other, false otherwise
 function subclassOf(other, aClass)
-  if aClass == nil or other==nil then return false end
+  if _classes[aClass]==nil or _classes[other]==nil then return false end
   if aClass.superclass==nil then return false end -- aClass is Object, or a non-class
   return aClass.superclass == other or subclassOf(other, aClass.superclass)
 end
 
 -- Returns true if obj is an instance of aClass (or one of its subclasses) false otherwise
 function instanceOf(aClass, obj)
-  if obj==nil or _classes[aClass]==nil or _classes[obj.class]==nil then return false end
+  if _classes[aClass]==nil or type(obj)~='table' or _classes[obj.class]==nil then return false end
   if obj.class==aClass then return true end
   return subclassOf(aClass, obj.class)
 end
 
 -- Returns true if the a module has already been included on a class (or a superclass of that class)
-function included(module, aClass)
-  if aClass==nil or _classes[aClass]==nil or _classes[aClass].modules==nil then return false end
+function includes(module, aClass)
+  if _classes[aClass]==nil or _classes[aClass].modules==nil then return false end
   if _classes[aClass].modules[module] then return true end
-  return included(module, aClass.superclass)
+  return includes(module, aClass.superclass)
 end
 
--- Creates a new class named 'name'. It uses baseClass as the parent (Object if none specified)
-function class(name, baseClass)
+-- Creates a new class named 'name'. Uses Object if no baseClass is specified. Additional parameters for compatibility
+function class(name, baseClass, ...)
   baseClass = baseClass or Object
-  return baseClass:subclass(name)
+  return baseClass:subclass(name, ...)
 end
