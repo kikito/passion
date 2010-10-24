@@ -1,7 +1,8 @@
 local _G=_G
 module('passion.timer')
 
-Timer = _G.class('passion.timer.Timer', _G.StatefulObject)
+Timer = _G.class('passion.timer.Timer')
+Timer:include(_G.Stateful)
 Timer:include(_G.Apply)
 
 --[[ Creates a new timer.
@@ -53,5 +54,10 @@ end
 
 function Timer:isPaused()
   return self:isInState('Paused', true)
+end
+
+function Timer:destroy()
+  super.destroy(self)
+  self:removeFromApply()
 end
 

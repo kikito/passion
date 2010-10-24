@@ -1,17 +1,11 @@
 local _G=_G
 module('passion')
 
-Actor = _G.class('passion.Actor', _G.StatefulObject)
+Actor = _G.class('passion.Actor')
 
-Actor:include(_G.Callbacks) -- this allows definition of beforeUpdate, afterUpdate, etc
-Actor:defineCallbacks('initialize', nil, 'afterInitialize')
-Actor:defineCallbacks('update', 'beforeUpdate', 'afterUpdate')
-Actor:defineCallbacks('draw', 'beforeDraw', 'afterDraw')
-Actor:defineCallbacks('destroy', 'beforeDestroy', nil)
-
-Actor:include(_G.Beholder) -- defines observe and stopObserving
-Actor:include(_G.GetterSetter) -- getter/setter methods
-Actor:include(_G.Apply) -- defines apply and applySorted
+for _,module in _G.pairs({_G.Invoker, _G.GetterSetter, _G.Callbacks, _G.Apply, _G.Beholder, _G.Stateful})
+  Actor:include(module)
+end
 
 ------------------------------------
 -- PRIVATE METHODS AND ATTRIBUTES
@@ -40,6 +34,7 @@ function Actor:destroy()
   self:gotoState(nil)
   self:applyToChildren('destroy')
   _children[self] = nil
+  self:removeFromApply()
   super.destroy(self)
 end
 

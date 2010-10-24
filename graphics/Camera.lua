@@ -92,7 +92,8 @@ end
 --           CAMERA STUFF               --
 ------------------------------------------
 
-Camera = _G.class('passion.graphics.Camera', _G.StatefulObject)
+Camera = _G.class('passion.graphics.Camera')
+Camera:include(_G.Stateful)
 Camera:include(_G.Beholder)
 Camera:include(_G.Apply)
 

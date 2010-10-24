@@ -2,22 +2,22 @@
 -- passion general loading order - do not alterate without a reason!
 -- TODO: skip loading of modules if love modules are deactivated
 
-require 'passion/fixes/init.lua'
+require 'passion.fixes.init'
 
-require 'passion/oop/init.lua'
+require 'passion.middleclass-extras.init'
 
-require 'passion/passion.lua'
-require 'passion/colors/init.lua'
+require 'passion.passion'
+require 'passion.colors.init'
 
-require 'passion/graphics/init.lua'
-require 'passion/fonts/init.lua'
-require 'passion/audio/init.lua'
+require 'passion.graphics.init'
+require 'passion.fonts.init'
+require 'passion.audio.init'
 
-require 'passion/Actor.lua'
+require 'passion.Actor'
 
-require 'passion/timer/init.lua'
-require 'passion/physics/init.lua'
+require 'passion.timer.init'
+require 'passion.physics.init'
 
-require 'passion/gui/init.lua'
+require 'passion.gui.init'
 
-require 'passion/ai/init.lua'
+require 'passion.ai.init'
