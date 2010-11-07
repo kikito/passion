@@ -40,9 +40,10 @@ function Timer:reset(seconds)
   self.running = 0
 end
 
--- State and functions to control the "pause state"
+
+-- The paused state redefines update to 'do nothing'
 local Paused = Timer:addState('Paused')
-function Paused:tic(dt) end -- do nothing
+function Paused:update(dt) end -- do nothing
 
 function Timer:pause()
   self:pushState('Paused')
@@ -55,9 +56,3 @@ end
 function Timer:isPaused()
   return self:isInState('Paused', true)
 end
-
-function Timer:destroy()
-  super.destroy(self)
-  self:removeFromApply()
-end
-

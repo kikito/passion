@@ -121,6 +121,7 @@ end
 --------------------------------------------------
 --     CAMERA & PARENT-RELATED METHODS
 --------------------------------------------------
+-- FIXME use branchy here
 function Panel:setParent(parent)
   self.parent = parent
   if(parent~=nil) then

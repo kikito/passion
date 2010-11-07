@@ -1,1 +1,1 @@
-require 'passion/ai/QuadTree.lua'
+require 'passion.ai.QuadTree'

@@ -1,4 +1,4 @@
-require 'passion/graphics/graphics.lua'
-require 'passion/graphics/Camera.lua'
+require 'passion.graphics.graphics'
+require 'passion.graphics.Camera'
 
 

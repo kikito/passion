@@ -5,7 +5,7 @@ module('passion.timer')
 -- optionally, at the end, it can invoke a function.
 Effect = _G.class('passion.timer.Effect', _G.passion.timer.Timer)
 
-local _getValue = function(self, name)
+local function _getValue(self, name)
   local getter = self.object[_G.GetterSetter:getterFor(name)]
   if(getter~=nil) then
     return getter(self.object)
@@ -14,7 +14,7 @@ local _getValue = function(self, name)
   end
 end
 
-local _setValue = function(self, name, value)
+local function _setValue(self, name, value)
   local setter = self.object[_G.GetterSetter:setterFor(name)]
   if(setter~=nil) then
     setter(self.object, value)
@@ -23,8 +23,7 @@ local _setValue = function(self, name, value)
   end
 end
 
-local _getDifference
-_getDifference = function(name, objective, beginning)
+local function _getDifference(name, objective, beginning)
   local to,tb = _G.type(objective), _G.type(beginning)
   if(to=='number' or tb=='number') then
     return (objective or 0) - (beginning or 0)
@@ -40,8 +39,7 @@ _getDifference = function(name, objective, beginning)
   end
 end
 
-local _easingWithTables
-_easingWithTables = function(name, easing, t, b, c, d)
+local function _easingWithTables(name, easing, t, b, c, d)
   local tb,tc = _G.type(c)
   if(tc=='number' or tb=='number') then
     return easing(t, b or 0, c, d)

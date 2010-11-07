@@ -1,1 +1,1 @@
-require 'passion/colors/colors.lua'
+require 'passion.colors.colors'

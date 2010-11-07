@@ -94,7 +94,6 @@ end
 
 Camera = _G.class('passion.graphics.Camera')
 Camera:include(_G.Stateful)
-Camera:include(_G.Beholder)
 Camera:include(_G.Apply)
 
 local _current = nil -- current camera being used

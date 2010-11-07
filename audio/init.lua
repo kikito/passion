@@ -1,1 +1,1 @@
-require 'passion/audio/audio.lua'
+require 'passion.audio.audio'

@@ -1,2 +1,2 @@
-require 'passion/physics/physics.lua'
-require 'passion/physics/Actor.lua'
+require 'passion.physics.physics'
+require 'passion.physics.Actor'

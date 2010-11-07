@@ -1,1 +1,1 @@
-require('passion/fixes/fixGroupIndex.lua')
+require 'passion.fixes.fixGroupIndex'
