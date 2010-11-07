@@ -121,13 +121,15 @@ end
 --------------------------------------------------
 --     CAMERA & PARENT-RELATED METHODS
 --------------------------------------------------
--- FIXME use branchy here
-function Panel:setParent(parent)
-  self.parent = parent
-  if(parent~=nil) then
-    self:setCamera(parent:getInternalCamera())
-    self.internalCamera:setParent(parent:getInternalCamera())
-  end
+
+local prevAddChild = Panel.addChild
+
+function Panel:addChild(child)
+  prevAddChild(self, child)
+  local camera = self:getInternalCamera()
+  child:setCamera(camera)
+  camera:addChild(child:getInternalCamera())
+  return child
 end
 
 function Panel:getAlpha()
@@ -139,8 +141,7 @@ end
 
 function Panel:getDrawOrder()
   if(self.drawOrder~=nil) then return self.drawOrder end
-  local parent = self:getParent()
-  if(parent~=nil) then return parent:getDrawOrder() - 1 end
+  if(self.parent~=nil) then return self.parent:getDrawOrder() - 1 end
   return 0
 end
 
