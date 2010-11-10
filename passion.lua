@@ -22,10 +22,11 @@ end
 
 -- function used for drawing. Used in draw callback
 local _drawWithCameras = function(actor)
-  for _,camera in _G.pairs(actor:getCameras()) do
-    camera:set()
+  --for _,camera in _G.pairs(actor:getCameras()) do
+  --  _G.print('drawing with cameras')
+  --  camera:set()
     actor:draw()
-  end
+  --end
 end
 
 -- function for drawing actors in the right order. Used in draw callback

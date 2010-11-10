@@ -42,7 +42,7 @@ function Label:getFontSize()
 end
 
 function Label:draw()
-
+  
   local align = self:getAlign()
   local valign = self:getValign()
   local font = self:getFont()

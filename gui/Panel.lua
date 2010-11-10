@@ -125,6 +125,7 @@ end
 local prevAddChild = Panel.addChild
 
 function Panel:addChild(child)
+  _G.print('hello')
   prevAddChild(self, child)
   local camera = self:getInternalCamera()
   child:setCamera(camera)
@@ -134,8 +135,7 @@ end
 
 function Panel:getAlpha()
   if(self.alpha~=nil) then return self.alpha end
-  local parent = self:getParent()
-  if(parent ~= nil) then return parent:getAlpha() end
+  if(self.parent ~= nil) then return self.parent:getAlpha() end
   return 255
 end
 
