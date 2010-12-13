@@ -1,1 +1,12 @@
-require 'passion.fixes.fixGroupIndex'
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/fixes/init.lua
+-----------------------------------------------------------------------------------------------------------------------
+
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'fixGroupIndex'
+}
+
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end

@@ -1,5 +1,12 @@
-require 'passion.timer.timer'
-require 'passion.timer.Timer'
-require 'passion.timer.PeriodicTimer'
-require 'passion.timer.Effect'
-require 'passion.timer.Timed'
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/timer/init.lua
+-----------------------------------------------------------------------------------------------------------------------
+
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'timer', 'Timer', 'PeriodicTimer', 'Effect', 'Timed'
+}
+
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end

@@ -1,19 +1,18 @@
-
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/init.lua
 -- passion general loading order - do not alterate without a reason!
+-----------------------------------------------------------------------------------------------------------------------
+
 -- TODO: skip loading of modules if love modules are deactivated
 
-require 'passion.fixes.init'
 
-require 'passion.passion'
-require 'passion.colors.init'
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'fixes.init', 'passion',    'colors.init', 'fonts.init',
+  'audio.init', 'timer.init', 'Actor',       'physics.init',
+  'gui.init'
+}
 
-require 'passion.graphics.init'
-require 'passion.fonts.init'
-require 'passion.audio.init'
-require 'passion.timer.init'
-
-require 'passion.Actor'
-
-require 'passion.physics.init'
-
-require 'passion.gui.init'
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end

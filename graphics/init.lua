@@ -1,4 +1,14 @@
-require 'passion.graphics.graphics'
-require 'passion.graphics.Camera'
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/graphics/init.lua
+-----------------------------------------------------------------------------------------------------------------------
+
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'graphics', 'Camera'
+}
+
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end
 
 

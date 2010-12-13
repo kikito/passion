@@ -1,3 +1,12 @@
-require 'passion.gui.Panel'
-require 'passion.gui.Label'
-require 'passion.gui.Button'
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/gui/init.lua
+-----------------------------------------------------------------------------------------------------------------------
+
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'Panel', 'Label', 'Button'
+}
+
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end

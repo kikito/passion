@@ -1,2 +1,12 @@
-require 'passion.physics.physics'
-require 'passion.physics.Actor'
+-----------------------------------------------------------------------------------------------------------------------
+-- passion/graphics/init.lua
+-----------------------------------------------------------------------------------------------------------------------
+
+local _path = ({...})[1]:gsub("%.init", "")
+local _modules = {
+  'physics', 'Actor'
+}
+
+for _,module in ipairs(_modules) do
+  require(_path .. '.' .. module)
+end
