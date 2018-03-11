@@ -2,6 +2,15 @@ h1. PÄSSION
 
 An Object-oriented game engine for "LÖVE":http://www.love2d.org
 
+h2. Deprecated and *unmaintained*
+
+This project is *deprecated* and *unmaintained*. Some of its original ideas have been exported to their own separate projects.
+
+* "middleclass":https://github.com/kikito/stateful.lua is still working and maintained.
+* passion.Actor became "stateful.lua":https://github.com/kikito/stateful.lua
+* passion.timers became "cron.lua":https://github.com/kikito/cron.lua
+* passion.physics became "bump.lua":https://github.com/kikito/bump.lua
+
 h2. Main features
 
 * Object orientation provided through "MiddleClass & MindState":http://github.com/kikito/middleclass
